@@ -98,9 +98,9 @@ Why repo root? Workspace packages `@millipede/lesson-widgets` and `@millipede/md
 
 | Variable | Value | Environments |
 |----------|-------|--------------|
-| `NODE_VERSION` | `22` | Production + Preview |
+| `NODE_VERSION` | `24` | Production + Preview |
 
-Repo also has `.node-version` with `22` as backup.
+Repo also has `.node-version` with `24`. Avoid Node 22 on Cloudflare — it resolves to 22.22.0, which corepack rejects.
 
 ### 2.4 Deploy
 
@@ -163,7 +163,7 @@ git push origin main
 |---------|-------|-----|
 | No "Build output directory" field | Worker flow, not Pages | Back → **Pages** → Connect to Git |
 | Deploy command shows `wrangler deploy` | Worker flow | Same — use Pages |
-| `pnpm: command not found` | Node/pnpm not detected | Set `NODE_VERSION=22`; commit `pnpm-lock.yaml` |
+| `pnpm: command not found` | Node/pnpm not detected | Set `NODE_VERSION=24`; commit `pnpm-lock.yaml` |
 | Workspace package not found | Building from `apps/academy` only | Root directory empty; build from repo root |
 | Widgets blank on live site | Hydration / JS error | Browser console; MDX needs `client:load` on Solid components |
 | Build passes locally, fails on CF | Missing lockfile or wrong output path | Output must be `apps/academy/dist` |

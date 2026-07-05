@@ -68,9 +68,9 @@ Click **Environment variables** → **Add**:
 
 | Variable | Value | Environments |
 |----------|-------|--------------|
-| `NODE_VERSION` | `22` | Production + Preview |
+| `NODE_VERSION` | `24` | Production + Preview |
 
-*(Optional — `.node-version` at repo root also works.)*
+*(Also set in `.node-version` at repo root. Node 22 on CF resolves to 22.22.0 — too old for corepack/pnpm 11; use 24.)*
 
 ### 2.4 Deploy
 
@@ -128,7 +128,7 @@ Preview deployments: every PR gets a unique `*.pages.dev` preview URL.
 
 | Problem | Fix |
 |---------|-----|
-| Build fails: `pnpm: command not found` | Add env var `NODE_VERSION=22`; ensure `pnpm-lock.yaml` is committed |
+| Build fails: `pnpm: command not found` | Add env var `NODE_VERSION=24`; ensure `pnpm-lock.yaml` is committed |
 | Build fails: workspace package not found | Build from **repo root**, not `apps/academy` alone |
 | `[ERR_PNPM_IGNORED_BUILDS]` esbuild/sharp | pnpm 11 uses `allowBuilds` in `pnpm-workspace.yaml` (not `onlyBuiltDependencies`) | Commit `allowBuilds: { esbuild: true, sharp: true }`; deploy latest `main` |
 | Widgets blank on site | Check browser console; ensure `client:load` on MDX components |

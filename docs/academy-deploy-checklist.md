@@ -12,7 +12,7 @@ Quick reference — full guide: [apps/academy/DEPLOY.md](../apps/academy/DEPLOY.
 - [ ] Repo: `seahorse-byte/millipede`
 - [ ] Build command: `pnpm install && pnpm build:academy`
 - [ ] Output directory: `apps/academy/dist`
-- [ ] Env: `NODE_VERSION=22`
+- [ ] Env: `NODE_VERSION=24`
 - [ ] Live URL: `https://millipede-academy.pages.dev`
 
 ## Verify
