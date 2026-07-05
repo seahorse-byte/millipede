@@ -14,3 +14,7 @@ test-results/
 
 # Source PDFs live in docs/ (copies at repo root are local-only)
 /*.pdf
+
+# Local debug logs — contents stay on disk; README only in git
+logs/**
+!logs/README.md
