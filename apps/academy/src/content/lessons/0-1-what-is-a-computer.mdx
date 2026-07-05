@@ -1,0 +1,44 @@
+---
+id: "0.1"
+book: 0
+title: "What is a computer, really?"
+type: lesson
+duration_min: 45
+prerequisites: []
+objectives:
+  - "Explain how text becomes bits in memory"
+  - "Encode a character using ASCII"
+components:
+  - BitRegister
+quiz_id: book0-lesson1
+lab_id: encode-name-ascii
+instructor_notes: true
+---
+
+import { BitRegister } from "@millipede/lesson-widgets";
+
+Computers store **everything** as binary — voltage on or off, represented as `1` and `0`.
+
+## From letters to bits
+
+When you type `A`, the keyboard sends a signal the CPU interprets as decimal **65** (ASCII). That number becomes **8 bits**:
+
+```
+01000001
+```
+
+Each bit is one switch. Eight switches give you 256 possible values (0–255), enough for the basic Latin alphabet, digits, and punctuation.
+
+## Why this matters for Team Radar
+
+Every webhook payload — GitHub PR, Jira ticket, Slack pulse — arrives as bytes on the wire. The ingestion service parses JSON, but underneath it's all bits flowing through Kafka partitions.
+
+<BitRegister client:load />
+
+## Lab: encode your name
+
+Pick the first letter of your name. Use the widget above to see its bit pattern. Write down the decimal ASCII value and binary string in your journal.
+
+## Teach-back prompt
+
+Explain to a colleague: "What happens when I press a key?" in three sentences or fewer.

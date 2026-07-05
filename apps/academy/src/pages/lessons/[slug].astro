@@ -1,0 +1,67 @@
+---
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const lessons = await getCollection("lessons");
+  return lessons.map((lesson) => ({
+    params: { slug: lesson.slug },
+    props: { lesson },
+  }));
+}
+
+const { lesson } = Astro.props;
+const { Content } = await lesson.render();
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { lessonComponents } from "../../components/lesson-widgets";
+---
+
+<BaseLayout title={`${lesson.data.id} — ${lesson.data.title}`}>
+  <article class="lesson">
+    <header>
+      <p class="eyebrow">Book {lesson.data.book} · Lesson {lesson.data.id}</p>
+      <h1>{lesson.data.title}</h1>
+      {
+        lesson.data.objectives.length > 0 && (
+          <ul class="objectives">
+            {lesson.data.objectives.map((obj) => (
+              <li>{obj}</li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+    <div class="content">
+      <Content components={lessonComponents} />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .lesson {
+    max-width: 720px;
+  }
+  .eyebrow {
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+  }
+  .objectives {
+    color: #94a3b8;
+    margin: 1rem 0 2rem;
+  }
+  .content :global(h2) {
+    margin-top: 2rem;
+  }
+  .content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  .content :global(th),
+  .content :global(td) {
+    border: 1px solid #334155;
+    padding: 0.5rem;
+    text-align: left;
+  }
+</style>

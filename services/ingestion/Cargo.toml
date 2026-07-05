@@ -1,0 +1,14 @@
+[package]
+name = "millipede-ingestion"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+rdkafka.workspace = true
+uuid = { version = "1", features = ["v4"] }

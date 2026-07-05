@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+target/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+coverage/
+playwright-report/
+test-results/
+
+# Source PDFs live in docs/ (copies at repo root are local-only)
+/*.pdf

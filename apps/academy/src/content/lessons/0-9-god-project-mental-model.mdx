@@ -1,0 +1,63 @@
+---
+id: "0.9"
+book: 0
+title: "The God Project mental model"
+type: lesson
+duration_min: 60
+prerequisites:
+  - "0.1"
+  - "0.5"
+objectives:
+  - "Map the six planning PDFs to monorepo directories"
+  - "Explain the Academy-to-Team-Radar learning loop"
+components:
+  - KafkaPipelineVisualizer
+instructor_notes: true
+---
+
+import { KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+The **God Project** is not one app — it's a **learning loop**: each Academy lesson teaches a concept you immediately implement in Team Radar.
+
+## The six PDFs → this repo
+
+| PDF | Vision | Maps to |
+|-----|--------|---------|
+| Gemini1 | Monorepo model | Root layout, `apps/`, `services/`, `packages/` |
+| Gemini2 | Team Radar diagram | Event flow: inputs → gateway → stream → dashboard |
+| Gemini3 | Rust + Python, Kafka/PG/Redis | `services/`, `infra/docker/` |
+| Gemini4 | JWT gateway + mTLS | `services/gateway/`, `infra/certs/` |
+| Gemini5 | Chained Consumer, 1:1 portal | LLM worker → analyzer → manager views |
+| Gemini6 | WASM redaction, SolidJS | `packages/redact-wasm/`, `apps/radar/` |
+
+Source PDFs live in `docs/` — they are **planning artifacts**, not runtime code.
+
+## Monorepo mental model
+
+```
+millipede/
+├── apps/academy/     ← you are here (teach)
+├── apps/radar/       ← SolidJS dashboard (ship Stage 4)
+├── services/         ← Rust + Python pipeline
+├── packages/         ← shared widgets, WASM, types
+├── content/          ← MDX books 0–7 (mirrors Academy)
+└── infra/docker/     ← Kafka + Postgres + Redis
+```
+
+## The pipeline you'll build
+
+<KafkaPipelineVisualizer client:load />
+
+1. **Ingestion** (Rust Axum) accepts webhooks, publishes to `raw-dev-events`
+2. **LLM worker** (Python) enriches sentiment and risk, publishes `enriched-dev-events`
+3. **Analyzer** (Rust) writes Postgres + Redis for live dashboard
+4. **Gateway** (Rust) validates JWT, proxies over mTLS — **no Express BFF**
+5. **Dashboard** (SolidJS + TanStack) renders team health for managers
+
+## Work repos are reference only
+
+See `docs/work-alignment.md` — maverick, maverick-ui, and ai-pentest inform **patterns** (eval CI, OTel, BFF deep-dive) but do not reshape this stack.
+
+## Capstone prep
+
+Draw Team Radar on a whiteboard: inputs, Kafka topics, services, and the manager dashboard. Time yourself — 5 minutes.
