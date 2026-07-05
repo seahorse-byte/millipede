@@ -167,6 +167,7 @@ git push origin main
 | Workspace package not found | Building from `apps/academy` only | Root directory empty; build from repo root |
 | Widgets blank on live site | Hydration / JS error | Browser console; MDX needs `client:load` on Solid components |
 | Build passes locally, fails on CF | Missing lockfile or wrong output path | Output must be `apps/academy/dist` |
+| `[ERR_PNPM_IGNORED_BUILDS]` esbuild/sharp | pnpm 11 blocks postinstall scripts on CI | Root `package.json` has `pnpm.onlyBuiltDependencies`; see `.npmrc` |
 | 1Password error on `git commit` | Commit signing agent | Retry after unlocking 1Password |
 
 ---

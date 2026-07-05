@@ -130,6 +130,7 @@ Preview deployments: every PR gets a unique `*.pages.dev` preview URL.
 |---------|-----|
 | Build fails: `pnpm: command not found` | Add env var `NODE_VERSION=22`; ensure `pnpm-lock.yaml` is committed |
 | Build fails: workspace package not found | Build from **repo root**, not `apps/academy` alone |
+| `[ERR_PNPM_IGNORED_BUILDS]` esbuild/sharp | pnpm 11 blocks postinstall on CI until allowlisted | Commit root `pnpm.onlyBuiltDependencies` + `.npmrc` |
 | Widgets blank on site | Check browser console; ensure `client:load` on MDX components |
 | Wrong site URL in meta | Update `site` in `apps/academy/astro.config.mjs` after first deploy |
 
