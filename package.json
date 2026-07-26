@@ -9,7 +9,8 @@
     "build:widgets": "pnpm --filter @millipede/lesson-widgets build",
     "compose:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",
-    "ingestion:dev": "cargo run -p millipede-ingestion"
+    "ingestion:dev": "cargo run -p millipede-ingestion",
+    "analyzer:dev": "cargo run -p millipede-analyzer"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

@@ -14,6 +14,22 @@ pnpm install
 pnpm compose:up          # Kafka + Postgres + Redis
 pnpm dev:academy         # Academy at http://localhost:4321
 cargo run -p millipede-ingestion   # Webhook at :8081
+cargo run -p millipede-analyzer    # Kafka → Postgres at :8082/health
+```
+
+### Stage 1 pipeline (local)
+
+```bash
+pnpm compose:up
+cargo run -p millipede-analyzer    # terminal 1
+cargo run -p millipede-ingestion   # terminal 2
+curl -X POST http://localhost:8081/webhooks/hello \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"opened","source":"github"}'
+psql postgres://millipede:millipede@localhost:5432/team_radar \
+  -c "SELECT id, source, left(payload_json, 60) FROM team_events ORDER BY created_at DESC LIMIT 5;"
+curl -s http://localhost:8082/api/metrics/summary | jq
+docker exec -it docker-redis-1 redis-cli SUBSCRIBE team_radar:events
 ```
 
 ## Monorepo layout
@@ -36,7 +52,7 @@ docs/                  PDFs + work-alignment reference
 
 | Stage | Deliverable |
 |-------|-------------|
-| 1 | Webhook → Kafka → Postgres |
+| 1 | Webhook → Kafka → Postgres + Redis |
 | 2 | JWT gateway + mTLS |
 | 3 | Python LLM enrichment |
 | 4 | SolidJS + TanStack + WASM redaction |
