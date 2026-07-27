@@ -1,4 +1,6 @@
 use axum::{extract::State, routing::get, Json, Router};
+use axum_server::tls_rustls::RustlsConfig;
+use millipede_tls_common::{build_mtls_server_config, certs_dir, ensure_crypto_provider, mtls_enabled};
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::Message;
@@ -207,8 +209,26 @@ async fn run_consumer(state: Arc<AppState>, brokers: String, topic: String) {
     }
 }
 
+async fn serve(app: Router, addr: SocketAddr, mtls_service: Option<&str>) {
+    if let Some(name) = mtls_service {
+        let dir = certs_dir();
+        let tls = build_mtls_server_config(name, &dir).expect("mtls config");
+        let rustls = RustlsConfig::from_config(tls);
+        info!(%addr, service = name, "analyzer listening with mTLS");
+        axum_server::bind_rustls(addr, rustls)
+            .serve(app.into_make_service())
+            .await
+            .expect("mTLS server failed");
+    } else {
+        info!(%addr, "analyzer listening (plain HTTP)");
+        let listener = tokio::net::TcpListener::bind(addr).await.expect("bind failed");
+        axum::serve(listener, app).await.expect("server failed");
+    }
+}
+
 #[tokio::main]
 async fn main() {
+    ensure_crypto_provider();
     tracing_subscriber::fmt()
         .with_env_filter(
             env::var("RUST_LOG")
@@ -269,11 +289,23 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .route("/api/metrics/summary", get(metrics_summary))
+        .route("/metrics/summary", get(metrics_summary))
         .with_state((*state).clone());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    info!(%addr, "analyzer listening");
+    let plain_addr = SocketAddr::from(([0, 0, 0, 0], port));
 
-    let listener = tokio::net::TcpListener::bind(addr).await.expect("bind failed");
-    axum::serve(listener, app).await.expect("server failed");
+    if mtls_enabled() {
+        let mtls_port: u16 = env::var("ANALYZER_MTLS_PORT")
+            .ok()
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(8084);
+        let mtls_addr = SocketAddr::from(([0, 0, 0, 0], mtls_port));
+        let app_mtls = app.clone();
+        tokio::spawn(async move {
+            serve(app_mtls, mtls_addr, Some("analyzer")).await;
+        });
+        serve(app, plain_addr, None).await;
+    } else {
+        serve(app, plain_addr, None).await;
+    }
 }

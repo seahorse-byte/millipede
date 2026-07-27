@@ -1,0 +1,8 @@
+[package]
+name = "millipede-tls-common"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustls = { version = "0.23", features = ["aws-lc-rs"] }
+rustls-pemfile = "2"

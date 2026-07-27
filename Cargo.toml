@@ -4,6 +4,7 @@ members = [
   "services/ingestion",
   "services/gateway",
   "services/analyzer",
+  "services/tls-common",
   "packages/redact-wasm",
 ]
 
@@ -21,3 +22,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 rdkafka = { version = "0.37", features = ["cmake-build"] }
 sqlx = { version = "0.8", features = ["runtime-tokio", "postgres"] }
 redis = { version = "0.27", features = ["tokio-comp"] }
+jsonwebtoken = "9"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+axum-server = { version = "0.7", features = ["tls-rustls"] }
+millipede-tls-common = { path = "services/tls-common" }

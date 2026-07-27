@@ -32,6 +32,20 @@ curl -s http://localhost:8082/api/metrics/summary | jq
 docker exec -it docker-redis-1 redis-cli SUBSCRIBE team_radar:events
 ```
 
+### Stage 2 — JWT gateway + mTLS
+
+See [`docs/stage2-gateway.md`](docs/stage2-gateway.md). Quick path:
+
+```bash
+bash infra/certs/generate-dev-certs.sh
+pnpm compose:up
+MILLIPEDE_MTLS=1 pnpm analyzer:dev    # :8082 plain + :8084 mTLS
+MILLIPEDE_MTLS=1 pnpm ingestion:dev   # :8081 plain + :8083 mTLS
+MILLIPEDE_MTLS=1 pnpm gateway:dev     # :8443 HTTPS, JWT required
+export TOKEN="$(cargo run -q -p millipede-gateway --bin mint-dev-jwt)"
+curl -sk https://localhost:8443/api/metrics/summary -H "Authorization: Bearer $TOKEN"
+```
+
 ## Monorepo layout
 
 ```
