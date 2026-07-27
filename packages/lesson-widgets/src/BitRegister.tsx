@@ -1,3 +1,4 @@
+import { asciiForByte, decimalToHex, formattedBinary } from "./binary-utils";
 import { createMemo, createSignal, For } from "solid-js";
 import { WidgetShell } from "./WidgetShell";
 
@@ -13,6 +14,7 @@ function charToBits(char: string): number[] {
 export function BitRegister() {
   const [text, setText] = createSignal("A");
   const bits = createMemo(() => charToBits(text().slice(0, 1) || "A"));
+  const decimal = createMemo(() => text().charCodeAt(0) || 65);
 
   return (
     <WidgetShell
@@ -29,8 +31,8 @@ export function BitRegister() {
               onInput={(e) => setText(e.currentTarget.value.toUpperCase())}
             />
           </label>
-          <p>
-            ASCII {text().charCodeAt(0)} → binary
+          <p class="mw-mono">
+            Decimal {decimal()} · Hex 0x{decimalToHex(decimal())} · Binary {formattedBinary(decimal())}
           </p>
           <div class="mw-bits">
             <For each={bits()}>
@@ -41,6 +43,7 @@ export function BitRegister() {
               )}
             </For>
           </div>
+          <p>ASCII meaning: '{asciiForByte(decimal())}'</p>
           {mode() === "challenge" && (
             <p class="mw-hint">Challenge: encode your name, one character at a time.</p>
           )}

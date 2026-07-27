@@ -1,0 +1,154 @@
+---
+id: "0.2"
+book: 0
+title: "Binary, hex, and decimal conversions"
+type: lesson
+duration_min: 60
+prerequisites:
+  - "0.1"
+objectives:
+  - "Convert between binary, hex, and decimal for one byte"
+  - "Use the nibble split trick for binary ↔ hex"
+  - "Explain the five layers from memory to ASCII meaning"
+components:
+  - BaseConverter
+  - ByteAnatomy
+  - HexColorMixer
+quiz_id: book0-lesson2
+lab_id: break-fix-hex-binary
+instructor_notes: true
+---
+
+import { BaseConverter, ByteAnatomy, HexColorMixer } from "@millipede/lesson-widgets";
+
+Computers count in **base 2** (binary). Programmers read **hex** because it compresses 4 bits into one digit. We still use **decimal** for math — and **ASCII** when a number becomes a character.
+
+This lesson follows the same path as the *Binary & Hexadecimal Handbook* — from switches to `#` on screen.
+
+## 1. Binary — base 2
+
+A switch is **OFF (0)** or **ON (1)**. In decimal, place values are 1, 10, 100… In binary they are **1, 2, 4, 8…**
+
+### One nibble (4 bits)
+
+| Position | 4th | 3rd | 2nd | 1st |
+|----------|:---:|:---:|:---:|:---:|
+| **Value** | **8** | **4** | **2** | **1** |
+
+**Example:** `0010` → only the 2-place is ON → **2**.
+
+Toggle bits in the converter below and watch each nibble sum update.
+
+<BaseConverter client:load />
+
+## 2. Hex — base 16 (the bridge)
+
+Binary gets long fast:
+
+| System | Value for 255 |
+|--------|----------------|
+| Decimal | `255` |
+| Binary | `11111111` |
+| Hex | `FF` |
+
+One **hex digit** encodes exactly **4 bits** (one nibble). After 9 we use letters **A–F** for 10–15.
+
+| Decimal | Hex | Binary |
+|---------|-----|--------|
+| 10 | **A** | 1010 |
+| 13 | **D** | 1101 |
+| 15 | **F** | 1111 |
+
+## 3. The split trick (binary ↔ hex)
+
+A **byte** is 8 bits. Split it in half — no heavy math required.
+
+### Binary → hex: `1101 1010`
+
+1. Split: `1101` | `1010`
+2. Left nibble: 8+4+1 = **13** → **D**
+3. Right nibble: 8+2 = **10** → **A**
+4. Result: **DA**
+
+### Hex → binary: `3C`
+
+1. Split: `3` | `C`
+2. `3` → 2+1 → `0011`
+3. `C` (12) → 8+4 → `1100`
+4. Result: `0011 1100`
+
+Use **Step** mode on the widget to walk the algorithm without guessing.
+
+## 4. Five layers of one byte
+
+Same electricity, five interpretations — this is how Git packfiles, JSON, and webhooks all reduce to bytes.
+
+<ByteAnatomy client:load />
+
+Example from the handbook:
+
+```
+Buffer.from([0x23])
+  Binary:  0010 0011   ← hardware truth
+  Hex:     0x23        ← programmer shorthand
+  Decimal: 35           ← math value
+  ASCII:   '#'          ← human meaning
+```
+
+The machine only stores switches. Hex, decimal, and text are **views** we put on top.
+
+## 5. Hex in the real world — RGB colors
+
+CSS colors use `#RRGGBB` — three bytes, one per channel (Red, Green, Blue).
+
+| Hex | Meaning |
+|-----|---------|
+| `#FF0000` | Max red → **Red** |
+| `#00FF00` | Max green → **Green** |
+| `#FFFFFF` | All channels max → **White** |
+| `#000000` | All off → **Black** |
+| `#FFFF00` | Red + green light → **Yellow** |
+
+<HexColorMixer client:load />
+
+**Think:** `#880000` is still pure red — but the dimmer is halfway down (**dark red / maroon**). `#EEEEEE` is much brighter than `#111111`.
+
+## Lab: practice (then check answers)
+
+**Part A — Binary → hex**
+
+1. `0000 1001` → ?
+2. `1111 0011` → ?
+3. `1010 1100` → ?
+
+**Part B — Hex → binary**
+
+4. `B2` → ?
+5. `F0` → ?
+6. `4D` → ?
+
+**Part C — Color**
+
+7. Which is brighter: `#111111` or `#EEEEEE`?
+8. If `#FF0000` is red, what is `#880000`?
+
+### Answer key
+
+<details>
+<summary>Instructor / self-check</summary>
+
+**Part A:** 1) **09** · 2) **F3** · 3) **AC**
+
+**Part B:** 4) `1011 0010` · 5) `1111 0000` · 6) `0100 1101`
+
+**Part C:** 7) **#EEEEEE** · 8) **Dark red (maroon)**
+
+</details>
+
+## Why this matters for Team Radar
+
+Kafka messages are JSON in the app — but on the wire they are **bytes**. Git SHAs, JWT segments, and TLS certificates are all hex strings over binary data. When you read a webhook payload or a packfile offset, you are switching glasses — not changing what the machine stored.
+
+## Teach-back prompt
+
+Explain the **split trick** to a colleague using one byte example. Then name all **five layers** from memory to ASCII.

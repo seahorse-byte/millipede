@@ -34,6 +34,9 @@ export function parseLessonFrontmatter(data: unknown): LessonFrontmatter {
 
 export const widgetNames = [
   "BitRegister",
+  "BaseConverter",
+  "ByteAnatomy",
+  "HexColorMixer",
   "PacketJourney",
   "EventLoopSimulator",
   "OwnershipVisualizer",

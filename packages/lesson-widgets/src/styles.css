@@ -94,3 +94,128 @@
   font-size: 0.9rem;
   color: #94a3b8;
 }
+
+.mw-mono {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9rem;
+}
+
+.mw-converter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mw-converter-controls input {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #e2e8f0;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+}
+
+.mw-nibble-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.mw-nibble-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.mw-nibble-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.mw-place-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mw-place-cell {
+  display: grid;
+  gap: 0.15rem;
+  place-items: center;
+  min-width: 2.5rem;
+  padding: 0.35rem;
+  border-radius: 6px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.mw-place-cell[data-on="true"] {
+  border-color: #38bdf8;
+  background: #172554;
+}
+
+.mw-place-value {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.mw-place-bit {
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+}
+
+.mw-steps {
+  margin: 1rem 0 0;
+  padding-left: 1.25rem;
+  color: #cbd5e1;
+}
+
+.mw-anatomy .mw-layer-stack {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.mw-layer {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.mw-layer-head {
+  display: grid;
+  gap: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+
+.mw-layer-head span {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.mw-layer code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.mw-color-swatch {
+  height: 4rem;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  margin: 0.75rem 0;
+}
+
+.mw-color-channel {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.mw-color-channel input[type="range"] {
+  width: 100%;
+}
