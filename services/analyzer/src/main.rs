@@ -1,5 +1,7 @@
-use axum::{extract::State, routing::get, Json, Router};
+use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
+use axum::response::sse::{Event, KeepAlive, Sse};
 use axum_server::tls_rustls::RustlsConfig;
+use futures_util::StreamExt;
 use millipede_tls_common::{build_mtls_server_config, certs_dir, ensure_crypto_provider, mtls_enabled};
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
@@ -8,7 +10,10 @@ use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use std::convert::Infallible;
 use std::{collections::HashMap, env, net::SocketAddr, sync::Arc, time::Duration};
+use tokio_stream::wrappers::ReceiverStream;
+use tower_http::cors::{Any, CorsLayer};
 use tracing::{error, info, warn};
 
 #[derive(Clone)]
@@ -105,6 +110,51 @@ async fn metrics_summary(State(state): State<AppState>) -> Result<Json<MetricsSu
         events_by_source,
         latest_by_source,
     }))
+}
+
+async fn events_stream(
+    State(state): State<AppState>,
+) -> Result<Sse<impl futures_util::Stream<Item = Result<Event, Infallible>> + Send>, StatusCode> {
+    let client = state
+        .redis
+        .as_ref()
+        .ok_or(StatusCode::SERVICE_UNAVAILABLE)?
+        .clone();
+
+    let (tx, rx) = tokio::sync::mpsc::channel::<String>(64);
+
+    tokio::spawn(async move {
+        let Ok(mut pubsub) = client.get_async_pubsub().await else {
+            warn!("redis pubsub connection failed");
+            return;
+        };
+        if pubsub.subscribe("team_radar:events").await.is_err() {
+            warn!("redis pubsub subscribe failed");
+            return;
+        }
+
+        let mut messages = pubsub.into_on_message();
+        while let Some(message) = messages.next().await {
+            let Ok(payload) = message.get_payload::<String>() else {
+                continue;
+            };
+            if tx.send(payload).await.is_err() {
+                break;
+            }
+        }
+    });
+
+    let stream = ReceiverStream::new(rx).map(|payload| {
+        Ok(Event::default().event("team_event").data(payload))
+    });
+
+    Ok(
+        Sse::new(stream).keep_alive(
+            KeepAlive::new()
+                .interval(Duration::from_secs(15))
+                .text("ping"),
+        ),
+    )
 }
 
 async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Error> {
@@ -301,6 +351,14 @@ async fn main() {
         .route("/health", get(health))
         .route("/api/metrics/summary", get(metrics_summary))
         .route("/metrics/summary", get(metrics_summary))
+        .route("/api/events/stream", get(events_stream))
+        .route("/events/stream", get(events_stream))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        )
         .with_state((*state).clone());
 
     let plain_addr = SocketAddr::from(([0, 0, 0, 0], port));

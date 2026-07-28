@@ -27,6 +27,9 @@ services/llm-worker/*.egg-info/
 **/__pycache__/
 **/*.pyc
 
+# WASM build output
+packages/redact-wasm/pkg/
+
 # Dev mTLS certs — regenerate with infra/certs/generate-dev-certs.sh
 infra/certs/dev/*.pem
 infra/certs/dev/*.srl

@@ -1,0 +1,23 @@
+{
+  "name": "@millipede/radar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@millipede/redact-wasm": "workspace:*",
+    "@tanstack/solid-query": "^5.69.0",
+    "@tanstack/solid-router": "^1.114.29",
+    "solid-js": "^1.9.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.2.3",
+    "vite-plugin-solid": "^2.11.6"
+  }
+}

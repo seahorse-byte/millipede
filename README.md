@@ -63,6 +63,17 @@ psql postgres://millipede:millipede@localhost:5432/team_radar \
   -c "SELECT id, sentiment, risk_score, enriched_at FROM team_events ORDER BY created_at DESC LIMIT 3;"
 ```
 
+### Stage 4 — SolidJS dashboard + WASM redaction
+
+See [`docs/stage4-radar.md`](docs/stage4-radar.md). Quick path:
+
+```bash
+cargo install wasm-pack   # once
+pnpm install && pnpm build:wasm
+pnpm compose:up && pnpm llm-worker:dev & pnpm analyzer:dev & pnpm ingestion:dev &
+pnpm dev:radar   # http://localhost:5174
+```
+
 ## Monorepo layout
 
 ```

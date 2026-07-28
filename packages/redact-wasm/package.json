@@ -1,0 +1,12 @@
+{
+  "name": "@millipede/redact-wasm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": ["pkg"],
+  "main": "./pkg/millipede_redact_wasm.js",
+  "types": "./pkg/millipede_redact_wasm.d.ts",
+  "scripts": {
+    "build": "wasm-pack build . --target web --out-dir pkg --release"
+  }
+}

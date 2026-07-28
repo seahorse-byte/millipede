@@ -6,6 +6,8 @@
     "dev:academy": "pnpm --filter @millipede/academy dev",
     "build:academy": "pnpm --filter @millipede/academy build",
     "dev:radar": "pnpm --filter @millipede/radar dev",
+    "build:radar": "pnpm build:wasm && pnpm --filter @millipede/radar build",
+    "build:wasm": "pnpm --filter @millipede/redact-wasm build",
     "build:widgets": "pnpm --filter @millipede/lesson-widgets build",
     "compose:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",
