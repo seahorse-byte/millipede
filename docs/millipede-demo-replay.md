@@ -213,6 +213,8 @@ psql postgres://millipede:millipede@localhost:5432/team_radar \
 
 ## 5. Architecture (what you're demoing)
 
+See the canonical map: [`millipede-e2e-map.md`](millipede-e2e-map.md) (also in `~/.claude/plans/millipede-e2e-map.md`).
+
 ```
 curl :8081/webhooks/hello
         │

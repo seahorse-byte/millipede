@@ -1,0 +1,68 @@
+---
+import type { QuizDefinition } from "../data/labs-quizzes";
+
+interface Props {
+  quiz: QuizDefinition;
+}
+
+const { quiz } = Astro.props;
+const uid = `quiz-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<section class="ac-panel ac-quiz" data-quiz={uid}>
+  <h2>{quiz.title}</h2>
+  {
+    quiz.questions.map((q, qi) => (
+      <fieldset class="ac-quiz-q">
+        <legend>{qi + 1}. {q.prompt}</legend>
+        {
+          q.choices.map((choice, ci) => (
+            <label class="ac-quiz-choice">
+              <input
+                type="radio"
+                name={`${uid}-q${qi}`}
+                value={String(ci)}
+                data-correct={String(ci === q.answerIndex)}
+              />
+              {choice}
+            </label>
+          ))
+        }
+        <p class="ac-quiz-feedback" hidden />
+      </fieldset>
+    ))
+  }
+  <button type="button" class="ac-quiz-submit" data-quiz-submit={uid}>
+    Check answers
+  </button>
+  <p class="ac-score" data-quiz-score={uid} hidden />
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-quiz-submit]").forEach((btn) => {
+    const uid = btn.getAttribute("data-quiz-submit");
+    if (!uid) return;
+    const root = document.querySelector(`[data-quiz="${uid}"]`);
+    if (!root) return;
+
+    btn.addEventListener("click", () => {
+      const fieldsets = root.querySelectorAll("fieldset");
+      let score = 0;
+      fieldsets.forEach((fs) => {
+        const selected = fs.querySelector<HTMLInputElement>("input[type=radio]:checked");
+        const feedback = fs.querySelector<HTMLElement>(".ac-quiz-feedback");
+        if (!selected || !feedback) return;
+        const ok = selected.getAttribute("data-correct") === "true";
+        if (ok) score += 1;
+        feedback.hidden = false;
+        feedback.textContent = ok ? "Correct" : "Not quite — review the lesson.";
+        feedback.className = ok ? "ac-quiz-feedback ac-ok" : "ac-quiz-feedback ac-warn";
+      });
+      const scoreEl = root.querySelector<HTMLElement>(`[data-quiz-score="${uid}"]`);
+      if (scoreEl) {
+        scoreEl.hidden = false;
+        scoreEl.textContent = `Score: ${score} / ${fieldsets.length}`;
+      }
+    });
+  });
+</script>

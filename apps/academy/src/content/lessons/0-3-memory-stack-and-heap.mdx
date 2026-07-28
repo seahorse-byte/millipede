@@ -1,0 +1,48 @@
+---
+id: "0.3"
+book: 0
+title: "Memory, stack, and heap"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "0.1"
+  - "0.2"
+objectives:
+  - "Contrast stack frames vs heap allocations"
+  - "Relate call depth to webhook handler flow in Rust"
+components:
+  - StackFrameVisualizer
+quiz_id: book0-lesson3
+lab_id: trace-call-stack
+instructor_notes: true
+---
+
+import { StackFrameVisualizer } from "@millipede/lesson-widgets";
+
+Programs need **memory**. Two regions matter first:
+
+| Region | Holds | Lifetime |
+|--------|-------|----------|
+| **Stack** | Local variables, return addresses, call frames | Short — pops when a function returns |
+| **Heap** | Shared, long-lived data | Until freed or process exits |
+
+## Webhook handler mental model
+
+When Axum receives a POST:
+
+1. A frame for `handle_webhook` is **pushed**
+2. Nested calls (parse JSON, publish Kafka) add frames
+3. When the HTTP response is sent, those frames **pop**
+4. Rows in Postgres and Kafka buffers live on the **heap** (or owned structures) much longer
+
+<StackFrameVisualizer client:load />
+
+## Why this matters for Team Radar
+
+A burst of webhooks means many overlapping stacks — one per concurrent request — while heap usage grows with stored events and Redis payloads.
+
+Rust's ownership rules (Book 1) exist partly to make heap lifetimes explicit. For now: **stack = temporary work**, **heap = remembered state**.
+
+## Teach-back prompt
+
+When ingestion returns 200, what memory is definitely freed vs what remains for the pipeline?

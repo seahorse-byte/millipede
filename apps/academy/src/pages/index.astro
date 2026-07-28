@@ -7,66 +7,36 @@ const lessons = (await getCollection("lessons")).sort((a, b) =>
 );
 ---
 
-<BaseLayout title="Millipede Academy">
+<BaseLayout title="Millipede Academy" activeNav="home">
   <section class="hero">
-    <h1>Millipede Academy</h1>
-    <p>Learn fundamentals. Ship Team Radar. Teach the class.</p>
+    <p class="hero-eyebrow">DevSecOps learning loop</p>
+    <h1>Learn the stack. Ship the radar.</h1>
+    <p class="hero-lead">
+      Interactive lessons that teach bits, HTTP, and security primitives — mapped directly to the
+      Team Radar pipeline you build in the monorepo.
+    </p>
+    <div class="hero-stats">
+      <span class="hero-stat"><strong>{lessons.length}</strong> lessons</span>
+      <span class="hero-stat"><strong>Book 0</strong> Foundations</span>
+      <span class="hero-stat"><strong>Interactive</strong> widgets + labs</span>
+    </div>
   </section>
 
-  <section>
+  <section class="book-section">
     <h2>Book 0 — Foundations</h2>
-    <ul class="lesson-list">
+    <p class="book-meta">Bits → packets → client/server → browser → CORS → TLS → Team Radar capstone</p>
+    <ul class="lesson-grid">
       {
         lessons.map((lesson) => (
-          <li>
+          <li class="lesson-card">
             <a href={`/lessons/${lesson.slug}/`}>
               <span class="lesson-id">{lesson.data.id}</span>
-              {lesson.data.title}
+              <span class="lesson-title">{lesson.data.title}</span>
+              <span class="lesson-meta">{lesson.data.duration_min ?? 30} min</span>
             </a>
-            <span class="meta">{lesson.data.duration_min ?? 30} min</span>
           </li>
         ))
       }
     </ul>
   </section>
 </BaseLayout>
-
-<style>
-  .hero {
-    margin-bottom: 2rem;
-  }
-  .hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .lesson-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: 0.75rem;
-  }
-  .lesson-list a {
-    color: #38bdf8;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .lesson-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background: #1e293b;
-    border-radius: 8px;
-    border: 1px solid #334155;
-  }
-  .lesson-id {
-    display: inline-block;
-    min-width: 2.5rem;
-    color: #94a3b8;
-    margin-right: 0.5rem;
-  }
-  .meta {
-    color: #64748b;
-    font-size: 0.875rem;
-  }
-</style>

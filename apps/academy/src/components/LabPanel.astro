@@ -1,0 +1,41 @@
+---
+import type { LabDefinition } from "../data/labs-quizzes";
+
+interface Props {
+  lab: LabDefinition;
+}
+
+const { lab } = Astro.props;
+const uid = `lab-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<section class="ac-panel ac-lab">
+  <h2>{lab.title}</h2>
+  <ol class="ac-checklist" id={uid}>
+    {
+      lab.steps.map((step) => (
+        <li>
+          <label>
+            <input type="checkbox" data-lab={uid} />
+            {step}
+          </label>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="ac-done" data-lab-done={uid} hidden>Lab complete — nice work.</p>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLInputElement>("input[data-lab]").forEach((box) => {
+    const uid = box.getAttribute("data-lab");
+    if (!uid) return;
+    const done = document.querySelector(`[data-lab-done="${uid}"]`);
+    const sync = () => {
+      const boxes = document.querySelectorAll<HTMLInputElement>(`input[data-lab="${uid}"]`);
+      const all = [...boxes].every((b) => b.checked);
+      if (done instanceof HTMLElement) done.hidden = !all;
+    };
+    box.addEventListener("change", sync);
+  });
+</script>

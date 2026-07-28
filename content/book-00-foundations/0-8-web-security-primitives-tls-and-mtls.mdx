@@ -1,0 +1,49 @@
+---
+id: "0.8"
+book: 0
+title: "Web security primitives — TLS and mTLS"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "0.4"
+  - "0.7"
+objectives:
+  - "Walk through TLS handshake at a high level"
+  - "Contrast HTTPS termination vs mTLS between services"
+  - "Locate dev certs in infra/certs/"
+components:
+  - MtlsHandshake
+quiz_id: book0-lesson8
+lab_id: read-cert-chain
+instructor_notes: true
+---
+
+import { MtlsHandshake } from "@millipede/lesson-widgets";
+
+**TLS** encrypts traffic and proves server identity. **mTLS** adds **client** certificates so backends only talk to known peers.
+
+Team Radar Stage 2 uses both:
+
+- Browser/gateway: **HTTPS + JWT**
+- Gateway → ingestion/analyzer: **mTLS** on `:8083` / `:8084`
+
+<MtlsHandshake client:load />
+
+## Dev cert bootstrap
+
+```bash
+bash infra/certs/generate-dev-certs.sh
+MILLIPEDE_MTLS=1 pnpm gateway:dev
+```
+
+Read a cert:
+
+```bash
+openssl x509 -in infra/certs/dev/gateway.crt -text -noout | head -25
+```
+
+Full runbook: `docs/stage2-gateway.md`.
+
+## Teach-back prompt
+
+Where is JWT checked vs where is the client certificate checked?

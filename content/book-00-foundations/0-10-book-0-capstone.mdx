@@ -1,0 +1,59 @@
+---
+id: "0.10"
+book: 0
+title: "Book 0 capstone — teach Team Radar"
+type: recap
+duration_min: 30
+prerequisites:
+  - "0.1"
+  - "0.2"
+  - "0.3"
+  - "0.4"
+  - "0.5"
+  - "0.6"
+  - "0.7"
+  - "0.8"
+  - "0.9"
+objectives:
+  - "Explain Team Radar end-to-end in five minutes"
+  - "Connect Book 0 concepts to the running demo"
+components:
+  - KafkaPipelineVisualizer
+quiz_id: book0-capstone
+lab_id: capstone-teach-back
+instructor_notes: true
+---
+
+import { KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+You finished **Book 0 — Foundations**. This capstone is **teach-it-back**, not new syntax.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| Client vs server (curl vs ingestion) | |
+| Packet / HTTP path to Kafka | |
+| Async pipeline after HTTP 200 | |
+| Browser client (poll + SSE) | |
+| Optional: TLS/mTLS where Stage 2 fits | |
+
+## Five-minute script outline
+
+1. **Hook** — "Managers need velocity *and* security signal."
+2. **Demo** — `millipede-demo` or manual stack; fire `millipede-webhook`.
+3. **Diagram** — draw or point at e2e map while narrating.
+4. **Twist** — WASM 1:1 portal: PII never leaves browser.
+5. **Close** — what's Stage 5 (eval CI, OTel, Playwright).
+
+<KafkaPipelineVisualizer client:load />
+
+## Reference docs
+
+- `docs/millipede-e2e-map.md` — canonical architecture
+- `docs/millipede-demo-replay.md` — tmux + curl script
+- `docs/academy-status.md` — what's next in Book 1
+
+## Teach-back prompt
+
+Record yourself (phone voice memo is fine). Can you explain the system without reading slides?

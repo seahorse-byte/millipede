@@ -1,0 +1,32 @@
+---
+interface Props {
+  lessons: Array<{
+    slug: string;
+    data: { id: string; title: string };
+  }>;
+  currentSlug?: string;
+}
+
+const { lessons, currentSlug } = Astro.props;
+---
+
+<aside class="lesson-sidebar">
+  <p class="lesson-sidebar-title">Book 0</p>
+  <nav aria-label="Book 0 lessons">
+    <ul class="lesson-nav">
+      {
+        lessons.map((lesson) => (
+          <li>
+            <a
+              href={`/lessons/${lesson.slug}/`}
+              class:list={{ "is-current": lesson.slug === currentSlug }}
+            >
+              <span class="lesson-nav-id">{lesson.data.id}</span>
+              {lesson.data.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</aside>

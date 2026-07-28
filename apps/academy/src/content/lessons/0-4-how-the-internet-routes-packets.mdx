@@ -1,0 +1,56 @@
+---
+id: "0.4"
+book: 0
+title: "How the internet routes packets"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "0.5"
+objectives:
+  - "Name the layers from DNS to HTTP body"
+  - "Read curl -v output and map lines to hops"
+components:
+  - PacketJourney
+quiz_id: book0-lesson4
+lab_id: curl-v-dissection
+instructor_notes: true
+---
+
+import { PacketJourney } from "@millipede/lesson-widgets";
+
+Lesson 0.5 covered **who** talks (client/server). This lesson covers **how bytes travel** between them.
+
+## Layers (simplified)
+
+```
+Your curl command
+      │
+      ▼ DNS (name → IP)
+      ▼ TCP (reliable port :8081)
+      ▼ HTTP (method, headers, JSON body)
+      ▼ HTTP response back
+```
+
+On localhost you skip wide-area routing, but the **same stack** applies — useful when you later debug real networks.
+
+<PacketJourney client:load />
+
+## curl -v is your X-ray
+
+Verbose mode prints each phase:
+
+```bash
+curl -v -X POST http://localhost:8081/webhooks/hello \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"github"}'
+```
+
+Look for `Connected to`, `> POST`, `< HTTP/1.1 200`.
+
+## Team Radar tie-in
+
+Every GitHub webhook simulation crosses this path before Kafka ever sees a message. If TCP fails, ingestion logs never run.
+
+## Teach-back prompt
+
+Which hop is still HTTP if you switch port 8081 → 8443 with HTTPS?

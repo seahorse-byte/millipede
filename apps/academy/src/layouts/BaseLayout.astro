@@ -1,10 +1,12 @@
 ---
 interface Props {
   title: string;
+  activeNav?: "home" | "lessons";
 }
 
-const { title } = Astro.props;
+const { title, activeNav = "lessons" } = Astro.props;
 import "@millipede/lesson-widgets/styles.css";
+import "../styles/academy.css";
 ---
 
 <!doctype html>
@@ -13,74 +15,39 @@ import "@millipede/lesson-widgets/styles.css";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Millipede Academy — interactive DevSecOps learning" />
+    <meta name="theme-color" content="#080b10" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <title>{title} | Millipede Academy</title>
   </head>
   <body>
-    <header class="site-header">
-      <a href="/">Millipede Academy</a>
-      <nav>
-        <a href="/">Lessons</a>
-        <a href="https://github.com" rel="noopener">GitHub</a>
-      </nav>
-    </header>
-    <main>
-      <slot />
-    </main>
+    <div class="site-shell">
+      <header class="site-header">
+        <a href="/" class="site-brand">
+          <span class="site-brand-mark" aria-hidden="true">M</span>
+          <span>Millipede Academy</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/" class:list={{ "is-active": activeNav === "home" }}>Lessons</a>
+          <a
+            href="https://github.com/seahorse-byte/millipede"
+            rel="noopener noreferrer"
+            target="_blank">GitHub</a
+          >
+        </nav>
+      </header>
+      <main class="site-main">
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <p>
+          Learn fundamentals · Ship Team Radar · <a href="/">Book 0 — Foundations</a>
+        </p>
+      </footer>
+    </div>
   </body>
 </html>
-
-<style is:global>
-  :root {
-    color-scheme: dark;
-    font-family: ui-sans-serif, system-ui, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
-    line-height: 1.6;
-  }
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    min-height: 100vh;
-  }
-  main {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  a {
-    color: #38bdf8;
-  }
-  code {
-    font-family: ui-monospace, monospace;
-    background: #1e293b;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-  }
-  pre code {
-    display: block;
-    padding: 1rem;
-    overflow-x: auto;
-  }
-</style>
-
-<style>
-  .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #334155;
-    background: #0b1220;
-  }
-  .site-header a {
-    color: #e2e8f0;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  nav {
-    display: flex;
-    gap: 1rem;
-  }
-</style>

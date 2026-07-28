@@ -1,0 +1,95 @@
+---
+id: "0.5"
+book: 0
+title: "Client-server architecture"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "0.1"
+  - "0.2"
+objectives:
+  - "Distinguish client and server roles in an HTTP exchange"
+  - "Trace a request from curl through ingestion to the JSON response"
+  - "Explain why the webhook client does not wait for the full Kafka pipeline"
+components:
+  - RequestTimeline
+quiz_id: book0-lesson5
+lab_id: draw-team-radar-architecture
+instructor_notes: true
+---
+
+import { RequestTimeline } from "@millipede/lesson-widgets";
+
+Every web system you will build in Team Radar follows the same shape: a **client** asks for something, a **server** listens and responds.
+
+## Client vs server
+
+| Role | Job | Team Radar example |
+|------|-----|-------------------|
+| **Client** | Starts the conversation; sends a request | `curl` posting a webhook · browser loading `:5174` |
+| **Server** | Listens on a port; parses the request; returns a response | `millipede-ingestion` on `:8081` · `millipede-analyzer` on `:8082` |
+
+The client never runs your business logic directly — it sends bytes; the server interprets them.
+
+## One HTTP exchange
+
+A minimal request has three parts on the wire:
+
+```http
+POST /webhooks/hello HTTP/1.1
+Content-Type: application/json
+
+{"action":"opened","source":"github","title":"ship feature"}
+```
+
+The server answers with **status line + headers + body**:
+
+```json
+{"accepted": true, "kafka_status": "published", "topic": "raw-dev-events"}
+```
+
+That round trip is the **request timeline** — everything the client waits for.
+
+<RequestTimeline client:load />
+
+## Sync vs async (why the demo confuses people)
+
+When ingestion returns `"accepted": true`, it has **not** finished sentiment scoring or dashboard updates. It only means:
+
+1. The JSON was valid
+2. A message was handed to Kafka
+3. The HTTP response could be sent
+
+**LLM worker → analyzer → Postgres → Redis → radar UI** run **after** the client gets its response. Different clients, same backend story:
+
+- **Client A:** `curl` — one POST, one JSON reply, done
+- **Client B:** browser on `:5174` — polls metrics and opens an SSE stream
+
+Lesson 0.9 zooms out to the full pipeline. Here we nail the **first hop**: client ↔ ingestion.
+
+## Lab: draw Team Radar architecture
+
+On paper or a whiteboard (5–10 minutes):
+
+1. Box the **clients** (curl, browser)
+2. Box each **server process** (ingestion, llm-worker, analyzer, radar dev server)
+3. Draw **Kafka** and **Postgres/Redis** between them
+4. Mark where **HTTP ends** vs where **async messaging** begins
+
+Check your drawing against `docs/millipede-e2e-map.md` in the monorepo when you run the stack locally.
+
+## Try it locally
+
+With the stack running (`millipede-demo` or manual tmux):
+
+```bash
+curl -s -X POST http://localhost:8081/webhooks/hello \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"opened","source":"github","title":"client-server lab"}' | jq .
+```
+
+Watch the ingestion pane — that is the **server** handling your **client** request.
+
+## Teach-back prompt
+
+In two sentences: what is the difference between the HTTP response from ingestion and the live update on the radar dashboard?

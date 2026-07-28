@@ -1,5 +1,11 @@
 ---
 import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LessonSidebar from "../../components/LessonSidebar.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import LabPanel from "../../components/LabPanel.astro";
+import QuizPanel from "../../components/QuizPanel.astro";
+import { labs, quizzes } from "../../data/labs-quizzes";
 
 export async function getStaticPaths() {
   const lessons = await getCollection("lessons");
@@ -11,57 +17,59 @@ export async function getStaticPaths() {
 
 const { lesson } = Astro.props;
 const { Content } = await lesson.render();
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import { lessonComponents } from "../../components/lesson-widgets";
+
+const allLessons = (await getCollection("lessons")).sort((a, b) =>
+  a.data.id.localeCompare(b.data.id, undefined, { numeric: true }),
+);
+
+const lab = lesson.data.lab_id ? labs[lesson.data.lab_id] : undefined;
+const quiz = lesson.data.quiz_id ? quizzes[lesson.data.quiz_id] : undefined;
 ---
 
 <BaseLayout title={`${lesson.data.id} — ${lesson.data.title}`}>
-  <article class="lesson">
-    <header>
-      <p class="eyebrow">Book {lesson.data.book} · Lesson {lesson.data.id}</p>
-      <h1>{lesson.data.title}</h1>
-      {
-        lesson.data.objectives.length > 0 && (
-          <ul class="objectives">
-            {lesson.data.objectives.map((obj) => (
-              <li>{obj}</li>
-            ))}
-          </ul>
-        )
-      }
-    </header>
-    <div class="content">
-      <Content components={lessonComponents} />
-    </div>
-  </article>
-</BaseLayout>
+  <Breadcrumb
+    items={[
+      { label: "Home", href: "/" },
+      { label: `Book ${lesson.data.book} — Foundations`, href: "/" },
+      { label: `${lesson.data.id} · ${lesson.data.title}` },
+    ]}
+  />
 
-<style>
-  .lesson {
-    max-width: 720px;
-  }
-  .eyebrow {
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.8rem;
-  }
-  .objectives {
-    color: #94a3b8;
-    margin: 1rem 0 2rem;
-  }
-  .content :global(h2) {
-    margin-top: 2rem;
-  }
-  .content :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-  }
-  .content :global(th),
-  .content :global(td) {
-    border: 1px solid #334155;
-    padding: 0.5rem;
-    text-align: left;
-  }
-</style>
+  <div class="lesson-layout">
+    <LessonSidebar lessons={allLessons} currentSlug={lesson.slug} />
+
+    <article class="lesson-article">
+      <header class="lesson-header">
+        <p class="lesson-eyebrow">
+          Book {lesson.data.book} · Lesson {lesson.data.id}
+          {lesson.data.type !== "lesson" && ` · ${lesson.data.type}`}
+        </p>
+        <h1>{lesson.data.title}</h1>
+        {
+          lesson.data.objectives.length > 0 && (
+            <ul class="lesson-objectives">
+              {lesson.data.objectives.map((obj) => (
+                <li>{obj}</li>
+              ))}
+            </ul>
+          )
+        }
+        {
+          lesson.data.prerequisites.length > 0 && (
+            <p class="lesson-prereqs">
+              Prerequisites: {lesson.data.prerequisites.join(" · ")}
+            </p>
+          )
+        }
+      </header>
+
+      <div class="prose">
+        <Content components={lessonComponents} />
+      </div>
+
+      {lab && <LabPanel lab={lab} />}
+      {quiz && <QuizPanel quiz={quiz} />}
+    </article>
+  </div>
+</BaseLayout>

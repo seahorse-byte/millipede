@@ -1,9 +1,15 @@
 import {
   BaseConverter,
   BitRegister,
+  BrowserRuntimeDiagram,
   ByteAnatomy,
   HexColorMixer,
   KafkaPipelineVisualizer,
+  MtlsHandshake,
+  PacketJourney,
+  RequestTimeline,
+  StackFrameVisualizer,
+  TrustBoundaryDiagram,
 } from "@millipede/lesson-widgets";
 import "@millipede/lesson-widgets/styles.css";
 
@@ -13,4 +19,10 @@ export const lessonComponents = {
   ByteAnatomy,
   HexColorMixer,
   KafkaPipelineVisualizer,
+  RequestTimeline,
+  PacketJourney,
+  StackFrameVisualizer,
+  BrowserRuntimeDiagram,
+  TrustBoundaryDiagram,
+  MtlsHandshake,
 };

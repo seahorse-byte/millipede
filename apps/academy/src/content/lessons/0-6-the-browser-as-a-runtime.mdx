@@ -1,0 +1,41 @@
+---
+id: "0.6"
+book: 0
+title: "The browser as a runtime"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "0.5"
+objectives:
+  - "Describe HTML → DOM → JS → paint pipeline"
+  - "Connect SolidJS signals to fine-grained UI updates"
+components:
+  - BrowserRuntimeDiagram
+quiz_id: book0-lesson6
+lab_id: inspect-solidjs-devtools
+instructor_notes: true
+---
+
+import { BrowserRuntimeDiagram } from "@millipede/lesson-widgets";
+
+The **radar dashboard** is not magic — it is a browser running JavaScript downloaded from Vite.
+
+## What the browser does
+
+1. **Fetch** HTML/JS/CSS
+2. **Parse** into DOM + executable JS
+3. **Run** SolidJS — subscriptions update only what changed
+4. **Network** — TanStack Query polls `/api/metrics/summary`
+5. **Paint** pixels when metrics or SSE rows update
+
+<BrowserRuntimeDiagram client:load />
+
+## SolidJS vs "reload the page"
+
+Classic sites re-render big chunks. SolidJS **signals** mean when `total_events` increments, only that card's text node updates — good practice for live dashboards.
+
+Book 6 goes deeper. You already have the running app at `:5174`.
+
+## Teach-back prompt
+
+What runs in the browser vs on the analyzer server when metrics refresh?

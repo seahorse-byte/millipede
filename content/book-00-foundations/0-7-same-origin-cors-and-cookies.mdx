@@ -1,0 +1,49 @@
+---
+id: "0.7"
+book: 0
+title: "Same-origin, CORS, and cookies"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "0.5"
+  - "0.6"
+objectives:
+  - "Define origin (scheme + host + port)"
+  - "Explain why cross-origin fetch is blocked by default"
+  - "Describe how Vite proxy avoids CORS in dev"
+components:
+  - TrustBoundaryDiagram
+quiz_id: book0-lesson7
+lab_id: fix-cors-error
+instructor_notes: true
+---
+
+import { TrustBoundaryDiagram } from "@millipede/lesson-widgets";
+
+Browsers enforce a **same-origin policy**: JavaScript at `http://localhost:5174` cannot read responses from `http://localhost:8082` unless the server opts in with **CORS** headers.
+
+## Origin triple
+
+| Part | Example |
+|------|---------|
+| Scheme | `http` |
+| Host | `localhost` |
+| Port | `5174` |
+
+`127.0.0.1` and `localhost` are **different hosts** — a common dev footgun.
+
+<TrustBoundaryDiagram client:load />
+
+## How millipede dev works
+
+Vite proxies `/api/*` → analyzer `:8082`. The browser only talks to `:5174`, so no cross-origin fetch.
+
+Analyzer also sends `Access-Control-Allow-Origin` when you hit it directly — see `services/analyzer` CORS config.
+
+## Cookies (preview)
+
+Cookies are scoped by domain/path. Team Radar JWT mode (Stage 2 gateway) prefers **Authorization headers**, not cookie sessions — simpler for API-first dashboards.
+
+## Teach-back prompt
+
+Why does the radar UI doc say use `localhost:5174` not `127.0.0.1:5174`?

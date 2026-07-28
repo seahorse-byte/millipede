@@ -100,4 +100,6 @@ docs/                  PDFs + work-alignment reference
 | 4 | SolidJS + TanStack + WASM redaction |
 | 5 | Eval CI, OTel, Playwright e2e |
 
+**End-to-end map:** [`docs/millipede-e2e-map.md`](docs/millipede-e2e-map.md) · Demo replay: [`docs/millipede-demo-replay.md`](docs/millipede-demo-replay.md) · **Academy status:** [`docs/academy-status.md`](docs/academy-status.md)
+
 Canonical plan: `millipede_learning_journey_0db313c1.plan.md`
