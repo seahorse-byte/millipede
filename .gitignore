@@ -21,6 +21,12 @@ test-results/
 logs/**
 !logs/README.md
 
+# Python venvs
+services/llm-worker/.venv/
+services/llm-worker/*.egg-info/
+**/__pycache__/
+**/*.pyc
+
 # Dev mTLS certs — regenerate with infra/certs/generate-dev-certs.sh
 infra/certs/dev/*.pem
 infra/certs/dev/*.srl

@@ -11,7 +11,8 @@
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",
     "ingestion:dev": "cargo run -p millipede-ingestion",
     "analyzer:dev": "cargo run -p millipede-analyzer",
-    "gateway:dev": "cargo run -p millipede-gateway"
+    "gateway:dev": "cargo run -p millipede-gateway",
+    "llm-worker:dev": "bash -c 'cd services/llm-worker && (test -d .venv || python3 -m venv .venv) && .venv/bin/pip install -q -e . && .venv/bin/python -m millipede_llm_worker.main'"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

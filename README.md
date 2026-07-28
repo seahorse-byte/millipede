@@ -46,6 +46,23 @@ export TOKEN="$(cargo run -q -p millipede-gateway --bin mint-dev-jwt)"
 curl -sk https://localhost:8443/api/metrics/summary -H "Authorization: Bearer $TOKEN"
 ```
 
+### Stage 3 — LLM enrichment worker
+
+See [`docs/stage3-llm-worker.md`](docs/stage3-llm-worker.md). Quick path:
+
+```bash
+cd services/llm-worker && python3 -m venv .venv && source .venv/bin/activate && pip install -e .
+pnpm compose:up
+pnpm llm-worker:dev     # raw-dev-events → enriched-dev-events
+pnpm analyzer:dev       # terminal 2
+pnpm ingestion:dev      # terminal 3
+curl -X POST http://localhost:8081/webhooks/hello \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"opened","source":"github","title":"ship feature"}'
+psql postgres://millipede:millipede@localhost:5432/team_radar \
+  -c "SELECT id, sentiment, risk_score, enriched_at FROM team_events ORDER BY created_at DESC LIMIT 3;"
+```
+
 ## Monorepo layout
 
 ```

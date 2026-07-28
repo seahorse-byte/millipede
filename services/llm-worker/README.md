@@ -1,3 +1,9 @@
 # Stage 3: Python LLM Kafka consumer (LangGraph-style)
 
-Placeholder for `services/llm-worker/`. See Book 5 lessons 5.5–5.8.
+Consumes `raw-dev-events`, enriches with sentiment + risk scores, publishes `enriched-dev-events`.
+
+See [`docs/stage3-llm-worker.md`](../../docs/stage3-llm-worker.md) for setup and runbook.
+
+```bash
+pnpm llm-worker:dev
+```

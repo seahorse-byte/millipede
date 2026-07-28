@@ -39,6 +39,9 @@ struct RawEvent {
     id: String,
     source: String,
     payload: serde_json::Value,
+    sentiment: Option<f64>,
+    risk_score: Option<f64>,
+    enriched_at: Option<String>,
 }
 
 async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
@@ -108,14 +111,20 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
     let payload_json = event.payload.to_string();
     sqlx::query(
         r#"
-        INSERT INTO team_events (id, source, payload_json, created_at)
-        VALUES ($1, $2, $3, NOW()::TEXT)
-        ON CONFLICT (id) DO NOTHING
+        INSERT INTO team_events (id, source, payload_json, sentiment, risk_score, enriched_at, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW()::TEXT)
+        ON CONFLICT (id) DO UPDATE SET
+            sentiment = EXCLUDED.sentiment,
+            risk_score = EXCLUDED.risk_score,
+            enriched_at = EXCLUDED.enriched_at
         "#,
     )
     .bind(&event.id)
     .bind(&event.source)
     .bind(payload_json)
+    .bind(event.sentiment)
+    .bind(event.risk_score)
+    .bind(event.enriched_at.as_deref())
     .execute(pool)
     .await?;
     Ok(())
@@ -130,6 +139,8 @@ async fn warm_redis(client: &redis::Client, event: &RawEvent) {
     let live_payload = serde_json::json!({
         "id": event.id,
         "source": event.source,
+        "sentiment": event.sentiment,
+        "risk_score": event.risk_score,
     });
 
     let _: Result<(), redis::RedisError> = conn
@@ -166,7 +177,7 @@ async fn run_consumer(state: Arc<AppState>, brokers: String, topic: String) {
         return;
     }
 
-    info!(%brokers, %topic, "analyzer consuming raw events");
+    info!(%brokers, %topic, "analyzer consuming enriched events");
 
     loop {
         match consumer.recv().await {
@@ -237,7 +248,7 @@ async fn main() {
         .init();
 
     let kafka_brokers = env::var("KAFKA_BROKERS").unwrap_or_else(|_| "localhost:9092".into());
-    let kafka_topic = env::var("KAFKA_TOPIC").unwrap_or_else(|_| "raw-dev-events".into());
+    let kafka_topic = env::var("KAFKA_TOPIC").unwrap_or_else(|_| "enriched-dev-events".into());
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
         "postgres://millipede:millipede@localhost:5432/team_radar".into()
     });
