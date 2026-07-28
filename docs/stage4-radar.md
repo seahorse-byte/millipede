@@ -70,3 +70,5 @@ SolidJS radar (:5174)
 ```
 
 Stage 5 adds eval CI, OTel, and Playwright e2e over this UI.
+
+**Demo replay:** [`docs/millipede-demo-replay.md`](millipede-demo-replay.md) — tmux layout + curl script to test the full pipeline in the UI.

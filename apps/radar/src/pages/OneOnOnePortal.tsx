@@ -10,38 +10,53 @@ export function OneOnOnePortal() {
     event.preventDefault();
     setBusy(true);
     try {
-      const sanitized = await redactInWorker(notes());
-      setRedacted(sanitized);
+      setRedacted(await redactInWorker(notes()));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div class="portal-grid">
-      <section class="panel">
-        <h2>1:1 notes</h2>
-        <p class="muted">
-          Raw notes stay in the browser. WASM redaction runs locally before anything would be sent
-          upstream.
-        </p>
-        <form onSubmit={handleSubmit}>
-          <textarea
-            rows={10}
-            placeholder="Example: Alice is worried about burnout. Email alice@example.com if follow-up needed."
-            value={notes()}
-            onInput={(event) => setNotes(event.currentTarget.value)}
-          />
-          <button type="submit" disabled={busy() || notes().trim().length === 0}>
-            {busy() ? "Redacting…" : "Sanitize with WASM"}
-          </button>
-        </form>
-      </section>
+    <div class="page-stack portal-stack">
+      <div class="alert alert--info">
+        Notes are sanitized in-browser via WASM before any upstream write. Raw text never leaves
+        this session.
+      </div>
 
-      <section class="panel">
-        <h2>Sanitized preview</h2>
-        <pre class="preview">{redacted() || "Redacted output will appear here."}</pre>
-      </section>
+      <div class="portal-grid">
+        <section class="panel panel--accent">
+          <div class="panel-head">
+            <div>
+              <h3>Raw input</h3>
+              <p class="panel-sub">Manager 1:1 capture buffer</p>
+            </div>
+            <span class="badge badge--medium">Local only</span>
+          </div>
+          <form class="portal-form" onSubmit={handleSubmit}>
+            <textarea
+              rows={14}
+              spellcheck={false}
+              placeholder="Team member reported burnout. Contact alice@example.com after standup."
+              value={notes()}
+              onInput={(event) => setNotes(event.currentTarget.value)}
+            />
+            <button type="submit" class="btn btn--primary" disabled={busy() || !notes().trim()}>
+              {busy() ? "Redacting…" : "Run WASM redaction"}
+            </button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Sanitized output</h3>
+              <p class="panel-sub">redact_pii_deterministic</p>
+            </div>
+            <span class="badge badge--easy">Safe</span>
+          </div>
+          <pre class="output-block">{redacted() || "Output will appear here after redaction."}</pre>
+        </section>
+      </div>
     </div>
   );
 }
