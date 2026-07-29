@@ -1,0 +1,49 @@
+---
+id: "1.4"
+book: 1
+title: "The WASM boundary"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.3"
+objectives:
+  - "Explain why WASM runs sandboxed linear memory"
+  - "Describe copy-in / compute / copy-out at the JS boundary"
+  - "Connect to radar 1:1 PII redaction"
+components:
+  - WasmBoundary
+quiz_id: book1-lesson4
+lab_id: load-wasm-redact
+instructor_notes: true
+---
+
+import { WasmBoundary } from "@millipede/lesson-widgets";
+
+**WebAssembly (WASM)** is a portable binary format. Browsers load `.wasm` modules and call exported functions from JavaScript — with a strict memory boundary.
+
+## Why WASM for privacy?
+
+In the radar **1:1 portal**, manager notes stay in the browser. Rust code compiled to WASM runs `redact_pii_deterministic` locally — raw email addresses never POST to your API.
+
+Package: `packages/redact-wasm/` · UI: `apps/radar/` route `/1on1`
+
+<WasmBoundary client:load />
+
+## Boundary rules
+
+| Side | Memory | Trust |
+|------|--------|-------|
+| JavaScript | GC heap | Full browser APIs |
+| WASM | Linear memory | Sandboxed — no DOM, no network unless imported |
+
+Crossing the boundary **copies** strings/bytes — not shared pointers.
+
+## Build path (monorepo)
+
+```bash
+pnpm build:wasm   # wasm-pack → packages/redact-wasm/pkg/
+```
+
+## Teach-back prompt
+
+Why is browser WASM redaction different from sending text to the LLM worker?

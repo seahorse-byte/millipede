@@ -1,0 +1,52 @@
+---
+id: "1.14"
+book: 1
+title: "TanStack Query and Router intro"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.13"
+objectives:
+  - "Separate server state (Query) from UI state (signals)"
+  - "Trace a metrics poll through proxy and cache"
+  - "Name TanStack Router's role in radar navigation"
+components:
+  - TanStackDataFlow
+quiz_id: book1-lesson14
+lab_id: fetch-mock-metrics
+instructor_notes: true
+---
+
+import { TanStackDataFlow } from "@millipede/lesson-widgets";
+
+Book 1 closes on the **browser ship stack**: SolidJS + TanStack Query + TanStack Router.
+
+## Three layers
+
+| Layer | Tool | Responsibility |
+|-------|------|----------------|
+| Routes | TanStack Router | URL → page component, type-safe params |
+| Server state | TanStack Query | fetch, cache, stale, refetchInterval |
+| UI state | Solid signals | toggles, form focus, SSE merge into view |
+
+Animate one poll cycle in **TanStackDataFlow**.
+
+## Dev proxy
+
+Radar dev server proxies `/api/*` to the gateway — same-origin from the browser's perspective (lesson 0.7).
+
+```ts
+useQuery(() => ({
+  queryKey: ["metrics", "summary"],
+  queryFn: () => fetch("/api/metrics/summary").then((r) => r.json()),
+  refetchInterval: 5000,
+}));
+```
+
+## Book 1 complete
+
+You can read ingestion Rust *and* radar TypeScript. **Book 2** starts with why events beat synchronous chains.
+
+## Teach-back prompt
+
+Why keep SSE live feed separate from Query polling?

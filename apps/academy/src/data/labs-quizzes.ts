@@ -86,6 +86,119 @@ export const labs: Record<string, LabDefinition> = {
       "Optional: run millipede-demo while narrating.",
     ],
   },
+  "predict-microtask-order": {
+    title: "Predict microtask order",
+    steps: [
+      "Write predicted output for A/D/C/B before using the simulator.",
+      "Step through EventLoopSimulator and confirm.",
+      "Explain why Promise beat setTimeout in one sentence.",
+    ],
+  },
+  "debug-race-condition": {
+    title: "Debug a race condition",
+    steps: [
+      "Sketch two callbacks mutating the same variable — one Promise, one setTimeout.",
+      "Which runs first after sync code finishes?",
+      "Name one radar UI scenario where order matters (metrics vs SSE).",
+    ],
+  },
+  "callbacks-to-async-await": {
+    title: "Callbacks → async/await",
+    steps: [
+      "Rewrite the fetch chain in lesson 1.3 as async/await.",
+      "Mark each await as a microtask boundary.",
+      "Contrast with an Axum async handler (yields task, not browser tab).",
+    ],
+  },
+  "load-wasm-redact": {
+    title: "Load WASM redaction",
+    steps: [
+      "Run pnpm build:wasm from repo root.",
+      "Open radar /1on1 and paste text with an email.",
+      "Confirm redaction in browser — check Network tab for no POST of raw email.",
+    ],
+  },
+  "read-axum-handler": {
+    title: "Read an Axum handler",
+    steps: [
+      "Open services/ingestion/src/main.rs.",
+      "Find github_webhook — trace validate → Kafka publish → JSON response.",
+      "Name one Result type that could fail before 200 OK.",
+    ],
+  },
+  "fix-five-borrows": {
+    title: "Fix borrow errors",
+    steps: [
+      "Work through all three BorrowCheckerPanel scenarios.",
+      "Explain each error aloud before Apply fix.",
+      "Note which fixes use clone vs reorder.",
+    ],
+  },
+  "annotate-lifetimes": {
+    title: "Annotate lifetimes (preview)",
+    steps: [
+      "Read analyzer SQLx query that returns rows.",
+      "Identify what owns the database connection.",
+      "Why can't a row reference outlive the connection?",
+    ],
+  },
+  "explain-string-move": {
+    title: "Explain String move",
+    steps: [
+      "Write pseudo-Rust: let a = String::from(\"x\"); let b = a;",
+      "Is a valid after? Why?",
+      "Contrast with let n = 5i32; let m = n;",
+    ],
+  },
+  "channel-playground": {
+    title: "Channel in playground",
+    steps: [
+      "Send three events in ConcurrencyChannels without receiving.",
+      "Receive all — confirm order is FIFO.",
+      "Explain what backpressure would mean if buffer size were 1.",
+    ],
+  },
+  "service-boundary-rules": {
+    title: "Service boundary rules",
+    steps: [
+      "In SendSyncExplorer, classify String vs Arc<Mutex<T>>.",
+      "Name one type in ingestion State — is it Send?",
+      "Why can't Rc cross a tokio::spawn boundary?",
+    ],
+  },
+  "trace-one-handler": {
+    title: "Trace one handler",
+    steps: [
+      "Open services/ingestion/src/main.rs.",
+      "List every .await in github_webhook.",
+      "Step TokioFutureMachine in parallel — match labels to code.",
+    ],
+  },
+  "hello-axum-webhook": {
+    title: "Hello Axum webhook",
+    steps: [
+      "Start stack: pnpm millipede-demo (or docker compose up).",
+      "curl -X POST http://localhost:8081/webhooks/hello -H 'Content-Type: application/json' -d '{\"source\":\"github\"}'",
+      "Confirm accepted:true in JSON.",
+      "Step RequestTimeline while narrating async pipeline.",
+    ],
+  },
+  "reactive-counter": {
+    title: "Build a reactive counter",
+    steps: [
+      "In SolidSignalGraph, increment until doubled ≥ 10.",
+      "Read the effect line — what re-ran on each click?",
+      "Open apps/radar and find one createSignal in source.",
+    ],
+  },
+  "fetch-mock-metrics": {
+    title: "Fetch mock metrics API",
+    steps: [
+      "Run radar dev — open Network tab.",
+      "Find GET /api/metrics/summary on ~5s interval.",
+      "Animate TanStackDataFlow and map each step to Network rows.",
+    ],
+  },
 };
 
 export interface QuizQuestion {
@@ -211,6 +324,151 @@ export const quizzes: Record<string, QuizDefinition> = {
       {
         prompt: "millipede-ingestion listens on port…",
         choices: ["5174", "8081", "9092", "8443"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson1": {
+    title: "Lesson 1.1 check",
+    questions: [
+      {
+        prompt: "Classic demo output order?",
+        choices: ["A B C D", "A D C B", "A C D B", "D C B A"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson2": {
+    title: "Lesson 1.2 check",
+    questions: [
+      {
+        prompt: "Microtasks run…",
+        choices: ["After each macrotask", "Before the next macrotask", "Only on page load", "On a worker thread"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson3": {
+    title: "Lesson 1.3 check",
+    questions: [
+      {
+        prompt: "async/await in JS schedules continuations as…",
+        choices: ["Macrotasks only", "Microtasks via Promises", "New OS threads", "Rust Tokio jobs"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson4": {
+    title: "Lesson 1.4 check",
+    questions: [
+      {
+        prompt: "WASM linear memory is…",
+        choices: ["Shared with JS GC", "Sandboxed from DOM/network by default", "Same as Postgres", "Only on server"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson5": {
+    title: "Lesson 1.5 check",
+    questions: [
+      {
+        prompt: "millipede LLM enrichment runs in…",
+        choices: ["Rust analyzer", "Python llm-worker", "SolidJS radar", "Cloudflare Pages"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson6": {
+    title: "Lesson 1.6 check",
+    questions: [
+      {
+        prompt: "After a move, the original owner…",
+        choices: ["Can still use the value", "Is invalid unless cloned", "Shares mutably", "Runs GC"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson7": {
+    title: "Lesson 1.7 check",
+    questions: [
+      {
+        prompt: "&mut T allows…",
+        choices: ["Many writers", "One exclusive writer", "No compile checks", "Only WASM"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson8": {
+    title: "Lesson 1.8 check",
+    questions: [
+      {
+        prompt: "i32 assignment copies because i32 is…",
+        choices: ["Move only", "Copy", "Always cloned on heap", "A reference"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson9": {
+    title: "Lesson 1.9 check",
+    questions: [
+      {
+        prompt: "mpsc channels move data by…",
+        choices: ["Shared mutable globals", "Message passing / ownership transfer", "Browser microtasks", "Postgres triggers"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson10": {
+    title: "Lesson 1.10 check",
+    questions: [
+      {
+        prompt: "Sync means…",
+        choices: ["Safe to share &T across threads", "Always async", "Same as JavaScript Promise", "Only for WASM"],
+        answerIndex: 0,
+      },
+    ],
+  },
+  "book1-lesson11": {
+    title: "Lesson 1.11 check",
+    questions: [
+      {
+        prompt: ".await in Tokio…",
+        choices: ["Blocks all threads", "Yields the current task cooperatively", "Runs on the browser main thread", "Replaces Kafka"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-capstone": {
+    title: "Book 1 capstone",
+    questions: [
+      {
+        prompt: "HTTP 200 from ingestion means…",
+        choices: ["LLM finished", "Webhook accepted; pipeline may still run", "Radar polled metrics", "Postgres migrated"],
+        answerIndex: 1,
+      },
+      {
+        prompt: "Book 1 covered both…",
+        choices: ["Only Python", "JS runtime + Rust/Tokio + Solid/TanStack", "Only Kafka", "Only Cloudflare"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson13": {
+    title: "Lesson 1.13 check",
+    questions: [
+      {
+        prompt: "Solid signals update…",
+        choices: ["The entire page every time", "Only subscribed computations/DOM", "Kafka partitions", "Postgres rows"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book1-lesson14": {
+    title: "Lesson 1.14 check",
+    questions: [
+      {
+        prompt: "TanStack Query primarily manages…",
+        choices: ["TCP routing", "Server/async fetched state", "TLS certificates", "Rust ownership"],
         answerIndex: 1,
       },
     ],

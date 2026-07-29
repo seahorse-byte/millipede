@@ -1,0 +1,45 @@
+---
+id: "1.13"
+book: 1
+title: "SolidJS signals"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "1.3"
+  - "1.12"
+objectives:
+  - "Define signals, memos, and effects"
+  - "See fine-grained updates vs full re-render"
+  - "Relate signals to live metric cards in radar"
+components:
+  - SolidSignalGraph
+quiz_id: book1-lesson13
+lab_id: reactive-counter
+instructor_notes: true
+---
+
+import { SolidSignalGraph } from "@millipede/lesson-widgets";
+
+Team Radar ships **SolidJS** — reactive primitives without a virtual DOM diff on every poll.
+
+## Core primitives
+
+```tsx
+const [count, setCount] = createSignal(0);
+const doubled = () => count() * 2;
+createEffect(() => console.log(doubled()));
+```
+
+Reading `count()` inside `doubled` or an effect **subscribes** that computation — only those nodes update.
+
+**SolidSignalGraph** — increment and watch the dependency chain light up.
+
+## Radar connection
+
+When Redis SSE pushes a new event count, only the bound text node changes — not the whole dashboard shell.
+
+See `apps/radar/` — signals for UI, TanStack Query for server JSON (next lesson).
+
+## Teach-back prompt
+
+How is a Solid signal different from React `useState` triggering a component re-render?

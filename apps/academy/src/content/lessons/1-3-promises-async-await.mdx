@@ -1,0 +1,63 @@
+---
+id: "1.3"
+book: 1
+title: "Promises and async/await"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "1.2"
+objectives:
+  - "Rewrite callback code with Promises and async/await"
+  - "Identify where microtasks are scheduled"
+  - "Read async Rust/Tokio handlers as a contrast (preview)"
+components:
+  - EventLoopSimulator
+quiz_id: book1-lesson3
+lab_id: callbacks-to-async-await
+instructor_notes: true
+---
+
+import { EventLoopSimulator } from "@millipede/lesson-widgets";
+
+**Promises** represent a future value. **`async/await`** is syntax sugar over Promises — still microtasks under the hood.
+
+## Callback style (legacy)
+
+```javascript
+fetch('/api/metrics/summary')
+  .then((r) => r.json())
+  .then((data) => updateCards(data))
+  .catch((err) => showError(err));
+```
+
+## async/await (modern)
+
+```javascript
+async function loadMetrics() {
+  try {
+    const r = await fetch('/api/metrics/summary');
+    const data = await r.json();
+    updateCards(data);
+  } catch (err) {
+    showError(err);
+  }
+}
+```
+
+Each `await` **yields** the function — remainder schedules as microtasks when the Promise settles.
+
+<EventLoopSimulator client:load />
+
+## Contrast with Rust (preview)
+
+| | JavaScript (browser) | Rust + Tokio (ingestion/analyzer) |
+|--|----------------------|-----------------------------------|
+| Concurrency model | Single thread + event loop | Thread pool + async tasks |
+| Async syntax | `async/await` → microtasks | `async/await` → state machines |
+| Blocking | Blocks the whole tab | `.await` yields task, not thread |
+
+Book 1.11 goes deeper on Tokio. For now: **radar = JS loop**, **pipeline = Rust async**.
+
+## Teach-back prompt
+
+Does `await fetch(...)` block other tabs? Other SSE events in the same tab?

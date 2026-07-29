@@ -6,6 +6,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import LabPanel from "../../components/LabPanel.astro";
 import QuizPanel from "../../components/QuizPanel.astro";
 import { labs, quizzes } from "../../data/labs-quizzes";
+import { bookLabel } from "../../data/books";
 
 export async function getStaticPaths() {
   const lessons = await getCollection("lessons");
@@ -31,7 +32,7 @@ const quiz = lesson.data.quiz_id ? quizzes[lesson.data.quiz_id] : undefined;
   <Breadcrumb
     items={[
       { label: "Home", href: "/" },
-      { label: `Book ${lesson.data.book} — Foundations`, href: "/" },
+      { label: bookLabel(lesson.data.book), href: "/" },
       { label: `${lesson.data.id} · ${lesson.data.title}` },
     ]}
   />

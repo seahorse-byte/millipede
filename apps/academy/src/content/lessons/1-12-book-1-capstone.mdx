@@ -1,0 +1,46 @@
+---
+id: "1.12"
+book: 1
+title: "Book 1 capstone — Hello Axum webhook"
+type: recap
+duration_min: 45
+prerequisites:
+  - "1.1"
+  - "1.5"
+  - "1.11"
+objectives:
+  - "POST a webhook and read the JSON response"
+  - "Connect JS runtime lessons to Rust pipeline lessons"
+  - "Self-grade Book 1 rubric"
+components:
+  - RequestTimeline
+quiz_id: book1-capstone
+lab_id: hello-axum-webhook
+instructor_notes: true
+---
+
+import { RequestTimeline } from "@millipede/lesson-widgets";
+
+You finished **Book 1 — Runtimes & Languages**. This capstone ties the browser loop to the Rust pipeline.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| Explain A/D/C/B event loop order | |
+| Name WASM boundary vs JS heap | |
+| Ownership move vs borrow in one sentence | |
+| Send/Sync or channel for cross-task data | |
+| Trace webhook: HTTP → Kafka → async pipeline | |
+
+## Request timeline
+
+Step through **RequestTimeline** while narrating — the curl client gets 200 before enrichment finishes.
+
+## Book 1 → Book 2 bridge
+
+Book 2 opens on **Kafka topics** — you already published to `raw-dev-events` in the lab.
+
+## Teach-back prompt
+
+In one paragraph: why is radar SolidJS but ingestion is Rust?

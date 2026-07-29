@@ -1,10 +1,11 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { bookLabel, groupLessonsByBook } from "../data/books";
 
-const lessons = (await getCollection("lessons")).sort((a, b) =>
-  a.data.id.localeCompare(b.data.id, undefined, { numeric: true }),
-);
+const lessons = await getCollection("lessons");
+const byBook = groupLessonsByBook(lessons);
+const books = [...byBook.keys()].sort((a, b) => a - b);
 ---
 
 <BaseLayout title="Millipede Academy" activeNav="home">
@@ -17,26 +18,38 @@ const lessons = (await getCollection("lessons")).sort((a, b) =>
     </p>
     <div class="hero-stats">
       <span class="hero-stat"><strong>{lessons.length}</strong> lessons</span>
-      <span class="hero-stat"><strong>Book 0</strong> Foundations</span>
+      <span class="hero-stat"><strong>{books.length}</strong> books in progress</span>
       <span class="hero-stat"><strong>Interactive</strong> widgets + labs</span>
     </div>
   </section>
 
-  <section class="book-section">
-    <h2>Book 0 — Foundations</h2>
-    <p class="book-meta">Bits → packets → client/server → browser → CORS → TLS → Team Radar capstone</p>
-    <ul class="lesson-grid">
-      {
-        lessons.map((lesson) => (
-          <li class="lesson-card">
-            <a href={`/lessons/${lesson.slug}/`}>
-              <span class="lesson-id">{lesson.data.id}</span>
-              <span class="lesson-title">{lesson.data.title}</span>
-              <span class="lesson-meta">{lesson.data.duration_min ?? 30} min</span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+  {
+    books.map((book) => (
+      <section class="book-section">
+        <h2>{bookLabel(book)}</h2>
+        <p class="book-meta">
+          {
+            book === 0
+              ? "Bits → packets → client/server → browser → CORS → TLS → capstone"
+              : book === 1
+                ? "Event loop → Promises → Rust ownership → SolidJS + TanStack"
+                : "Coming soon"
+          }
+        </p>
+        <ul class="lesson-grid">
+          {
+            (byBook.get(book) ?? []).map((lesson) => (
+              <li class="lesson-card">
+                <a href={`/lessons/${lesson.slug}/`}>
+                  <span class="lesson-id">{lesson.data.id}</span>
+                  <span class="lesson-title">{lesson.data.title}</span>
+                  <span class="lesson-meta">{lesson.data.duration_min ?? 30} min</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    ))
+  }
 </BaseLayout>

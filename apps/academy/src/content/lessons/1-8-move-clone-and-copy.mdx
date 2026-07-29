@@ -1,0 +1,42 @@
+---
+id: "1.8"
+book: 1
+title: "Move, clone, and Copy"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "1.6"
+objectives:
+  - "Distinguish move, clone, and Copy types"
+  - "Explain why String moves but i32 copies"
+  - "Choose clone vs reference in handler code"
+components:
+  - OwnershipVisualizer
+quiz_id: book1-lesson8
+lab_id: explain-string-move
+instructor_notes: true
+---
+
+import { OwnershipVisualizer } from "@millipede/lesson-widgets";
+
+Not every assignment moves heap data.
+
+| Trait / type | Behavior | Example |
+|--------------|----------|---------|
+| **Copy** | Bitwise duplicate on stack | `i32`, `bool`, `[u8; 4]` |
+| **Move** | Transfer ownership | `String`, `Vec<u8>` |
+| **Clone** | Explicit deep copy | `payload.clone()` |
+
+Use **OwnershipVisualizer** — toggle **Move** vs **Borrow** to see when the original stays valid.
+
+## When to clone in services
+
+Clone when two parts of the pipeline need independent copies (e.g. log message + Kafka payload). Prefer borrow when reading without taking ownership.
+
+## Cost awareness
+
+Cloning large JSON payloads on every webhook adds CPU — structure types so you move once into Kafka.
+
+## Teach-back prompt
+
+Why is `let n = counter; counter += 1` valid for `i32` but not for `String`?

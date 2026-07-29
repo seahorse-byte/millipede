@@ -1,0 +1,56 @@
+---
+id: "1.1"
+book: 1
+title: "JavaScript single-threaded model"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "0.6"
+  - "0.10"
+objectives:
+  - "Explain why JavaScript has one call stack per tab"
+  - "Predict console output for sync + async code"
+  - "Relate the event loop to radar polling and SSE"
+components:
+  - EventLoopSimulator
+quiz_id: book1-lesson1
+lab_id: predict-microtask-order
+instructor_notes: true
+---
+
+import { EventLoopSimulator } from "@millipede/lesson-widgets";
+
+JavaScript in the browser is **single-threaded**: one call stack, one heap, one event loop per tab. Async work feels parallel — but execution is still interleaved on that one thread.
+
+## Why one thread?
+
+Browsers originally ran JS for small UI tweaks. A single stack keeps the DOM model simple: no data races on `document` from two threads at once.
+
+Heavy work (network, timers) is delegated to the **browser** or **runtime**. When ready, callbacks return via the **event loop**.
+
+## The classic snippet
+
+```javascript
+console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
+```
+
+Output: **`A`, `D`, `C`, `B`** — not alphabetical order.
+
+<EventLoopSimulator client:load />
+
+## Team Radar connection
+
+| UI behavior | Event loop role |
+|-------------|-----------------|
+| TanStack Query refetch every 5s | Macrotask / fetch callback |
+| SSE `onmessage` handler | Microtask/macrotask when chunk arrives |
+| SolidJS signal update | Sync render phase after data arrives |
+
+When metrics "jump" on the dashboard, you're watching the loop drain queues — not a second JS thread.
+
+## Teach-back prompt
+
+Why can a long synchronous loop block SSE updates from painting?

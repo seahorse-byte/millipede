@@ -1,0 +1,49 @@
+---
+id: "1.5"
+book: 1
+title: "Why Rust for infrastructure"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "1.3"
+objectives:
+  - "Compare Rust services to Python/Node for pipeline workloads"
+  - "Read a minimal Axum handler structure"
+  - "Name millipede services written in Rust"
+components: []
+quiz_id: book1-lesson5
+lab_id: read-axum-handler
+instructor_notes: true
+---
+
+Millipede pipeline services — **ingestion**, **analyzer**, **gateway** — are Rust/Axum. The **llm-worker** is Python. Why split?
+
+## Comparison
+
+| | Rust (Axum) | Python (llm-worker) |
+|--|-------------|---------------------|
+| Strength | Predictable latency, safety, Kafka I/O | ML ecosystem, rapid enrichment logic |
+| Memory | Ownership, no GC pauses in hot path | GC OK for batch consumer |
+| Deploy | Single static binary + mTLS | venv + container |
+
+## Minimal Axum handler shape
+
+```rust
+async fn health() -> Json<HealthResponse> {
+    Json(HealthResponse { redis: "connected".into() })
+}
+
+async fn github_webhook(body: Json<WebhookBody>) -> Result<Json<Accepted>, StatusCode> {
+    // validate → publish Kafka → return 200
+}
+```
+
+See `services/ingestion/src/main.rs` — real webhook at `:8081`.
+
+## Error handling philosophy
+
+Rust forces you to handle `Result` — failed Kafka publish becomes a typed error, not a silent `None`.
+
+## Teach-back prompt
+
+Which millipede service would you *not* rewrite in Rust first, and why?

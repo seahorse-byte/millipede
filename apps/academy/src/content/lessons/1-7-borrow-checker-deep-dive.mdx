@@ -1,0 +1,41 @@
+---
+id: "1.7"
+book: 1
+title: "Borrow checker deep dive"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "1.6"
+objectives:
+  - "Fix common borrow checker errors"
+  - "Explain mutable vs shared borrows"
+  - "Connect compile failures to safer services"
+components:
+  - BorrowCheckerPanel
+quiz_id: book1-lesson7
+lab_id: annotate-lifetimes
+instructor_notes: true
+---
+
+import { BorrowCheckerPanel } from "@millipede/lesson-widgets";
+
+The **borrow checker** is Rust's static proof that references never outlive data or alias illegally.
+
+| Borrow | Syntax | Rule |
+|--------|--------|------|
+| Shared | `&T` | Many readers OR one writer |
+| Mutable | `&mut T` | Exclusive — no other borrows |
+
+<BorrowCheckerPanel client:load />
+
+## Lifetimes (preview)
+
+When references appear in structs or return types, lifetime annotations (`'a`) tell the compiler how long borrows remain valid. Analyzer SQLx queries often return rows tied to connection lifetime.
+
+## EM angle
+
+Borrow errors in CI = cheaper than data races in prod.
+
+## Teach-back prompt
+
+Why is `&mut` incompatible with another active `&` to the same value?

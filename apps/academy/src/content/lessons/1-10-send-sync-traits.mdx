@@ -1,0 +1,47 @@
+---
+id: "1.10"
+book: 1
+title: "Send and Sync traits"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "1.9"
+objectives:
+  - "Define Send and Sync in plain language"
+  - "Classify common millipede types as Send/Sync"
+  - "Explain why Axum State must be Send + Sync"
+components:
+  - SendSyncExplorer
+quiz_id: book1-lesson10
+lab_id: service-boundary-rules
+instructor_notes: true
+---
+
+import { SendSyncExplorer } from "@millipede/lesson-widgets";
+
+Thread safety in Rust is expressed as **traits**, not comments.
+
+| Trait | Meaning |
+|-------|---------|
+| **Send** | Safe to **move** to another thread |
+| **Sync** | Safe to **share** `&T` across threads |
+
+Most Axum handlers return `impl Future + Send` because Tokio may run continuations on different worker threads.
+
+## Service boundary rules
+
+| Type | Typical use | Send / Sync |
+|------|-------------|-------------|
+| `String` | Move into Kafka payload | Move only — not shared by ref across threads |
+| `Arc<Mutex<Metrics>>` | Shared counters | Send + Sync when inner `T` is |
+| `Rc<Config>` | Single-thread cache | Neither — use `Arc` for shared state |
+
+Toggle types in **SendSyncExplorer**.
+
+## Gateway vs ingestion
+
+Shared connection pools (Postgres, Redis) live in `State` — cloned per handler, internally synchronized.
+
+## Teach-back prompt
+
+Why is `Rc<T>` forbidden in a `tokio::spawn` future?

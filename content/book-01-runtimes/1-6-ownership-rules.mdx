@@ -1,0 +1,40 @@
+---
+id: "1.6"
+book: 1
+title: "Ownership rules"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "1.5"
+objectives:
+  - "State the three ownership rules"
+  - "Demonstrate move vs borrow with a string payload"
+  - "Relate moves to Kafka publish handoff"
+components:
+  - OwnershipVisualizer
+quiz_id: book1-lesson6
+lab_id: fix-five-borrows
+instructor_notes: true
+---
+
+import { OwnershipVisualizer } from "@millipede/lesson-widgets";
+
+Rust ownership — three rules:
+
+1. Each value has **one owner**
+2. When owner goes out of scope, value is **dropped**
+3. You can **borrow** (`&T`) or **move** — not both mutably at once
+
+<OwnershipVisualizer client:load />
+
+## Move in ingestion
+
+When the handler builds a payload and sends it to Kafka, ownership often **transfers** to the producer buffer — the handler must not use the string afterward unless it cloned.
+
+## vs JavaScript
+
+JS objects are shared by reference — garbage collector reclaims when unreachable. Rust catches use-after-move **at compile time**.
+
+## Teach-back prompt
+
+What happens if ingestion moved a buffer to Kafka and then logged it?

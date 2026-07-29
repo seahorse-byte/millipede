@@ -1,0 +1,46 @@
+---
+id: "1.9"
+book: 1
+title: "Fearless concurrency"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.8"
+objectives:
+  - "Explain message passing vs shared mutable state"
+  - "Simulate mpsc channel producer/consumer flow"
+  - "Connect channels to Tokio tasks in services"
+components:
+  - ConcurrencyChannels
+quiz_id: book1-lesson9
+lab_id: channel-playground
+instructor_notes: true
+---
+
+import { ConcurrencyChannels } from "@millipede/lesson-widgets";
+
+Rust's slogan **"fearless concurrency"** means the compiler rejects data races before you ship.
+
+## Message passing
+
+Instead of two threads locking the same `Vec`, one task **sends** ownership through a channel; another **receives** it.
+
+```rust
+let (tx, mut rx) = tokio::sync::mpsc::channel(32);
+tokio::spawn(async move {
+    while let Some(event) = rx.recv().await {
+        analyze(event).await;
+    }
+});
+tx.send(payload).await?;
+```
+
+Use **ConcurrencyChannels** — send events from ingestion, receive in the analyzer side.
+
+## Why millipede prefers this
+
+Kafka already *is* a distributed channel. Inside a service, `mpsc` or bounded queues backpressure slow producers instead of corrupting memory.
+
+## Teach-back prompt
+
+When would you use `Arc<Mutex<T>>` instead of a channel?

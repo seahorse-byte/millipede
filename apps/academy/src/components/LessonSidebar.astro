@@ -1,32 +1,42 @@
 ---
+import { bookLabel, groupLessonsByBook } from "../data/books";
+
 interface Props {
   lessons: Array<{
     slug: string;
-    data: { id: string; title: string };
+    data: { id: string; title: string; book: number };
   }>;
   currentSlug?: string;
 }
 
 const { lessons, currentSlug } = Astro.props;
+const byBook = groupLessonsByBook(lessons);
+const books = [...byBook.keys()].sort((a, b) => a - b);
 ---
 
 <aside class="lesson-sidebar">
-  <p class="lesson-sidebar-title">Book 0</p>
-  <nav aria-label="Book 0 lessons">
-    <ul class="lesson-nav">
-      {
-        lessons.map((lesson) => (
-          <li>
-            <a
-              href={`/lessons/${lesson.slug}/`}
-              class:list={{ "is-current": lesson.slug === currentSlug }}
-            >
-              <span class="lesson-nav-id">{lesson.data.id}</span>
-              {lesson.data.title}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+  {
+    books.map((book) => (
+      <div class="lesson-sidebar-group">
+        <p class="lesson-sidebar-title">{bookLabel(book)}</p>
+        <nav aria-label={`Book ${book} lessons`}>
+          <ul class="lesson-nav">
+            {
+              (byBook.get(book) ?? []).map((lesson) => (
+                <li>
+                  <a
+                    href={`/lessons/${lesson.slug}/`}
+                    class:list={{ "is-current": lesson.slug === currentSlug }}
+                  >
+                    <span class="lesson-nav-id">{lesson.data.id}</span>
+                    {lesson.data.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    ))
+  }
 </aside>

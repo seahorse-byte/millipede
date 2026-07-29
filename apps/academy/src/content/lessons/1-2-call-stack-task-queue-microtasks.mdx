@@ -1,0 +1,51 @@
+---
+id: "1.2"
+book: 1
+title: "Call stack, task queue, microtasks"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.1"
+objectives:
+  - "Separate call stack from task and microtask queues"
+  - "State the drain order when the stack is empty"
+  - "Debug a simple race between timeout and promise"
+components:
+  - EventLoopSimulator
+quiz_id: book1-lesson2
+lab_id: debug-race-condition
+instructor_notes: true
+---
+
+import { EventLoopSimulator } from "@millipede/lesson-widgets";
+
+Three structures drive async JavaScript:
+
+| Structure | Holds | Processed when |
+|-----------|-------|----------------|
+| **Call stack** | Currently running function | Immediately (LIFO) |
+| **Microtask queue** | `Promise.then`, `queueMicrotask` | Stack empty — **all** microtasks, repeatedly |
+| **Macrotask queue** | `setTimeout`, I/O, UI events | One per loop turn after microtasks |
+
+## Drain algorithm (simplified)
+
+1. Run sync code until stack is empty
+2. Run **every** microtask until micro queue empty
+3. Run **one** macrotask
+4. Repeat
+
+That is why **`C` beats `B`** in the classic demo.
+
+<EventLoopSimulator client:load />
+
+Use **Next phase** in step mode and name which queue changes each time.
+
+## Debugging races
+
+If two callbacks mutate the same DOM node — one from `setTimeout`, one from `fetch().then()` — order depends on queue type, not registration order alone.
+
+In radar, avoid long sync work in SSE handlers; defer heavy parsing with `queueMicrotask` or small chunks if needed.
+
+## Teach-back prompt
+
+What runs first after `console.log('D')` — the Promise callback or the timeout?
