@@ -1,0 +1,42 @@
+---
+id: "2.9"
+book: 2
+title: "Cloudflare Pages for Academy"
+type: lesson
+duration_min: 35
+prerequisites:
+  - "2.1"
+objectives:
+  - "Separate static Academy deploy from Team Radar runtime"
+  - "Trace git push to Pages CDN"
+  - "Run build:academy before push"
+components:
+  - PagesDeployFlow
+quiz_id: book2-lesson9
+lab_id: git-to-pages
+instructor_notes: true
+---
+
+import { PagesDeployFlow } from "@millipede/lesson-widgets";
+
+**Academy** and **Team Radar** deploy differently:
+
+| Product | Runtime | Deploy |
+|---------|---------|--------|
+| Academy | Static HTML/JS | Cloudflare Pages |
+| Team Radar | Docker services | Local compose (demo) |
+
+**PagesDeployFlow** — push → build → CDN.
+
+## Checklist
+
+```bash
+pnpm build:academy   # must pass
+git push origin main # triggers Pages
+```
+
+Live site: https://millipede-academy.pages.dev
+
+## Teach-back prompt
+
+Why doesn’t Academy need Kafka at runtime?

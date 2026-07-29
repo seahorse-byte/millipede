@@ -1,0 +1,52 @@
+---
+id: "2.10"
+book: 2
+title: "Book 2 capstone — full compose running"
+type: recap
+duration_min: 60
+prerequisites:
+  - "2.1"
+  - "2.8"
+  - "2.9"
+objectives:
+  - "Start Kafka + Postgres + Redis + pipeline services"
+  - "POST webhook and verify Postgres + radar"
+  - "Self-grade Book 2 rubric"
+components:
+  - KafkaPipelineVisualizer
+  - ComposeNetworkMap
+quiz_id: book2-capstone
+lab_id: full-compose-running
+instructor_notes: true
+---
+
+import { KafkaPipelineVisualizer, ComposeNetworkMap } from "@millipede/lesson-widgets";
+
+You finished **Book 2 — Event-Driven Architecture**. Prove it with the running stack.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| Name millipede’s two Kafka topics | |
+| Explain partition vs offset | |
+| Trace producer → consumer in chain | |
+| Describe team_events vs team_metrics | |
+| Redis pub/sub vs Query poll | |
+| Host vs compose network for Kafka | |
+
+## Animate the pipeline
+
+<KafkaPipelineVisualizer client:load />
+
+## Network mental model
+
+<ComposeNetworkMap client:load />
+
+## Book 2 → Book 3 bridge
+
+Book 3 adds **JWT, mTLS, and WASM redaction** — security around the pipeline you just ran.
+
+## Teach-back prompt
+
+Narrate one webhook from curl to a metric card in under 3 minutes.

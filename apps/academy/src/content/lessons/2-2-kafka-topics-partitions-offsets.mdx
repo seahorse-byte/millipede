@@ -1,0 +1,46 @@
+---
+id: "2.2"
+book: 2
+title: "Kafka topics, partitions, and offsets"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.1"
+objectives:
+  - "Define topic, partition, and offset"
+  - "Relate millipede topic names to services"
+  - "Simulate produce and offset rewind per partition"
+components:
+  - KafkaTopicExplorer
+  - KafkaPipelineVisualizer
+quiz_id: book2-lesson2
+lab_id: docker-compose-kafka
+instructor_notes: true
+---
+
+import { KafkaTopicExplorer, KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+Kafka is the **append-only log** between services.
+
+## Core vocabulary
+
+| Term | Meaning |
+|------|---------|
+| **Topic** | Named stream (`raw-dev-events`) |
+| **Partition** | Ordered sub-log — parallel consumers |
+| **Offset** | Monotonic index within a partition |
+
+**KafkaTopicExplorer** — switch topics, pick partition P0–P2, produce messages.
+
+## Millipede topics
+
+<KafkaPipelineVisualizer client:load />
+
+| Topic | Producer | Consumer |
+|-------|----------|----------|
+| `raw-dev-events` | ingestion | llm-worker |
+| `enriched-dev-events` | llm-worker | analyzer |
+
+## Teach-back prompt
+
+Why use a partition key like `team_id`?

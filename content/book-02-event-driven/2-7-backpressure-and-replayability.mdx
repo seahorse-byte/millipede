@@ -1,0 +1,39 @@
+---
+id: "2.7"
+book: 2
+title: "Backpressure and replayability"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.6"
+objectives:
+  - "Define consumer lag"
+  - "Simulate burst produce and catch-up"
+  - "Explain offset rewind for dev replay"
+components:
+  - KafkaOffsetRewind
+quiz_id: book2-lesson7
+lab_id: replay-from-offset-zero
+instructor_notes: true
+---
+
+import { KafkaOffsetRewind } from "@millipede/lesson-widgets";
+
+When producers outpace consumers, **lag** grows — that is backpressure visible in metrics.
+
+## Offsets
+
+**KafkaOffsetRewind** — burst +5 messages, consume one-by-one, or replay from offset 0.
+
+| Action | Dev | Prod |
+|--------|-----|------|
+| Reset consumer group | Reprocess test data | Dangerous — duplicate side effects |
+| Scale consumers | Add llm-worker replicas | Same |
+
+## Idempotency
+
+Replay requires **idempotent writes** (e.g. upsert by event `id`) or you duplicate Postgres rows.
+
+## Teach-back prompt
+
+How would you alert when lag exceeds 1000 messages?

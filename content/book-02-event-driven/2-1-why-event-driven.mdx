@@ -1,0 +1,39 @@
+---
+id: "2.1"
+book: 2
+title: "Why event-driven?"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "1.12"
+objectives:
+  - "Compare sync, async-in-process, and event-driven architectures"
+  - "Explain why Team Radar decouples HTTP from enrichment"
+  - "Name tradeoffs of Kafka operational complexity"
+components:
+  - EventPatternComparison
+quiz_id: book2-lesson1
+instructor_notes: true
+---
+
+import { EventPatternComparison } from "@millipede/lesson-widgets";
+
+Book 1 ended with a webhook that returns **before** the pipeline finishes. Book 2 explains **why** that shape is intentional.
+
+## Three patterns
+
+Use **EventPatternComparison** to toggle:
+
+| Pattern | HTTP client waits for LLM? | Survives worker restart? |
+|---------|---------------------------|--------------------------|
+| Sync chain | Yes | No |
+| Async tasks in one process | No | Risky |
+| Event log (Kafka) | No | Yes — replay from offset |
+
+## Millipede choice
+
+**ingestion** validates and publishes — **llm-worker** and **analyzer** catch up at their own pace. Managers see lag in metrics, not blocked webhooks.
+
+## Teach-back prompt
+
+When would sync still be the right choice?

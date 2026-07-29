@@ -1,0 +1,45 @@
+---
+id: "2.4"
+book: 2
+title: "Chained consumer pattern"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "2.3"
+objectives:
+  - "Map PDF5 chained consumer to millipede services"
+  - "Explain raw → enriched topic handoff"
+  - "Predict backlog when one stage is slow"
+components:
+  - ChainedConsumerDiagram
+quiz_id: book2-lesson4
+lab_id: raw-to-enriched-topics
+instructor_notes: true
+---
+
+import { ChainedConsumerDiagram } from "@millipede/lesson-widgets";
+
+Instead of one mega-service calling LLM then DB, millipede uses **chained consumers** — each stage is a small deployable unit.
+
+## The chain
+
+Click each link in **ChainedConsumerDiagram**:
+
+```
+HTTP → ingestion → raw-dev-events
+       → llm-worker → enriched-dev-events
+       → analyzer → Postgres + Redis
+       → radar (poll + SSE)
+```
+
+## Benefits
+
+| Benefit | How |
+|---------|-----|
+| Scale independently | Add llm-worker replicas |
+| Swap enrichment | Change Python without touching Rust ingestion |
+| Replay | Rewind consumer offset on enriched topic |
+
+## Teach-back prompt
+
+Could analyzer subscribe to `raw-dev-events` instead? When would you?

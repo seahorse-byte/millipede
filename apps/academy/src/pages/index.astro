@@ -33,7 +33,9 @@ const books = [...byBook.keys()].sort((a, b) => a - b);
               ? "Bits → packets → client/server → browser → CORS → TLS → capstone"
               : book === 1
                 ? "Event loop → Promises → Rust ownership → SolidJS + TanStack"
-                : "Coming soon"
+                : book === 2
+                  ? "Event-driven → Kafka → Postgres/Redis → Compose → Pages deploy"
+                  : "Coming soon"
           }
         </p>
         <ul class="lesson-grid">

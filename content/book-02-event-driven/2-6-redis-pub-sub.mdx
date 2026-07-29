@@ -1,0 +1,43 @@
+---
+id: "2.6"
+book: 2
+title: "Redis Pub/Sub"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "2.5"
+objectives:
+  - "Contrast Postgres persistence with Redis pub/sub"
+  - "Simulate live feed while page is open"
+  - "Relate to radar SSE endpoint"
+components:
+  - RedisPubSubLive
+quiz_id: book2-lesson6
+lab_id: redis-subscribe-terminal
+instructor_notes: true
+---
+
+import { RedisPubSubLive } from "@millipede/lesson-widgets";
+
+**TanStack Query** polls summary metrics every 5s. **Redis Pub/Sub** pushes ephemeral events while the manager keeps the tab open.
+
+## Two speeds of “live”
+
+| Mechanism | Data | Lifetime |
+|-----------|------|----------|
+| Postgres + Query | Aggregates | Durable |
+| Redis PUBLISH + SSE | Individual events | Fire-and-forget |
+
+**RedisPubSubLive** — subscribe, then publish from analyzer.
+
+## Terminal lab
+
+```bash
+redis-cli SUBSCRIBE team-radar:live
+```
+
+Run a webhook while subscribed — see messages (when stack is up).
+
+## Teach-back prompt
+
+What happens to pub/sub messages if no subscriber is connected?

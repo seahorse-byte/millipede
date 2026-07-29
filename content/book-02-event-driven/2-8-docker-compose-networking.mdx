@@ -1,0 +1,39 @@
+---
+id: "2.8"
+book: 2
+title: "Docker Compose networking"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.2"
+objectives:
+  - "Map host ports to compose services"
+  - "Explain kafka:9092 vs localhost:9092"
+  - "Navigate infra/docker/ layout"
+components:
+  - ComposeNetworkMap
+quiz_id: book2-lesson8
+lab_id: kafka-pg-redis-stack
+instructor_notes: true
+---
+
+import { ComposeNetworkMap } from "@millipede/lesson-widgets";
+
+Local Team Radar runs as **containers on a shared network** — service DNS names differ from host `localhost`.
+
+## Compose map
+
+Explore **ComposeNetworkMap** — click kafka, postgres, redis, ingestion.
+
+| From | Connect to Kafka as |
+|------|---------------------|
+| Host (curl, IDE) | `localhost:9092` |
+| Container (ingestion) | `kafka:9092` |
+
+Base infra: `infra/docker/docker-compose.yml` — Postgres, Redis, Kafka.
+
+Full stack adds `millipede-ingestion`, `llm-worker`, `analyzer` via project compose files.
+
+## Teach-back prompt
+
+Why expose Postgres port 5432 to the host in dev?

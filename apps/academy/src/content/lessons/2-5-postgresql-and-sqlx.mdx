@@ -1,0 +1,44 @@
+---
+id: "2.5"
+book: 2
+title: "PostgreSQL and SQLx"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.4"
+objectives:
+  - "Read team_events and team_metrics schema"
+  - "Explain why analyzer owns writes"
+  - "Connect SQLx to compile-time query checking"
+components:
+  - PostgresSchemaDiagram
+quiz_id: book2-lesson5
+lab_id: team-metrics-schema
+instructor_notes: true
+---
+
+import { PostgresSchemaDiagram } from "@millipede/lesson-widgets";
+
+Kafka is the **stream**; Postgres is the **system of record** for dashboard queries.
+
+## Schema
+
+**PostgresSchemaDiagram** mirrors `infra/docker/init-db.sql`:
+
+| Table | Purpose |
+|-------|---------|
+| `team_events` | Enriched events with sentiment, risk_score |
+| `team_metrics` | Rolled-up KPIs for cards |
+
+## SQLx in analyzer
+
+Queries are checked at compile time against the schema — typos fail CI, not production.
+
+```sql
+INSERT INTO team_events (id, source, payload_json, sentiment, risk_score)
+VALUES ($1, $2, $3, $4, $5);
+```
+
+## Teach-back prompt
+
+Why not query Kafka directly from the dashboard?

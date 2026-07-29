@@ -1,0 +1,42 @@
+---
+id: "2.3"
+book: 2
+title: "Producers and consumers"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.2"
+objectives:
+  - "Trace produce → broker → consume → commit"
+  - "Identify producer and consumer in each service"
+  - "Explain consumer groups at a high level"
+components:
+  - KafkaMessageFlow
+quiz_id: book2-lesson3
+lab_id: rust-producer-lab
+instructor_notes: true
+---
+
+import { KafkaMessageFlow } from "@millipede/lesson-widgets";
+
+Every pipeline service is both **producer** and **consumer** — except ingestion (producer only) and analyzer (final consumer + side effects).
+
+## Message lifecycle
+
+Animate **KafkaMessageFlow**:
+
+1. **Producer** serializes JSON, picks partition
+2. **Broker** persists to disk, assigns offset
+3. **Consumer** polls batch, processes, **commits** offset
+
+## Rust producer (ingestion)
+
+Uses `rdkafka` `FutureProducer` — async send with delivery callback.
+
+## Consumer groups
+
+Multiple llm-worker instances share partitions — each partition consumed by one group member at a time.
+
+## Teach-back prompt
+
+What happens if a consumer crashes before committing?

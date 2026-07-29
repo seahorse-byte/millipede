@@ -199,6 +199,80 @@ export const labs: Record<string, LabDefinition> = {
       "Animate TanStackDataFlow and map each step to Network rows.",
     ],
   },
+  "docker-compose-kafka": {
+    title: "Docker Compose Kafka",
+    steps: [
+      "cd infra/docker && docker compose up -d kafka",
+      "Wait for healthcheck — docker compose ps",
+      "List topics: docker exec ... kafka-topics.sh --list --bootstrap-server localhost:9092",
+      "Match topic names to KafkaTopicExplorer labels.",
+    ],
+  },
+  "rust-producer-lab": {
+    title: "Rust producer",
+    steps: [
+      "Open services/ingestion — find Kafka producer setup.",
+      "POST a test webhook to :8081.",
+      "Confirm message on raw-dev-events (kafka console consumer or logs).",
+    ],
+  },
+  "raw-to-enriched-topics": {
+    title: "raw → enriched topics",
+    steps: [
+      "With full stack up, POST one webhook.",
+      "Trace llm-worker logs — consumption from raw, publish to enriched.",
+      "Verify analyzer consumes enriched-dev-events.",
+    ],
+  },
+  "team-metrics-schema": {
+    title: "Team metrics schema",
+    steps: [
+      "Read infra/docker/init-db.sql.",
+      "Toggle tables in PostgresSchemaDiagram.",
+      "psql or GUI: SELECT count(*) FROM team_events after a webhook.",
+    ],
+  },
+  "redis-subscribe-terminal": {
+    title: "Subscribe in terminal",
+    steps: [
+      "docker compose up -d redis",
+      "redis-cli SUBSCRIBE team-radar:live",
+      "In another terminal POST webhook — watch for publish (if analyzer running).",
+    ],
+  },
+  "replay-from-offset-zero": {
+    title: "Replay from offset 0",
+    steps: [
+      "Use KafkaOffsetRewind widget — burst then replay.",
+      "Research: kafka-consumer-groups.sh --reset-offsets (dev only).",
+      "Explain duplicate risk in Postgres without idempotent keys.",
+    ],
+  },
+  "kafka-pg-redis-stack": {
+    title: "Kafka + PG + Redis stack",
+    steps: [
+      "cd infra/docker && docker compose up -d",
+      "Verify postgres :5432, redis :6379, kafka :9092.",
+      "Click each node in ComposeNetworkMap and match ports.",
+    ],
+  },
+  "git-to-pages": {
+    title: "Git → Pages",
+    steps: [
+      "Run pnpm build:academy locally.",
+      "Push a doc-only commit to main.",
+      "Confirm Pages build in Cloudflare dashboard.",
+    ],
+  },
+  "full-compose-running": {
+    title: "Full compose running",
+    steps: [
+      "pnpm millipede-demo (or equivalent compose up).",
+      "POST webhook — confirm accepted:true.",
+      "Open radar :5174 — metrics + live feed.",
+      "Step KafkaPipelineVisualizer while narrating.",
+    ],
+  },
 };
 
 export interface QuizQuestion {
@@ -469,6 +543,111 @@ export const quizzes: Record<string, QuizDefinition> = {
       {
         prompt: "TanStack Query primarily manages…",
         choices: ["TCP routing", "Server/async fetched state", "TLS certificates", "Rust ownership"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson1": {
+    title: "Lesson 2.1 check",
+    questions: [
+      {
+        prompt: "Event-driven architecture decouples…",
+        choices: ["Git from GitLab", "HTTP acceptance from slow downstream work", "Solid from JS", "PDF from MDX"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson2": {
+    title: "Lesson 2.2 check",
+    questions: [
+      {
+        prompt: "Offsets are scoped to…",
+        choices: ["The whole topic globally", "Each partition", "Postgres rows", "Redis channels"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson3": {
+    title: "Lesson 2.3 check",
+    questions: [
+      {
+        prompt: "After processing, consumers should…",
+        choices: ["Delete the topic", "Commit offsets", "Close Postgres", "Stop Kafka"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson4": {
+    title: "Lesson 2.4 check",
+    questions: [
+      {
+        prompt: "millipede LLM output goes to…",
+        choices: ["raw-dev-events", "enriched-dev-events", "Redis only", "Cloudflare Pages"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson5": {
+    title: "Lesson 2.5 check",
+    questions: [
+      {
+        prompt: "team_metrics stores…",
+        choices: ["Raw webhook bytes only", "Aggregated KPI values", "TLS certs", "WASM modules"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson6": {
+    title: "Lesson 2.6 check",
+    questions: [
+      {
+        prompt: "Redis Pub/Sub messages without subscribers…",
+        choices: ["Persist forever", "Are dropped", "Go to Postgres", "Block Kafka"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson7": {
+    title: "Lesson 2.7 check",
+    questions: [
+      {
+        prompt: "Consumer lag means…",
+        choices: ["Browser is slow", "Consumers behind producers", "TLS expired", "WASM failed"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson8": {
+    title: "Lesson 2.8 check",
+    questions: [
+      {
+        prompt: "Inside compose, Kafka hostname is…",
+        choices: ["localhost", "kafka", "127.0.0.1 only", "postgres"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-lesson9": {
+    title: "Lesson 2.9 check",
+    questions: [
+      {
+        prompt: "Academy on Cloudflare Pages is…",
+        choices: ["A Kafka consumer", "Static site from git build", "Postgres host", "mTLS gateway"],
+        answerIndex: 1,
+      },
+    ],
+  },
+  "book2-capstone": {
+    title: "Book 2 capstone",
+    questions: [
+      {
+        prompt: "First Kafka topic a webhook hits…",
+        choices: ["enriched-dev-events", "raw-dev-events", "team_metrics", "team-radar:live"],
+        answerIndex: 1,
+      },
+      {
+        prompt: "Book 2 focused on…",
+        choices: ["React hooks", "Event-driven streaming stack", "Only TLS", "Only WASM"],
         answerIndex: 1,
       },
     ],
