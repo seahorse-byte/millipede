@@ -1,0 +1,40 @@
+---
+id: "4.9"
+book: 4
+title: "Structured logging"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "4.7"
+objectives:
+  - "Configure RUST_LOG for ingestion and analyzer"
+  - "Correlate logs by event_id"
+  - "Use tracing levels for ops vs errors"
+components:
+  - TracingSpanTimeline
+quiz_id: book4-lesson9
+lab_id: trace-webhook-logs
+instructor_notes: true
+---
+
+import { TracingSpanTimeline } from "@millipede/lesson-widgets";
+
+Both services use **tracing** + **tracing-subscriber**:
+
+```bash
+RUST_LOG=millipede_ingestion=info,millipede_analyzer=info cargo run -p millipede-ingestion
+```
+
+**TracingSpanTimeline** — follow one event_id across services.
+
+## Structured fields
+
+```rust
+info!(event_id = %event_id, topic = %topic, "published event");
+```
+
+Enables grep/OTel export in Stage 5.
+
+## Teach-back prompt
+
+What log line tells you Kafka was down but webhook still accepted?

@@ -1,0 +1,37 @@
+---
+id: "3.5"
+book: 3
+title: "Field-level encryption for 1:1 notes"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "3.1"
+objectives:
+  - "Contrast encryption-at-rest vs client-side redaction"
+  - "Describe key custody for manager notes"
+  - "Relate to PDF5 1:1 portal privacy goals"
+components:
+  - FieldEncryptionPanel
+quiz_id: book3-lesson5
+lab_id: encryption-key-custody
+instructor_notes: true
+---
+
+import { FieldEncryptionPanel } from "@millipede/lesson-widgets";
+
+Manager **1:1 notes** are sensitive — two design patterns:
+
+| Approach | Where plaintext exists |
+|----------|------------------------|
+| Field-level encryption | Decrypt only with key holder |
+| WASM redaction (ship path) | Browser only — server sees tokens |
+
+**FieldEncryptionPanel** — encrypt-before-store thought experiment.
+
+## millipede ship path
+
+Radar `/1on1` redacts PII **before** any network call — server stores pseudonymized text, not raw emails.
+
+## Teach-back prompt
+
+Who should hold decryption keys for HR notes — the dashboard app or a separate vault?

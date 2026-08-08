@@ -1,0 +1,29 @@
+---
+id: "5.10"
+book: 5
+title: "Log replay and reprocess history"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "5.9"
+  - "2.7"
+objectives:
+  - "Explain consumer group offset reset"
+  - "Relate ON CONFLICT to safe replay"
+  - "Use KafkaOffsetRewind conceptually"
+components:
+  - KafkaOffsetRewind
+quiz_id: book5-lesson10
+lab_id: offset-replay-dev
+instructor_notes: true
+---
+
+import { KafkaOffsetRewind } from "@millipede/lesson-widgets";
+
+<KafkaOffsetRewind client:load />
+
+Reprocessing enriched topic re-runs LLM/heuristics — idempotent Postgres writes prevent duplicate PK errors.
+
+## Teach-back prompt
+
+Dev vs prod offset reset — what changes?

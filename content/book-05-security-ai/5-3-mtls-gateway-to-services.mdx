@@ -1,0 +1,29 @@
+---
+id: "5.3"
+book: 5
+title: "mTLS between gateway and services"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "5.2"
+  - "3.3"
+objectives:
+  - "Enable MILLIPEDE_MTLS=1 across stack"
+  - "Understand gateway rustls client to :8083/:8084"
+  - "Generate dev certs if missing"
+components:
+  - MtlsHandshake
+quiz_id: book5-lesson3
+lab_id: stage2-mtls-stack
+instructor_notes: true
+---
+
+import { MtlsHandshake } from "@millipede/lesson-widgets";
+
+<MtlsHandshake client:load />
+
+Gateway `build_http_client()` presents **gateway.pem** to ingestion/analyzer mTLS listeners.
+
+## Teach-back prompt
+
+Why keep plain :8081/:8082 in dev alongside mTLS ports?

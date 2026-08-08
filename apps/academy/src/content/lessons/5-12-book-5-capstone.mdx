@@ -1,0 +1,46 @@
+---
+id: "5.12"
+book: 5
+title: "Book 5 capstone — full secured pipeline"
+type: recap
+duration_min: 60
+prerequisites:
+  - "5.1"
+  - "5.11"
+objectives:
+  - "Run gateway + llm-worker + analyzer + ingestion"
+  - "JWT curl → enriched Postgres → radar"
+  - "Self-grade Book 5 rubric"
+components:
+  - SecuredPipelineCapstone
+  - KafkaPipelineVisualizer
+quiz_id: book5-capstone
+lab_id: stage23-full-demo
+instructor_notes: true
+---
+
+import { SecuredPipelineCapstone, KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+You finished **Book 5 — Stages 2+3 Security + AI**.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| MILLIPEDE_MTLS=1 gateway health | |
+| JWT metrics + webhook via :8443 | |
+| llm-worker enriches events | |
+| Postgres has sentiment/risk_score | |
+| radar shows live feed (Book 6) | |
+
+<SecuredPipelineCapstone client:load />
+
+<KafkaPipelineVisualizer client:load />
+
+## Book 5 → Book 6 bridge
+
+Book 6 already ships radar UI — now your backend matches the secured + enriched pipeline.
+
+## Teach-back prompt
+
+One diagram: gateway, Kafka, llm-worker, analyzer, radar.

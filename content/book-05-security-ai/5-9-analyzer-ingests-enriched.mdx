@@ -1,0 +1,33 @@
+---
+id: "5.9"
+book: 5
+title: "Analyzer ingests enriched events"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "5.8"
+  - "4.7"
+objectives:
+  - "Confirm analyzer default KAFKA_TOPIC"
+  - "Trace persist_event with sentiment columns"
+  - "See scores on radar dashboard"
+components:
+  - ConsumerLoopVisualizer
+quiz_id: book5-lesson9
+lab_id: enriched-to-postgres
+instructor_notes: true
+---
+
+import { ConsumerLoopVisualizer } from "@millipede/lesson-widgets";
+
+Analyzer consumes **enriched-dev-events** — RawEvent struct includes optional sentiment/risk_score.
+
+<ConsumerLoopVisualizer client:load />
+
+```sql
+SELECT id, sentiment, risk_score, enriched_at FROM team_events ORDER BY created_at DESC LIMIT 3;
+```
+
+## Teach-back prompt
+
+How does radar Activity stream get risk badges?

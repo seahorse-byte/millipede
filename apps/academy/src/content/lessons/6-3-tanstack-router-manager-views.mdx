@@ -1,0 +1,35 @@
+---
+id: "6.3"
+book: 6
+title: "TanStack Router and manager views"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "6.2"
+objectives:
+  - "Map / and /1on1 routes"
+  - "Read RootLayout sidebar navigation"
+  - "Connect routes to Dashboard vs 1:1 portal"
+components:
+  - RadarRouterMap
+quiz_id: book6-lesson3
+lab_id: radar-router-nav
+instructor_notes: true
+---
+
+import { RadarRouterMap } from "@millipede/lesson-widgets";
+
+<RadarRouterMap client:load />
+
+## Route tree
+
+```tsx
+const dashboardRoute = createRoute({ path: "/", component: Dashboard });
+const oneOnOneRoute = createRoute({ path: "/1on1", component: OneOnOnePortal });
+```
+
+`RootLayout` renders `<Outlet />` + sidebar `<Link>` components with `activeProps`.
+
+## Teach-back prompt
+
+How would you add a `/settings` route?

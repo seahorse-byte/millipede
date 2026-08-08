@@ -1,0 +1,42 @@
+---
+id: "4.2"
+book: 4
+title: "Event schemas (Git, Jira, Slack)"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "4.1"
+objectives:
+  - "Compare vendor payload shapes"
+  - "Explain ingestion envelope id + source + payload"
+  - "Design a new source field without breaking consumers"
+components:
+  - EventSchemaExplorer
+quiz_id: book4-lesson2
+lab_id: design-event-schema
+instructor_notes: true
+---
+
+import { EventSchemaExplorer } from "@millipede/lesson-widgets";
+
+Team Radar ingests **heterogeneous** dev signals — one Kafka envelope, many payload shapes.
+
+## Canonical envelope (at publish)
+
+```json
+{
+  "id": "uuid",
+  "source": "github",
+  "payload": { "action": "opened", "title": "…" }
+}
+```
+
+**EventSchemaExplorer** — toggle GitHub, Jira, Slack examples.
+
+## Future `packages/types/`
+
+Shared Rust/TS types can live in `packages/types/` — today ingestion uses `serde_json::Value` for flexibility in Stage 1.
+
+## Teach-back prompt
+
+Why is `source` a top-level field instead of buried in payload?

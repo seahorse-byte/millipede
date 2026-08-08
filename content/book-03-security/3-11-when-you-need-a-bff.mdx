@@ -1,0 +1,52 @@
+---
+id: "3.11"
+book: 3
+title: "Deep-dive — when you need a BFF"
+type: deep-dive
+duration_min: 60
+prerequisites:
+  - "3.2"
+  - "0.7"
+objectives:
+  - "Contrast Express BFF with Rust gateway proxy"
+  - "Name maverick-ui problems a BFF solves"
+  - "Defend Team Radar no-BFF decision"
+components:
+  - BffProxyFlow
+quiz_id: book3-lesson11
+lab_id: bff-vs-gateway-reading
+instructor_notes: true
+---
+
+import { BffProxyFlow } from "@millipede/lesson-widgets";
+
+**Optional 60-minute rabbit hole** — not on the Team Radar ship path.
+
+## Two architectures
+
+Toggle **BffProxyFlow**:
+
+| | maverick-ui BFF | millipede gateway |
+|--|-----------------|-------------------|
+| Session | Cookie + CSRF | Bearer JWT |
+| OAuth tokens | Hidden in BFF | N/A in olab |
+| Aggregation | Multi-upstream compose | Thin reverse proxy |
+| Stack | Express + React | Axum + SolidJS |
+
+## When you need a BFF
+
+- Enterprise OAuth with refresh token vault
+- CSRF-protected cookie sessions
+- Heavy response aggregation for one UI
+
+## When gateway is enough
+
+- JWT at edge + mTLS mesh
+- Browser calls `/api` directly (same-origin proxy in dev)
+- No hidden third-party API surface
+
+See `docs/work-alignment.md` — reference only.
+
+## Teach-back prompt
+
+Write two sentences for an EM audience: why Snyk uses BFF and olab does not.

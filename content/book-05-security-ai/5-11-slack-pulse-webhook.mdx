@@ -1,0 +1,32 @@
+---
+id: "5.11"
+book: 5
+title: "Slack pulse webhook"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "5.4"
+  - "3.8"
+objectives:
+  - "Design morning/afternoon check-in event shape"
+  - "Verify Slack signing secret pattern"
+  - "Publish pulse as source slack"
+components:
+  - SlackSignatureVerifier
+  - EventSchemaExplorer
+quiz_id: book5-lesson11
+lab_id: slack-pulse-event
+instructor_notes: true
+---
+
+import { SlackSignatureVerifier, EventSchemaExplorer } from "@millipede/lesson-widgets";
+
+Team Radar accepts **Slack pulse** events — team morale signals alongside Git/Jira.
+
+**SlackSignatureVerifier** — security before parse (lesson 3.8).
+
+**EventSchemaExplorer** — add mental model: `{ source: "slack", channel: "#eng-health", … }`.
+
+## Teach-back prompt
+
+Where would Slack verification live — gateway or ingestion?

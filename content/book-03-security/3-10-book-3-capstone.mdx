@@ -1,0 +1,49 @@
+---
+id: "3.10"
+book: 3
+title: "Book 3 capstone — mTLS between services"
+type: recap
+duration_min: 60
+prerequisites:
+  - "3.1"
+  - "3.4"
+  - "3.6"
+  - "3.9"
+objectives:
+  - "Run gateway with MILLIPEDE_MTLS=1"
+  - "Complete JWT + mTLS + WASM redaction rubric"
+  - "Self-grade Book 3 security checklist"
+components:
+  - MtlsHandshake
+  - ZeroTrustTopology
+quiz_id: book3-capstone
+lab_id: mtls-two-services
+instructor_notes: true
+---
+
+import { MtlsHandshake, ZeroTrustTopology } from "@millipede/lesson-widgets";
+
+You finished **Book 3 — Security & Privacy**. Prove the full security shell.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| Zero-trust layers named | |
+| JWT mint + curl with Bearer | |
+| mTLS certs generated and verified | |
+| WASM redaction on 1:1 portal | |
+| Slack signature concept | |
+| Manager scope enforced | |
+
+<ZeroTrustTopology client:load />
+
+<MtlsHandshake client:load />
+
+## Book 3 → Book 4 bridge
+
+Book 4 **builds** the pipeline skeleton — you now understand **why** gateway and certs exist.
+
+## Teach-back prompt
+
+Draw browser → gateway → ingestion on one diagram with JWT and mTLS labels.

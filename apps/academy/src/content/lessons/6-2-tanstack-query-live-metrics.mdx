@@ -1,0 +1,44 @@
+---
+id: "6.2"
+book: 6
+title: "TanStack Query and live metrics"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "6.1"
+  - "1.14"
+objectives:
+  - "Read createQuery in Dashboard.tsx"
+  - "Contrast 5s poll vs SSE live feed"
+  - "Handle analyzer unreachable state"
+components:
+  - RadarMetricsPanel
+quiz_id: book6-lesson2
+lab_id: radar-metrics-poll
+instructor_notes: true
+---
+
+import { RadarMetricsPanel } from "@millipede/lesson-widgets";
+
+Dashboard uses **two channels** for “live” data:
+
+| Channel | API | Updates |
+|---------|-----|---------|
+| TanStack Query | `GET /api/metrics/summary` | Stat cards every 5s |
+| EventSource SSE | `/api/events/stream` | Activity table rows |
+
+<RadarMetricsPanel client:load />
+
+```tsx
+createQuery(() => ({
+  queryKey: ["metrics-summary"],
+  queryFn: fetchMetricsSummary,
+  refetchInterval: 5000,
+}));
+```
+
+See `apps/radar/src/api/client.ts`.
+
+## Teach-back prompt
+
+Why not poll SSE every 5 seconds instead?

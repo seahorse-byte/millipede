@@ -1,0 +1,34 @@
+---
+id: "5.2"
+book: 5
+title: "JWT verification at edge"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "5.1"
+  - "3.2"
+objectives:
+  - "Mint dev JWT with mint_dev_jwt"
+  - "Trace require_manager_jwt middleware"
+  - "Call /api with Bearer token"
+components:
+  - JwtValidationFlow
+quiz_id: book5-lesson2
+lab_id: gateway-jwt-curl
+instructor_notes: true
+---
+
+import { JwtValidationFlow } from "@millipede/lesson-widgets";
+
+Book 3 taught JWT concepts — Book 5 **operates** the gateway.
+
+```bash
+export TOKEN="$(cargo run -q -p millipede-gateway --bin mint_dev_jwt)"
+curl -sk https://localhost:8443/api/metrics/summary -H "Authorization: Bearer $TOKEN"
+```
+
+Step through **JwtValidationFlow** again with gateway context.
+
+## Teach-back prompt
+
+What HTTP status without Bearer header?

@@ -1,0 +1,32 @@
+---
+id: "5.6"
+book: 5
+title: "Kafka consumer in Python"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "5.5"
+objectives:
+  - "Read consumer.poll loop in main.py"
+  - "Configure input/output topics via env"
+  - "Handle invalid JSON gracefully"
+components:
+  - PythonKafkaConsumer
+quiz_id: book5-lesson6
+lab_id: python-kafka-poll
+instructor_notes: true
+---
+
+import { PythonKafkaConsumer } from "@millipede/lesson-widgets";
+
+<PythonKafkaConsumer client:load />
+
+| Env | Default |
+|-----|---------|
+| `KAFKA_INPUT_TOPIC` | raw-dev-events |
+| `KAFKA_OUTPUT_TOPIC` | enriched-dev-events |
+| `LLM_WORKER_GROUP` | millipede-llm-worker |
+
+## Teach-back prompt
+
+What happens on JSONDecodeError?

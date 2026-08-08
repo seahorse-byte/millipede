@@ -1,0 +1,33 @@
+---
+id: "5.4"
+book: 5
+title: "Route ingestion through gateway"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "5.3"
+objectives:
+  - "POST webhook via gateway not direct :8081"
+  - "Trace proxy() path stripping /api prefix"
+  - "Explain no direct service access goal"
+components:
+  - GatewayProxyFlow
+quiz_id: book5-lesson4
+lab_id: webhook-via-gateway
+instructor_notes: true
+---
+
+import { GatewayProxyFlow } from "@millipede/lesson-widgets";
+
+<GatewayProxyFlow client:load />
+
+```bash
+curl -sk https://localhost:8443/api/webhooks/hello \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"source":"github","action":"opened"}'
+```
+
+## Teach-back prompt
+
+Why strip Authorization before upstream proxy?

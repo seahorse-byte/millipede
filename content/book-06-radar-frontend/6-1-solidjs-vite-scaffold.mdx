@@ -1,0 +1,42 @@
+---
+id: "6.1"
+book: 6
+title: "SolidJS and Vite scaffold"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.13"
+  - "4.10"
+objectives:
+  - "Navigate apps/radar directory layout"
+  - "Explain Vite dev server and /api proxy"
+  - "Start pnpm dev:radar on :5174"
+components:
+  - RadarAppShell
+quiz_id: book6-lesson1
+lab_id: radar-dev-server
+instructor_notes: true
+---
+
+import { RadarAppShell } from "@millipede/lesson-widgets";
+
+**Team Radar** is the manager dashboard — SolidJS + Vite, not React.
+
+<RadarAppShell client:load />
+
+## Quick start
+
+```bash
+pnpm build:wasm          # once
+pnpm compose:up
+pnpm analyzer:dev & pnpm ingestion:dev &
+pnpm dev:radar           # http://localhost:5174
+```
+
+## Vite proxy
+
+`vite.config.ts` forwards `/api/*` to analyzer `:8082` — same-origin for the browser (lesson 0.7).
+
+## Teach-back prompt
+
+Why is radar in `apps/` not `services/`?

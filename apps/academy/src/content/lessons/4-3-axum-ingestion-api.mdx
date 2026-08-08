@@ -1,0 +1,41 @@
+---
+id: "4.3"
+book: 4
+title: "Axum ingestion API"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "4.2"
+  - "1.5"
+objectives:
+  - "Read ingestion Router and AppState"
+  - "Trace github_webhook handler"
+  - "Separate API edge from async workers"
+components:
+  - AxumHandlerExplorer
+  - ApiWorkerSplit
+quiz_id: book4-lesson3
+lab_id: read-ingestion-main
+instructor_notes: true
+---
+
+import { AxumHandlerExplorer, ApiWorkerSplit } from "@millipede/lesson-widgets";
+
+`services/ingestion/src/main.rs` is the **HTTP edge** — fast accept, async handoff.
+
+<AxumHandlerExplorer client:load />
+
+## Handler outline
+
+```rust
+async fn github_webhook(State(state), Json(payload)) -> Json<WebhookResponse> {
+    let event_id = uuid::Uuid::new_v4().to_string();
+    // build message → kafka send → return accepted
+}
+```
+
+<ApiWorkerSplit client:load />
+
+## Teach-back prompt
+
+What stays out of the webhook handler in a production pipeline?

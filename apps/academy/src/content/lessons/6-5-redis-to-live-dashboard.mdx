@@ -1,0 +1,38 @@
+---
+id: "6.5"
+book: 6
+title: "Redis Pub/Sub to live dashboard"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "6.2"
+  - "4.8"
+objectives:
+  - "Trace analyzer PUBLISH to browser EventSource"
+  - "Read openEventStream in api/client.ts"
+  - "Populate Activity stream while tab is open"
+components:
+  - RadarLiveFeed
+quiz_id: book6-lesson5
+lab_id: radar-sse-activity
+instructor_notes: true
+---
+
+import { RadarLiveFeed } from "@millipede/lesson-widgets";
+
+When analyzer calls `warm_redis`, it **PUBLISH**es to `team_radar:events`. The dashboard subscribes via SSE:
+
+```ts
+const source = new EventSource("/api/events/stream");
+source.addEventListener("team_event", (msg) => …);
+```
+
+<RadarLiveFeed client:load />
+
+## Lab
+
+Keep radar open → POST webhook → watch Activity stream row appear with sentiment + risk badge.
+
+## Teach-back prompt
+
+What happens to SSE events if you close the tab?

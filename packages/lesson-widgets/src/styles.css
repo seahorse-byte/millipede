@@ -541,6 +541,14 @@
   border-color: rgba(251, 191, 36, 0.4);
 }
 
+.mw-own-line[data-kind="ok"] {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.mw-own-line[data-kind="pending"] {
+  opacity: 0.6;
+}
+
 .mw-channel-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -721,4 +729,25 @@
 .mw-compose-node span {
   font-size: 0.78rem;
   color: var(--ac-text-muted, #64748b);
+}
+
+.mw-field-enc textarea,
+.mw-slack-sig input,
+.mw-abac input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--ac-border, #334155);
+  background: var(--ac-surface, #0f172a);
+  color: inherit;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.mw-hint[data-ok="true"] {
+  color: rgba(52, 211, 153, 0.9);
+}
+
+.mw-hint[data-ok="false"] {
+  color: rgba(251, 191, 36, 0.9);
 }

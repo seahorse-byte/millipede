@@ -1,0 +1,45 @@
+---
+id: "3.9"
+book: 3
+title: "ABAC and role scoping"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "3.2"
+objectives:
+  - "Define attribute-based access control"
+  - "Map team_radar:manager scope to routes"
+  - "Design a read-only scope extension"
+components:
+  - AbacRoleMatrix
+quiz_id: book3-lesson9
+lab_id: manager-role-gateway
+instructor_notes: true
+---
+
+import { AbacRoleMatrix } from "@millipede/lesson-widgets";
+
+Authentication asks **who**; authorization asks **what they may do**.
+
+Gateway middleware:
+
+```rust
+if claims.claims.scope != "team_radar:manager" {
+    return Err(StatusCode::FORBIDDEN);
+}
+```
+
+**AbacRoleMatrix** — try paths `/api/metrics/summary` vs `/api/webhooks/hello`.
+
+## ABAC attributes
+
+| Attribute | Example |
+|-----------|---------|
+| Subject | `sub: manager-dev` |
+| Scope | `team_radar:manager` |
+| Resource | `/api/metrics/*` |
+| Action | GET vs POST |
+
+## Teach-back prompt
+
+How would you add `team_radar:read` without breaking manager POST?

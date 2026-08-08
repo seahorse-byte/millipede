@@ -1,0 +1,36 @@
+---
+id: "3.7"
+book: 3
+title: "Deterministic pseudonymization"
+type: lesson
+duration_min: 35
+prerequisites:
+  - "3.6"
+objectives:
+  - "Separate pseudonymization from redaction"
+  - "Map real names to stable dashboard labels"
+  - "Discuss where mapping tables live"
+components:
+  - PseudonymizationDemo
+quiz_id: book3-lesson7
+lab_id: pseudonym-mapping-table
+instructor_notes: true
+---
+
+import { PseudonymizationDemo } from "@millipede/lesson-widgets";
+
+**Redaction** removes PII (`alice@example.com` → `[EMAIL:…]`).  
+**Pseudonymization** replaces identity with a stable alias (`Alice Chen` → `Developer_Alpha`).
+
+**PseudonymizationDemo** — same person always maps to the same label for trend charts.
+
+## HR vs dashboard view
+
+| Audience | Sees |
+|----------|------|
+| Manager with HR access | Real name + context |
+| Team Radar aggregate | Pseudonym only |
+
+## Teach-back prompt
+
+Can you deanonymize without the mapping table?

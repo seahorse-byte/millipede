@@ -1,0 +1,30 @@
+---
+id: "5.7"
+book: 5
+title: "LangGraph-style agent and tools"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "5.6"
+objectives:
+  - "Walk parse → score → stamp pipeline"
+  - "Contrast heuristic vs OPENAI_API_KEY scoring"
+  - "Read enrichment_notes on output event"
+components:
+  - EnrichmentGraph
+quiz_id: book5-lesson7
+lab_id: enrichment-graph-trace
+instructor_notes: true
+---
+
+import { EnrichmentGraph } from "@millipede/lesson-widgets";
+
+<EnrichmentGraph client:load />
+
+`graph.py` — sequential nodes (LangGraph-style without external dependency for default path).
+
+Heuristic keywords in `enrich.py`: POSITIVE / NEGATIVE / RISK word lists.
+
+## Teach-back prompt
+
+When would you add a fourth node for Jira tool calls?

@@ -1,0 +1,45 @@
+---
+id: "4.6"
+book: 4
+title: "Postgres schema and SQLx"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "4.5"
+  - "2.5"
+objectives:
+  - "Connect DATABASE_URL to compose Postgres"
+  - "Review team_events DDL"
+  - "Use ON CONFLICT for idempotent inserts"
+components:
+  - PostgresSchemaDiagram
+quiz_id: book4-lesson6
+lab_id: sqlx-pool-connect
+instructor_notes: true
+---
+
+import { PostgresSchemaDiagram } from "@millipede/lesson-widgets";
+
+Analyzer requires Postgres at startup — pool fails fast if DB is down.
+
+```rust
+PgPoolOptions::new()
+    .max_connections(5)
+    .connect(&database_url)
+    .await?;
+```
+
+**PostgresSchemaDiagram** — `infra/docker/init-db.sql`.
+
+## Idempotent write
+
+```sql
+INSERT INTO team_events (…) VALUES (…)
+ON CONFLICT (id) DO UPDATE SET …
+```
+
+Enables safe Kafka replay without duplicate primary keys.
+
+## Teach-back prompt
+
+Why exit the process if Postgres is unavailable?

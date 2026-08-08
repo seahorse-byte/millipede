@@ -1,0 +1,41 @@
+---
+id: "3.1"
+book: 3
+title: "Zero-trust architecture"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.10"
+  - "0.8"
+objectives:
+  - "State the zero-trust principle in plain language"
+  - "Map PDF4 topology to gateway + mTLS + WASM"
+  - "Identify verification points in Team Radar"
+components:
+  - ZeroTrustTopology
+quiz_id: book3-lesson1
+instructor_notes: true
+---
+
+import { ZeroTrustTopology } from "@millipede/lesson-widgets";
+
+**Zero trust** means no implicit safe zone — every request and hop proves identity.
+
+## PDF4 topology
+
+| Layer | millipede component |
+|-------|---------------------|
+| Edge | `services/gateway` — JWT + HTTPS |
+| Service-to-service | rustls mTLS (`MILLIPEDE_MTLS=1`) |
+| Browser privacy | WASM redaction on 1:1 portal |
+| Data | Postgres least privilege (analyzer only) |
+
+Explore **ZeroTrustTopology** — click each layer.
+
+## Contrast with “castle and moat”
+
+VPN access to a flat internal network is **not** zero trust. Team Radar verifies at **gateway** even on localhost.
+
+## Teach-back prompt
+
+Which trust decision moved from “inside the VPC” to “every API call”?

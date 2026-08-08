@@ -1,0 +1,38 @@
+---
+id: "4.7"
+book: 4
+title: "Consumer writes to Postgres"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "4.6"
+objectives:
+  - "Trace persist_event after Kafka recv"
+  - "Verify rows with psql"
+  - "Call GET /api/metrics/summary"
+components:
+  - WebhookToDbFlow
+quiz_id: book4-lesson7
+lab_id: webhook-to-postgres
+instructor_notes: true
+---
+
+import { WebhookToDbFlow } from "@millipede/lesson-widgets";
+
+<WebhookToDbFlow client:load />
+
+## Lab commands
+
+```bash
+cargo run -p millipede-analyzer    # terminal 1
+cargo run -p millipede-ingestion   # terminal 2
+curl -X POST http://localhost:8081/webhooks/hello \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"opened","source":"github"}'
+psql postgres://millipede:millipede@localhost:5432/team_radar \
+  -c "SELECT id, source FROM team_events ORDER BY created_at DESC LIMIT 3;"
+```
+
+## Teach-back prompt
+
+At which step is the HTTP client done waiting?

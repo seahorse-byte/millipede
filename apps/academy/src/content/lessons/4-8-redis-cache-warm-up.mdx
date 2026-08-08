@@ -1,0 +1,37 @@
+---
+id: "4.8"
+book: 4
+title: "Redis cache warm-up"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "4.7"
+  - "2.6"
+objectives:
+  - "Run warm_redis after Postgres insert"
+  - "Explain HSET, INCR, PUBLISH keys"
+  - "Connect to metrics summary latest_by_source"
+components:
+  - RedisCacheWarmup
+quiz_id: book4-lesson8
+lab_id: redis-warm-after-insert
+instructor_notes: true
+---
+
+import { RedisCacheWarmup } from "@millipede/lesson-widgets";
+
+Postgres is durable; Redis is **fast + live**.
+
+After `persist_event`, analyzer calls `warm_redis`:
+
+| Key | Purpose |
+|-----|---------|
+| `team_radar:latest_by_source` | Hash — latest event id per source |
+| `team_radar:count:{source}` | Counter |
+| `team_radar:events` | Pub/sub channel for SSE |
+
+**RedisCacheWarmup** — click Warm on each key.
+
+## Teach-back prompt
+
+Why warm Redis if Postgres already has the row?

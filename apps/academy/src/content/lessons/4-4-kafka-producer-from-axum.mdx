@@ -1,0 +1,40 @@
+---
+id: "4.4"
+book: 4
+title: "Kafka producer from Axum"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "4.3"
+  - "2.3"
+objectives:
+  - "Configure rdkafka FutureProducer"
+  - "Publish to raw-dev-events with key and payload"
+  - "Handle broker-down gracefully in dev"
+components:
+  - IngestionProducerPanel
+quiz_id: book4-lesson4
+lab_id: publish-raw-dev-events
+instructor_notes: true
+---
+
+import { IngestionProducerPanel } from "@millipede/lesson-widgets";
+
+Ingestion wraps the producer in `Option` — if Kafka is down, webhooks still return `accepted: true` with `kafka_status: unavailable`.
+
+**IngestionProducerPanel** — simulate send vs broker failure.
+
+## Producer config
+
+```rust
+ClientConfig::new()
+    .set("bootstrap.servers", &kafka_brokers)
+    .set("message.timeout.ms", "5000")
+    .create::<FutureProducer>()
+```
+
+Default topic: `KAFKA_TOPIC=raw-dev-events`.
+
+## Teach-back prompt
+
+Why use event_id as the Kafka message key?

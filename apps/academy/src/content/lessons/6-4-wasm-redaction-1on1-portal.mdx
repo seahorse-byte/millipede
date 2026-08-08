@@ -1,0 +1,36 @@
+---
+id: "6.4"
+book: 6
+title: "WASM redaction in the 1:1 portal"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "6.3"
+  - "3.6"
+objectives:
+  - "Load @millipede/redact-wasm in radar"
+  - "Run redactInWorker before displaying output"
+  - "Build WASM with pnpm build:wasm"
+components:
+  - WasmRedaction
+quiz_id: book6-lesson4
+lab_id: radar-1on1-wasm
+instructor_notes: true
+---
+
+import { WasmRedaction } from "@millipede/lesson-widgets";
+
+The **1:1 Portal** (`/1on1`) keeps manager notes private — WASM redacts before any server POST.
+
+<WasmRedaction client:load />
+
+```ts
+// apps/radar/src/lib/redact.ts
+import init, { redact_pii_deterministic } from "@millipede/redact-wasm";
+```
+
+Open `OneOnOnePortal.tsx` — compare to Academy lesson 3.6.
+
+## Teach-back prompt
+
+Why compile redaction to WASM instead of a JS regex?

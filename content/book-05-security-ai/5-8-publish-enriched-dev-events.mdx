@@ -1,0 +1,28 @@
+---
+id: "5.8"
+book: 5
+title: "Publish to enriched-dev-events"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "5.7"
+objectives:
+  - "Complete chained consumer handoff"
+  - "Verify producer.produce to output topic"
+  - "Inspect enriched JSON shape"
+components:
+  - ChainedConsumerDiagram
+quiz_id: book5-lesson8
+lab_id: enriched-topic-verify
+instructor_notes: true
+---
+
+import { ChainedConsumerDiagram } from "@millipede/lesson-widgets";
+
+<ChainedConsumerDiagram client:load />
+
+Enriched payload adds `sentiment`, `risk_score`, `enriched_at`, `enrichment_notes`.
+
+## Teach-back prompt
+
+Which service consumes enriched-dev-events?

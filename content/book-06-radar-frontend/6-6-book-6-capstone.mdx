@@ -1,0 +1,46 @@
+---
+id: "6.6"
+book: 6
+title: "Book 6 capstone — full Team Radar live"
+type: recap
+duration_min: 60
+prerequisites:
+  - "6.1"
+  - "6.5"
+objectives:
+  - "Demo pipeline + radar + 1:1 portal"
+  - "Narrate Query vs SSE vs WASM paths"
+  - "Self-grade Stage 4 rubric"
+components:
+  - RadarStage4Diagram
+  - KafkaPipelineVisualizer
+quiz_id: book6-capstone
+lab_id: radar-full-demo
+instructor_notes: true
+---
+
+import { RadarStage4Diagram, KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+You finished **Book 6 — Stage 4 SolidJS Frontend**.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| dev:radar loads :5174 | |
+| Metrics cards poll from analyzer | |
+| Activity stream shows SSE events | |
+| /1on1 WASM redaction works | |
+| Can narrate full stack in 5 min | |
+
+<RadarStage4Diagram client:load />
+
+<KafkaPipelineVisualizer client:load />
+
+## Book 6 → Book 7 bridge
+
+Book 7 adds **EM leadership** — KPIs, eval CI, mock class — Stage 5 quality systems.
+
+## Teach-back prompt
+
+Demo Team Radar for a mock 1:1 with a burnout signal in notes.

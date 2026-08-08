@@ -35,7 +35,15 @@ const books = [...byBook.keys()].sort((a, b) => a - b);
                 ? "Event loop → Promises → Rust ownership → SolidJS + TanStack"
                 : book === 2
                   ? "Event-driven → Kafka → Postgres/Redis → Compose → Pages deploy"
-                  : "Coming soon"
+                  : book === 3
+                    ? "Zero-trust → JWT → mTLS → WASM redaction → BFF deep-dive"
+                    : book === 4
+                      ? "Build-along: monorepo → Axum → Kafka → SQLx → Redis → tracing"
+                      : book === 5
+                        ? "Gateway JWT/mTLS → Python LLM → enriched Kafka → analyzer"
+                        : book === 6
+                          ? "Radar: SolidJS → TanStack Query/Router → WASM → SSE live feed"
+                          : "Coming soon"
           }
         </p>
         <ul class="lesson-grid">

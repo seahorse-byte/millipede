@@ -1,0 +1,43 @@
+---
+id: "3.6"
+book: 3
+title: "WASM sanitize on submit"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "1.4"
+  - "3.5"
+objectives:
+  - "Run redact_pii_deterministic in the browser"
+  - "Explain deterministic tokens for EMAIL/PHONE"
+  - "Verify same input → same output"
+components:
+  - WasmRedaction
+quiz_id: book3-lesson6
+lab_id: wasm-redact-1on1
+instructor_notes: true
+---
+
+import { WasmRedaction } from "@millipede/lesson-widgets";
+
+`packages/redact-wasm` compiles Rust to WASM — same logic in tests and browser.
+
+```rust
+pub fn redact_pii_deterministic(input: &str) -> String
+```
+
+**WasmRedaction** — submit notes and inspect safe payload.
+
+## Radar integration
+
+`apps/radar/src/pages/OneOnOnePortal.tsx` calls `redactInWorker` before display/submit.
+
+## Build WASM
+
+```bash
+pnpm build:wasm
+```
+
+## Teach-back prompt
+
+Why deterministic hashes instead of random `[REDACTED]` each time?

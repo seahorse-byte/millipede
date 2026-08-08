@@ -1,0 +1,49 @@
+---
+id: "3.4"
+book: 3
+title: "Certificate Authority bootstrap"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "3.3"
+objectives:
+  - "Generate dev CA and service certs"
+  - "Explain SAN entries for localhost"
+  - "Verify cert chain with openssl"
+components:
+  - CertAuthorityBootstrap
+quiz_id: book3-lesson4
+lab_id: generate-dev-certs
+instructor_notes: true
+---
+
+import { CertAuthorityBootstrap } from "@millipede/lesson-widgets";
+
+Stage 2 needs a **trust anchor** — in dev, you are the CA.
+
+## Script
+
+```bash
+bash infra/certs/generate-dev-certs.sh
+```
+
+**CertAuthorityBootstrap** simulates signing gateway, ingestion, analyzer.
+
+## Files in `infra/certs/dev/`
+
+| File | Role |
+|------|------|
+| `ca.pem` | Trust anchor (distribute to clients) |
+| `ca-key.pem` | **Private** — never commit to prod |
+| `gateway.pem` | Server + client cert for gateway |
+| `ingestion.pem` / `analyzer.pem` | Backend server certs |
+
+## Verify
+
+```bash
+openssl verify -CAfile infra/certs/dev/ca.pem infra/certs/dev/gateway.pem
+```
+
+## Teach-back prompt
+
+Why add `subjectAltName = DNS:localhost` for local dev?

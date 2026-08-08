@@ -1,0 +1,31 @@
+---
+id: "5.5"
+book: 5
+title: "Python LLM service container"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "5.4"
+  - "2.4"
+objectives:
+  - "Set up llm-worker venv"
+  - "Run pnpm llm-worker:dev"
+  - "Optional OPENAI_API_KEY for LLM mode"
+components:
+  - LlmWorkerContainer
+quiz_id: book5-lesson5
+lab_id: llm-worker-setup
+instructor_notes: true
+---
+
+import { LlmWorkerContainer } from "@millipede/lesson-widgets";
+
+Stage 3 adds **Python** between Kafka topics — Rust ingestion stays thin.
+
+<LlmWorkerContainer client:load />
+
+See `docs/stage3-llm-worker.md`.
+
+## Teach-back prompt
+
+Why Python for enrichment but Rust for ingestion?

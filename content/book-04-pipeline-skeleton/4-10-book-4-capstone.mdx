@@ -1,0 +1,47 @@
+---
+id: "4.10"
+book: 4
+title: "Book 4 capstone — GitHub webhook to Postgres"
+type: recap
+duration_min: 60
+prerequisites:
+  - "4.1"
+  - "4.9"
+objectives:
+  - "Run full Stage 1 pipeline locally"
+  - "Verify Kafka, Postgres, Redis, metrics API"
+  - "Self-grade Book 4 rubric"
+components:
+  - WebhookToDbFlow
+  - KafkaPipelineVisualizer
+quiz_id: book4-capstone
+lab_id: stage1-capstone-demo
+instructor_notes: true
+---
+
+import { WebhookToDbFlow, KafkaPipelineVisualizer } from "@millipede/lesson-widgets";
+
+You finished **Book 4 — Stage 1 Pipeline Skeleton**.
+
+## Rubric (self-grade)
+
+| Criterion | Pass? |
+|-----------|-------|
+| compose up — kafka, postgres, redis | |
+| ingestion POST → kafka_status published | |
+| team_events row in Postgres | |
+| metrics summary JSON | |
+| redis PUBLISH or SSE (optional) | |
+| traced event_id in logs | |
+
+<WebhookToDbFlow client:load />
+
+<KafkaPipelineVisualizer client:load />
+
+## Book 4 → Book 5 bridge
+
+Book 5 adds **gateway JWT/mTLS** and the **Python LLM worker** — same pipeline, more stages.
+
+## Teach-back prompt
+
+Demo Stage 1 in 3 minutes without opening IDE.

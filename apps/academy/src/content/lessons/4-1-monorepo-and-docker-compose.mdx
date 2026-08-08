@@ -1,0 +1,46 @@
+---
+id: "4.1"
+book: 4
+title: "Monorepo and Docker Compose"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "2.10"
+  - "3.10"
+objectives:
+  - "Navigate apps, services, packages, infra"
+  - "Start Kafka + Postgres + Redis with compose"
+  - "Map Stage 1 services to directories"
+components:
+  - MonorepoMap
+  - ComposeNetworkMap
+quiz_id: book4-lesson1
+lab_id: stage1-compose-up
+instructor_notes: true
+---
+
+import { MonorepoMap, ComposeNetworkMap } from "@millipede/lesson-widgets";
+
+Book 4 is **build-along** — you ship the Stage 1 skeleton while reading code that already exists in this repo.
+
+## Monorepo tour
+
+<MonorepoMap client:load />
+
+| Path | Stage 1 role |
+|------|--------------|
+| `services/ingestion` | Webhook API |
+| `services/analyzer` | Consumer + metrics API |
+| `infra/docker` | Kafka, Postgres, Redis |
+
+## Compose up
+
+```bash
+pnpm compose:up   # or cd infra/docker && docker compose up -d
+```
+
+<ComposeNetworkMap client:load />
+
+## Teach-back prompt
+
+Which two services need compose healthy before `cargo run -p millipede-analyzer`?

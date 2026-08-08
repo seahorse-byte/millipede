@@ -1,0 +1,48 @@
+---
+id: "3.2"
+book: 3
+title: "JWT edge authentication"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "3.1"
+objectives:
+  - "Trace Bearer JWT validation in gateway middleware"
+  - "Explain scope claims for manager access"
+  - "Mint and use a dev token"
+components:
+  - JwtValidationFlow
+quiz_id: book3-lesson2
+lab_id: mint-dev-jwt
+instructor_notes: true
+---
+
+import { JwtValidationFlow } from "@millipede/lesson-widgets";
+
+The **gateway** is the JWT enforcement point — backends trust mTLS from gateway, not browser tokens.
+
+## Claims shape
+
+```rust
+struct Claims {
+    sub: String,           // "manager-dev"
+    scope: String,         // "team_radar:manager"
+    exp: usize,
+}
+```
+
+Step through **JwtValidationFlow** — try `guest` scope → 403.
+
+## Dev mint
+
+```bash
+cargo run -p millipede-gateway --bin mint_dev_jwt
+curl -sk https://localhost:8443/api/metrics/summary \
+  -H "Authorization: Bearer <token>"
+```
+
+See `services/gateway/src/main.rs` — `require_manager_jwt`.
+
+## Teach-back prompt
+
+Why does the gateway strip `Authorization` before proxying upstream?

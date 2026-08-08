@@ -1,0 +1,38 @@
+---
+id: "3.8"
+book: 3
+title: "Slack webhook security"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "3.2"
+objectives:
+  - "Verify Slack signing secret before parsing body"
+  - "Reject tampered X-Slack-Signature"
+  - "Explain replay protection with timestamp"
+components:
+  - SlackSignatureVerifier
+quiz_id: book3-lesson8
+lab_id: slack-signature-verify
+instructor_notes: true
+---
+
+import { SlackSignatureVerifier } from "@millipede/lesson-widgets";
+
+Slack (and similar vendors) prove webhook authenticity with **HMAC-SHA256**:
+
+```
+v0 = HMAC-SHA256(signing_secret, "v0:" + timestamp + ":" + raw_body)
+```
+
+**SlackSignatureVerifier** — compute signature, then tamper to see rejection.
+
+## Ingestion checklist
+
+1. Read raw body bytes (before JSON parse)
+2. Compare `X-Slack-Signature` constant-time
+3. Reject if timestamp skew &gt; 5 minutes
+
+## Teach-back prompt
+
+Why parse JSON only after signature verification?

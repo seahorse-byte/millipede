@@ -1,0 +1,39 @@
+---
+id: "3.3"
+book: 3
+title: "mTLS service-to-service"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "3.2"
+  - "0.8"
+objectives:
+  - "Contrast TLS (server auth) with mTLS (both sides)"
+  - "Walk gateway → ingestion/analyzer rustls hops"
+  - "Enable MILLIPEDE_MTLS=1 in dev"
+components:
+  - MtlsHandshake
+quiz_id: book3-lesson3
+lab_id: mtls-curl-gateway
+instructor_notes: true
+---
+
+import { MtlsHandshake } from "@millipede/lesson-widgets";
+
+Browser-to-gateway uses **TLS + JWT**. Gateway-to-backend uses **mTLS** — client certificate proves gateway identity.
+
+<MtlsHandshake client:load />
+
+## Port map (mTLS mode)
+
+| Service | Plain | mTLS |
+|---------|-------|------|
+| ingestion | :8081 | :8083 |
+| analyzer | :8082 | :8084 |
+| gateway | :8443 | HTTPS + client cert to backends |
+
+Gateway `build_http_client()` loads `gateway.pem` + `ca.pem` from `infra/certs/dev/`.
+
+## Teach-back prompt
+
+What fails if ingestion trusts any client cert without checking the CA?

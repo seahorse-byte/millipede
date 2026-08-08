@@ -1,0 +1,38 @@
+---
+id: "4.5"
+book: 4
+title: "Rust consumer skeleton"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "4.4"
+objectives:
+  - "Create StreamConsumer with group.id"
+  - "Loop recv → parse → handle errors"
+  - "Locate run_consumer in analyzer"
+components:
+  - ConsumerLoopVisualizer
+quiz_id: book4-lesson5
+lab_id: analyzer-consumer-loop
+instructor_notes: true
+---
+
+import { ConsumerLoopVisualizer } from "@millipede/lesson-widgets";
+
+The **analyzer** spawns `run_consumer` in a background task — HTTP server and consumer share `AppState`.
+
+Step **ConsumerLoopVisualizer** alongside `services/analyzer/src/main.rs`.
+
+## Consumer settings
+
+| Setting | Value |
+|---------|-------|
+| `group.id` | `millipede-analyzer` |
+| `auto.offset.reset` | `earliest` |
+| Topic (default) | `enriched-dev-events` (Stage 3 path) |
+
+Stage 1 lab: run analyzer with Kafka + Postgres; consumer persists events.
+
+## Teach-back prompt
+
+What happens if two analyzer instances share the same group.id?
