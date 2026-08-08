@@ -57,8 +57,8 @@ For local dev without gateway, keep the default Vite proxy to `:8082`.
 
 ## Next (Book 7 / OTel)
 
-- OpenTelemetry spans on LLM worker + analyzer latency
-- GitLab CI job wiring for `evals:run` + `test:e2e`
-- Book 7 EM leadership lessons + `AgentEvalGate` widget
+- Optional OTLP export: set `OTEL_EXPORTER_OTLP_ENDPOINT` (LLM worker: `pip install -e '.[otel]'`)
+- Analyzer latency: `GET /api/telemetry/summary`
+- GitHub Actions: `.github/workflows/ci.yml` runs evals + e2e on every push
 
 **Prior stage:** [`stage4-radar.md`](stage4-radar.md)

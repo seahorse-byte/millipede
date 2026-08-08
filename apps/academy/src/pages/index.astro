@@ -43,7 +43,9 @@ const books = [...byBook.keys()].sort((a, b) => a - b);
                         ? "Gateway JWT/mTLS → Python LLM → enriched Kafka → analyzer"
                         : book === 6
                           ? "Radar: SolidJS → TanStack Query/Router → WASM → SSE live feed"
-                          : "Coming soon"
+                          : book === 7
+                            ? "KPIs → eval CI → Playwright → EM mock class → work-bridge"
+                            : "Coming soon"
           }
         </p>
         <ul class="lesson-grid">

@@ -1,0 +1,55 @@
+---
+id: "7.4"
+book: 7
+title: "Write an original Academy lesson"
+type: lesson
+duration_min: 35
+prerequisites:
+  - "7.3"
+objectives:
+  - "Draft frontmatter matching millipede lesson schema"
+  - "Pair one widget with a teach-back prompt"
+  - "Mirror MDX to content/book-XX-* for Git review"
+instructor_notes: true
+---
+
+Book 7 includes a **meta lesson** — you author MDX the way the Academy ships it.
+
+## Frontmatter checklist
+
+```yaml
+id: "7.X"
+book: 7
+title: "Human title"
+type: lesson | meta | narrative | instructor | deep-dive
+duration_min: 40
+prerequisites: ["7.3"]
+objectives: ["Three measurable outcomes"]
+components: [WidgetName]   # optional
+quiz_id: book7-lessonX     # optional
+lab_id: slug               # optional
+instructor_notes: true
+```
+
+## Body pattern (~30–50 lines)
+
+1. One-sentence hook tying to Stage 5 or EM narrative
+2. Widget import + `<WidgetName client:load />` when applicable
+3. One code block or table
+4. Lab or reading pointer
+5. **Teach-back prompt** — always last
+
+## Mirror rule
+
+Every lesson lives in **two** paths:
+
+- `apps/academy/src/content/lessons/` — canonical Astro content
+- `content/book-07-em-leadership/` — reviewable mirror for instructors
+
+## Exercise
+
+Pick one widget from `@millipede/lesson-widgets` not yet used in Book 7. Draft a 7.X appendix lesson outline — no widget required to submit, but name the component you would import.
+
+## Teach-back prompt
+
+What breaks if you forget the mirror copy under `content/`?

@@ -9,39 +9,46 @@
 
 | Book | Lessons | Status |
 |------|---------|--------|
-| 0–4 | 44 | ✅ |
-| **5** Stages 2+3 Security + AI | **12** | ✅ |
-| **6** Stage 4 radar | **6** | ✅ |
-| 7 EM leadership | 8+ | 🔲 |
+| 0–6 | 62 | ✅ |
+| **7** Stage 5 + EM Leadership | **12** (8 + appendix) | ✅ |
+| — | — | **Curriculum complete** |
 
-**Total shipped:** 62 lessons (Books 0–6)
+**Total shipped:** 74 lessons (Books 0–7)
 
 ---
 
-## Book 5 — complete ✅
+## Book 7 — complete ✅
 
-Gateway JWT/mTLS · route through gateway · Python llm-worker · enrichment graph · enriched topic · analyzer · replay · Slack pulse · capstone.
+KPI dictionary · quality systems · agent eval CI · instructor packet · mock class · EM narrative · work-bridge · React-at-work appendix.
 
-Mirror: `content/book-05-security-ai/`
+Mirror: `content/book-07-em-leadership/`
+
+---
+
+## Team Radar — Stage 5 complete ✅
+
+| Deliverable | Command |
+|-------------|---------|
+| Eval gate | `pnpm evals:run` |
+| Write KPI | `pnpm evals:write-metrics` |
+| Smoke e2e | `pnpm test:e2e` |
+| Pipeline e2e | `pnpm compose:up && RUN_PIPELINE_E2E=1 pnpm test:e2e:pipeline` |
+| OTel (optional) | `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318` |
+
+Docs: [`docs/stage5-quality.md`](stage5-quality.md)
 
 ---
 
 ## Full demo
 
 ```bash
-bash infra/certs/generate-dev-certs.sh
+pnpm millipede-demo
+# or
 pnpm compose:up
-MILLIPEDE_MTLS=1 pnpm gateway:dev &
 pnpm llm-worker:dev & pnpm analyzer:dev & pnpm ingestion:dev &
-export TOKEN="$(cargo run -q -p millipede-gateway --bin mint_dev_jwt)"
 pnpm dev:radar
+pnpm evals:write-metrics
 ```
-
----
-
-## Next: Book 7 — EM Leadership Kit
-
-KPIs, eval CI, mock class, work-bridge doc.
 
 ```bash
 pnpm build:academy && git push origin main

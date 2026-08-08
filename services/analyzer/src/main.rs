@@ -1,3 +1,4 @@
+mod telemetry;
 use axum::response::sse::{Event, KeepAlive, Sse};
 use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
 use axum_server::tls_rustls::RustlsConfig;
@@ -92,6 +93,7 @@ async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
 async fn metrics_summary(
     State(state): State<AppState>,
 ) -> Result<Json<MetricsSummary>, axum::http::StatusCode> {
+    let _latency = telemetry::LatencyGuard::metrics();
     let rows: Vec<(String, i64)> = sqlx::query_as(
         "SELECT source, COUNT(*)::BIGINT FROM team_events GROUP BY source ORDER BY source",
     )
@@ -162,6 +164,10 @@ async fn metrics_summary(
     }))
 }
 
+async fn telemetry_summary() -> Json<telemetry::TelemetrySummary> {
+    Json(telemetry::summary())
+}
+
 async fn events_stream(
     State(state): State<AppState>,
 ) -> Result<Sse<impl futures_util::Stream<Item = Result<Event, Infallible>> + Send>, StatusCode> {
@@ -205,6 +211,7 @@ async fn events_stream(
 }
 
 async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Error> {
+    let _latency = telemetry::LatencyGuard::store();
     let payload_json = event.payload.to_string();
     sqlx::query(
         r#"
@@ -341,6 +348,7 @@ async fn serve(app: Router, addr: SocketAddr, mtls_service: Option<&str>) {
 #[tokio::main]
 async fn main() {
     ensure_crypto_provider();
+    telemetry::init_tracing_otel();
     tracing_subscriber::fmt()
         .with_env_filter(
             env::var("RUST_LOG").unwrap_or_else(|_| "millipede_analyzer=info,sqlx=warn".into()),
@@ -400,6 +408,8 @@ async fn main() {
         .route("/health", get(health))
         .route("/api/metrics/summary", get(metrics_summary))
         .route("/metrics/summary", get(metrics_summary))
+        .route("/api/telemetry/summary", get(telemetry_summary))
+        .route("/telemetry/summary", get(telemetry_summary))
         .route("/api/events/stream", get(events_stream))
         .route("/events/stream", get(events_stream))
         .layer(

@@ -751,3 +751,49 @@
 .mw-hint[data-ok="false"] {
   color: rgba(251, 191, 36, 0.9);
 }
+
+.mw-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.mw-badge--ok {
+  background: rgba(52, 211, 153, 0.15);
+  color: rgba(52, 211, 153, 0.95);
+}
+
+.mw-badge--warn {
+  background: rgba(251, 191, 36, 0.15);
+  color: rgba(251, 191, 36, 0.95);
+}
+
+.mw-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.mw-table th,
+.mw-table td {
+  border: 1px solid var(--ac-border, #334155);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+}
+
+.mw-step-list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.2rem;
+}
+
+.mw-step-list li {
+  margin-bottom: 0.35rem;
+  color: var(--ac-text-muted, #64748b);
+}
+
+.mw-step--done {
+  color: rgba(52, 211, 153, 0.95);
+}

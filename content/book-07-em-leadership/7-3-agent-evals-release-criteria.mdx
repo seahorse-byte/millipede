@@ -1,0 +1,48 @@
+---
+id: "7.3"
+book: 7
+title: "Agent evals and release criteria"
+type: lesson
+duration_min: 50
+prerequisites:
+  - "7.2"
+objectives:
+  - "Run evals/run_evals.py and interpret exit codes"
+  - "Wire pass rate into team_metrics for radar"
+  - "Define release criteria for enrichment changes"
+components:
+  - AgentEvalGate
+quiz_id: book7-lesson3
+lab_id: run-evals-gate
+instructor_notes: true
+---
+
+import { AgentEvalGate } from "@millipede/lesson-widgets";
+
+**pydantic-evals** style gate — borrowed from maverick, shipped in `evals/`.
+
+<AgentEvalGate client:load />
+
+## Run locally
+
+```bash
+pnpm evals:run
+pnpm evals:write-metrics   # needs compose + psql
+pnpm dev:radar             # Eval pass rate card updates
+```
+
+Golden cases cover sentiment scoring, high-risk detection, and secret-leak heuristics.
+
+## Release criteria
+
+- 100% pass on golden set before merge
+- No silent scorer changes without new cases
+- Radar KPI reflects latest run — managers see drift
+
+## Lab
+
+Break a keyword in `enrich.py`, rerun evals, watch gate fail and KPI drop.
+
+## Teach-back prompt
+
+Why exit code 1 in CI beats a Slack thread saying "looks fine"?

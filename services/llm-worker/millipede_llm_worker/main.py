@@ -12,6 +12,7 @@ from typing import Any
 from confluent_kafka import Consumer, KafkaException, Producer
 
 from millipede_llm_worker.graph import enrich_raw_event
+from millipede_llm_worker.telemetry import enrich_span, setup_otel
 
 LOG = logging.getLogger("millipede_llm_worker")
 RUNNING = True
@@ -44,7 +45,9 @@ def handle_shutdown(_signum: int, _frame: object | None) -> None:
 
 def process_message(payload: str, producer: Producer, output_topic: str) -> None:
     raw = json.loads(payload)
-    enriched = enrich_raw_event(raw)
+    event_id = str(raw.get("id", ""))
+    with enrich_span(event_id):
+        enriched = enrich_raw_event(raw)
     producer.produce(
         output_topic,
         key=enriched["id"].encode("utf-8"),
@@ -64,6 +67,7 @@ def main() -> None:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    setup_otel()
 
     input_topic = env("KAFKA_INPUT_TOPIC", "raw-dev-events")
     output_topic = env("KAFKA_OUTPUT_TOPIC", "enriched-dev-events")

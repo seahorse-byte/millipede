@@ -1,0 +1,40 @@
+---
+id: "7.8"
+book: 7
+title: "Work bridge — pattern judgment"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "7.7"
+objectives:
+  - "Contrast millipede PDF stack with Snyk work repos"
+  - "Apply stack decision rubric to real constraints"
+  - "Defend when not to copy enterprise patterns"
+components:
+  - StackDecisionRubric
+quiz_id: book7-capstone
+instructor_notes: true
+---
+
+import { StackDecisionRubric } from "@millipede/lesson-widgets";
+
+Staff value is **pattern judgment** — not copy-paste across contexts.
+
+<StackDecisionRubric client:load />
+
+## Reading map (reference only)
+
+See `docs/work-alignment.md` — maverick, maverick-ui, ai-pentest inform Book 7; they do **not** reshape Team Radar.
+
+| Work pattern | Millipede decision |
+|--------------|-------------------|
+| React + MobX dashboard | SolidJS + TanStack (Book 6) |
+| Express BFF | Gateway only (Book 3.11 deep-dive) |
+| pydantic-evals CI | Shipped in `evals/` |
+| Cerberus / OAuth | JWT teaching gateway |
+
+Cycle scenarios in **StackDecisionRubric** — each row is a teachable EM moment.
+
+## Teach-back prompt
+
+Write two sentences: when maverick-ui BFF is the right pick vs when millipede gateway is enough.

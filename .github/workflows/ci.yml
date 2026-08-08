@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run enrichment eval gate
+        run: python3 evals/run_evals.py
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install Rust (wasm-pack)
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+      - run: pnpm install
+      - run: pnpm build:wasm
+      - run: pnpm exec playwright install chromium --with-deps
+        working-directory: e2e
+      - run: pnpm test:e2e
+
+  e2e-pipeline:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+      - run: pnpm install
+      - run: pnpm build:wasm
+      - run: pnpm exec playwright install chromium --with-deps
+        working-directory: e2e
+      - name: Start data plane
+        run: pnpm compose:up
+      - name: Wait for Kafka
+        run: bash scripts/wait-for-kafka.sh
+      - name: Pipeline e2e
+        run: RUN_PIPELINE_E2E=1 pnpm test:e2e:pipeline
+        env:
+          RUN_PIPELINE_E2E: "1"

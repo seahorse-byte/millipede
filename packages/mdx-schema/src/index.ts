@@ -93,6 +93,10 @@ export const widgetNames = [
   "MtlsHandshake",
   "mTLSHandshake",
   "AgentEvalGate",
+  "KpiDictionary",
+  "QualitySystemsPanel",
+  "EmMockClassFlow",
+  "StackDecisionRubric",
 ] as const;
 
 export type WidgetName = (typeof widgetNames)[number];

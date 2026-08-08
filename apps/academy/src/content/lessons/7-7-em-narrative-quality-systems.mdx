@@ -1,0 +1,37 @@
+---
+id: "7.7"
+book: 7
+title: "EM narrative — Stage 5 quality systems"
+type: lesson
+duration_min: 35
+prerequisites:
+  - "7.6"
+objectives:
+  - "Tell the Stage 5 story in five minutes"
+  - "Link eval CI, e2e, and KPI cards in one arc"
+  - "Use docs/stage5-quality.md as portfolio anchor"
+instructor_notes: true
+---
+
+**Narrative doc lesson** — no widget. Read and rehearse the EM-facing story.
+
+## Stage 5 in one paragraph
+
+Team Radar now ships **quality systems**: heuristic eval CI in `evals/`, Playwright smoke in `e2e/`, gateway SSE for live feeds, and four manager KPIs fed from Postgres. Stage 5 does not reshape the PDF stack — it adds release discipline borrowed from work repos.
+
+Full reference: `docs/stage5-quality.md`
+
+## Narrative beats for leadership
+
+1. **Problem** — AI enrichment without gates is demo-ware
+2. **System** — eval regression + e2e + latency budgets
+3. **Outcome** — managers see eval pass rate on the same dashboard as sentiment
+4. **Proof** — run evals and e2e in a mock class, not a slide deck
+
+## Portfolio line
+
+> "I wired pydantic-evals-style CI, Playwright smoke, and manager KPIs into an event-driven teaching stack — gates before heroics."
+
+## Teach-back prompt
+
+Deliver the five-minute narrative without opening the codebase.

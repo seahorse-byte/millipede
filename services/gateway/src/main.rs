@@ -15,6 +15,7 @@ use millipede_tls_common::{build_public_server_config, certs_dir, ensure_crypto_
 use reqwest::Client;
 use serde::Serialize;
 use std::{env, io, net::SocketAddr, time::Duration};
+use tower_http::cors::{Any, CorsLayer};
 use tracing::{info, warn};
 
 #[derive(Clone)]
@@ -275,6 +276,12 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .merge(protected)
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        )
         .with_state(state);
 
     let port: u16 = env::var("GATEWAY_PORT")

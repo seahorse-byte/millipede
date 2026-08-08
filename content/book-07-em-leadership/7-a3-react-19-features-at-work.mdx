@@ -1,0 +1,43 @@
+---
+id: "7.11"
+book: 7
+title: "Deep-dive — React 19 features at work"
+type: deep-dive
+duration_min: 45
+prerequisites:
+  - "0.6"
+  - "7.A2"
+objectives:
+  - "Place React 19 runtime features in browser pipeline context"
+  - "Contrast work-repo React with SolidJS radar runtime"
+  - "Avoid reshaping millipede frontend for novelty"
+components:
+  - BrowserRuntimeDiagram
+instructor_notes: true
+---
+
+import { BrowserRuntimeDiagram } from "@millipede/lesson-widgets";
+
+**Appendix 7.A3** — React 19 at work vs the browser runtime Team Radar uses.
+
+<BrowserRuntimeDiagram client:load />
+
+## React 19 (work context)
+
+- **Actions** — async transitions with pending UI states
+- **use()** — read promises/context in render
+- **Document metadata** — head tags from components
+
+These solve **React app** ergonomics — not a reason to swap SolidJS on radar.
+
+## Same runtime, different library
+
+Both run in the pipeline above: fetch → parse → JS → paint. Solid signals and React hooks are **library choices** atop the same browser.
+
+## Pattern judgment
+
+Adopt React 19 patterns in maverick-ui where the team ships React. Teach event-driven design in millipede with the PDF stack.
+
+## Teach-back prompt
+
+Name one React 19 feature you would demo at work but would not port to radar — and why.

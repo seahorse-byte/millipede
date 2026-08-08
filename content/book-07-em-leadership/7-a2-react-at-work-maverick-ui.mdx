@@ -1,0 +1,43 @@
+---
+id: "7.10"
+book: 7
+title: "Deep-dive — React at work (maverick-ui)"
+type: deep-dive
+duration_min: 60
+prerequisites:
+  - "3.11"
+  - "7.8"
+objectives:
+  - "Trace maverick-ui BFF session and CSRF flow"
+  - "Name problems a BFF solves that gateway-only cannot"
+  - "Keep millipede ship path unchanged"
+components:
+  - BffProxyFlow
+instructor_notes: true
+---
+
+import { BffProxyFlow } from "@millipede/lesson-widgets";
+
+**Appendix 7.A2** — React + Express BFF at Snyk; reference for EM portfolio narrative.
+
+<BffProxyFlow client:load />
+
+## maverick-ui architecture
+
+Browser → React SPA → Express BFF → upstream APIs. OAuth tokens and CSRF live **server-side** — never in the bundle.
+
+Team Radar ships **gateway + SolidJS** — lesson 3.11 and `docs/work-alignment.md` explain why.
+
+## Compare
+
+| Concern | maverick-ui BFF | millipede gateway |
+|---------|-----------------|-------------------|
+| Session | Cookie + CSRF | Bearer JWT |
+| Token vault | Hidden in BFF | N/A in olab |
+| UI stack | React | SolidJS |
+
+Toggle **BffProxyFlow** — narrate for an EM audience without proposing a rewrite.
+
+## Teach-back prompt
+
+One sentence: why Snyk needs a BFF and olab does not.

@@ -1,0 +1,43 @@
+---
+id: "7.1"
+book: 7
+title: "Team Radar KPI dictionary"
+type: lesson
+duration_min: 40
+prerequisites:
+  - "6.6"
+objectives:
+  - "Map Postgres/Redis signals to manager outcomes"
+  - "Explain friction index formula on the dashboard"
+  - "Connect eval pass rate to evals/ CI gate"
+components:
+  - KpiDictionary
+quiz_id: book7-lesson1
+lab_id: kpi-dictionary
+instructor_notes: true
+---
+
+import { KpiDictionary } from "@millipede/lesson-widgets";
+
+Book 7 opens **Stage 5 quality systems** — EM leadership through measurable signals, not heroics.
+
+<KpiDictionary client:load />
+
+## Four KPI cards
+
+| Signal | Manager question |
+|--------|------------------|
+| avg_sentiment | Is morale trending down? |
+| high_risk_count | What needs security attention? |
+| friction_index | Is delivery drag rising? |
+| eval_pass_rate | Is AI enrichment still trustworthy? |
+
+Formulas live in `docs/stage5-quality.md` — refresh radar after `pnpm evals:write-metrics`.
+
+## Lab
+
+Open `:5174`, read each card aloud, then trace the SQL source in `services/analyzer/`.
+
+## Teach-back prompt
+
+Why is eval pass rate a manager KPI and not just an engineer CI artifact?

@@ -481,6 +481,22 @@ export const labs: Record<string, LabDefinition> = {
       "Animate RadarStage4Diagram while narrating.",
     ],
   },
+  "kpi-dictionary": {
+    title: "KPI dictionary walkthrough",
+    steps: [
+      "Open radar dashboard — read Manager KPI row labels.",
+      "Map each card to team_events / team_metrics in Postgres.",
+      "Fill a one-page signals → outcomes table in your journal.",
+    ],
+  },
+  "run-evals-gate": {
+    title: "Run enrichment eval gate",
+    steps: [
+      "pnpm evals:run — confirm 5/5 pass.",
+      "pnpm evals:write-metrics — verify team_metrics row.",
+      "Refresh radar — Eval pass rate KPI updates.",
+    ],
+  },
   "gateway-scaffold-run": {
     title: "Gateway scaffold run",
     steps: [
@@ -1290,6 +1306,29 @@ export const quizzes: Record<string, QuizDefinition> = {
     questions: [
       { prompt: "Book 5 shipped…", choices: ["Gateway + LLM enrichment", "Only Book 0 bits", "Only radar UI", "BFF only"], answerIndex: 0 },
       { prompt: "Full path includes…", choices: ["JWT → Kafka → enrich → Postgres", "Sync LLM in webhook", "No analyzer", "No gateway"], answerIndex: 0 },
+    ],
+  },
+  "book7-lesson1": {
+    title: "Lesson 7.1 check",
+    questions: [{ prompt: "Friction index blends…", choices: ["Sentiment + risk", "JWT + mTLS", "Kafka + Redis only", "WASM only"], answerIndex: 0 }],
+  },
+  "book7-lesson2": {
+    title: "Lesson 7.2 check",
+    questions: [{ prompt: "Quality systems prefer…", choices: ["Automated gates", "Manual heroics", "Skipping e2e", "No evals"], answerIndex: 0 }],
+  },
+  "book7-lesson3": {
+    title: "Lesson 7.3 check",
+    questions: [{ prompt: "Eval pass rate is stored in…", choices: ["team_metrics", "Kafka headers", "JWT claims", "Vite config"], answerIndex: 0 }],
+  },
+  "book7-lesson6": {
+    title: "Lesson 7.6 check",
+    questions: [{ prompt: "Mock class demo uses…", choices: ["pnpm millipede-demo", "Only PDF slides", "Production K8s", "No radar UI"], answerIndex: 0 }],
+  },
+  "book7-capstone": {
+    title: "Book 7 capstone",
+    questions: [
+      { prompt: "Book 7 ships…", choices: ["EM leadership + quality systems", "Only Rust basics", "React MobX UI", "BFF production path"], answerIndex: 0 },
+      { prompt: "Pattern judgment means…", choices: ["Choose stack for context", "Copy enterprise stack always", "Avoid eval CI", "Skip observability"], answerIndex: 0 },
     ],
   },
 };

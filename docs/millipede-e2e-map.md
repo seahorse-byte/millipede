@@ -23,8 +23,8 @@ Canonical architecture reference for the monorepo. Demo walkthrough: [`millipede
 
 | Product | Deploy target | Status |
 |---------|---------------|--------|
-| **Academy** | `https://millipede-academy.pages.dev` | **Book 0 complete** — 10 lessons + lab/quiz panels |
-| **Team Radar** | Local dev (Stage 5 → CI/e2e) | Stages 1–4 implemented |
+| **Academy** | `https://millipede-academy.pages.dev` | **Books 0–7 complete** — 74 lessons |
+| **Team Radar** | Local dev + GitHub CI | Stages 1–5 implemented |
 
 ---
 
@@ -98,9 +98,8 @@ See [`stage2-gateway.md`](stage2-gateway.md).
 ## Academy content map
 
 ```
-apps/academy/src/content/lessons/   Book 0 — lessons 0.1–0.10 (10 files)
-content/book-00-foundations/         mirror of Book 0
-content/ books 1–7                   not started
+apps/academy/src/content/lessons/   Books 0–7 (74 lessons)
+content/book-00 … book-07-em-leadership/   mirrors
 ```
 
 See [`academy-status.md`](academy-status.md) for the full lesson table.
@@ -109,8 +108,10 @@ See [`academy-status.md`](academy-status.md) for the full lesson table.
 
 | Status | Widgets |
 |--------|---------|
-| **Built (Book 0)** | BitRegister, BaseConverter, ByteAnatomy, HexColorMixer, StackFrameVisualizer, PacketJourney, RequestTimeline, BrowserRuntimeDiagram, TrustBoundaryDiagram, MtlsHandshake, KafkaPipelineVisualizer |
-| **Schema only (Book 1+)** | EventLoopSimulator, OwnershipVisualizer, BorrowCheckerPanel, ConcurrencyChannels, WasmBoundary, WasmRedaction, AgentEvalGate, ApiWorkerSplit, BffProxyFlow |
+| **Books 0–2** | BitRegister, KafkaPipelineVisualizer, PostgresSchemaDiagram, RedisPubSubLive, … |
+| **Books 3–5** | ZeroTrustTopology, GatewayProxyFlow, EnrichmentGraph, SecuredPipelineCapstone, … |
+| **Book 6** | RadarAppShell, RadarMetricsPanel, RadarLiveFeed, RadarStage4Diagram, … |
+| **Book 7** | KpiDictionary, QualitySystemsPanel, AgentEvalGate, EmMockClassFlow, StackDecisionRubric |
 
 Lab/quiz panels: `apps/academy/src/components/LabPanel.astro`, `QuizPanel.astro` + `data/labs-quizzes.ts`.
 
@@ -142,7 +143,7 @@ Radar backend stays **local only** — Academy is static HTML/JS. See [`academy-
 | 2 | JWT gateway + mTLS | [`stage2-gateway.md`](stage2-gateway.md) | ✅ |
 | 3 | Python LLM enrichment | [`stage3-llm-worker.md`](stage3-llm-worker.md) | ✅ |
 | 4 | SolidJS + TanStack + WASM redaction | [`stage4-radar.md`](stage4-radar.md) | ✅ |
-| 5 | Eval CI, OTel, Playwright e2e | [`work-alignment.md`](work-alignment.md) | 🔲 planned |
+| 5 | Eval CI, OTel, Playwright e2e, EM KPIs | [`stage5-quality.md`](stage5-quality.md) | ✅ |
 
 ---
 
@@ -169,7 +170,10 @@ PDFs referenced as living in `docs/` — planning artifacts, not runtime.
 |--------|---------|
 | Run full local demo | `millipede-demo` or `pnpm millipede-demo` |
 | Academy dev | `pnpm dev:academy` → http://localhost:4321 |
-| Radar dev | `pnpm dev:radar` → http://localhost:5174 |
+| Radar dev | `pnpm dev:radar` → http://127.0.0.1:5174 |
+| Eval gate | `pnpm evals:run` · `pnpm evals:write-metrics` |
+| Smoke e2e | `pnpm test:e2e` |
+| Pipeline e2e | `RUN_PIPELINE_E2E=1 pnpm test:e2e:pipeline` |
 | Commit + push | `millipede-commit-push` |
 
 Playbook: `playbook` → `millipede`

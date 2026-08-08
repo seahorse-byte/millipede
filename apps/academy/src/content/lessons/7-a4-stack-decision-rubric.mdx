@@ -1,0 +1,40 @@
+---
+id: "7.12"
+book: 7
+title: "Deep-dive — stack decision rubric"
+type: deep-dive
+duration_min: 50
+prerequisites:
+  - "7.8"
+objectives:
+  - "Apply EM/Staff rubric to hiring and architecture reviews"
+  - "Document choose vs avoid per scenario"
+  - "Close Book 7 with pattern judgment, not stack wars"
+components:
+  - StackDecisionRubric
+instructor_notes: true
+---
+
+import { StackDecisionRubric } from "@millipede/lesson-widgets";
+
+**Appendix 7.A4** — extended practice on the rubric from lesson 7.8.
+
+<StackDecisionRubric client:load />
+
+## Rubric dimensions
+
+For each scenario ask:
+
+1. **Constraint** — enterprise auth? teaching clarity? eval CI?
+2. **Choose** — pattern that fits *this* context
+3. **Avoid** — seductive copy-paste from another repo
+
+Scenarios in the widget mirror `docs/work-alignment.md` — teaching stack vs Snyk entitlements vs eval gates.
+
+## Book 7 capstone line
+
+> "I can ship quality systems on the PDF architecture *and* explain when work-repo patterns apply elsewhere."
+
+## Teach-back prompt
+
+Cycle all three widget scenarios — 90 seconds each, no slides.

@@ -6,6 +6,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"]],
+  globalSetup: "./global-setup.ts",
+  globalTeardown: "./global-teardown.ts",
   use: {
     baseURL: "http://127.0.0.1:5174",
     trace: "on-first-retry",

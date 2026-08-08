@@ -12,6 +12,7 @@
     "evals:run": "python3 evals/run_evals.py",
     "evals:write-metrics": "python3 evals/run_evals.py --write-metrics",
     "test:e2e": "pnpm --filter @millipede/e2e test",
+    "test:e2e:pipeline": "pnpm --filter @millipede/e2e test -- --grep @pipeline",
     "test:e2e:ui": "pnpm --filter @millipede/e2e test:ui",
     "compose:up": "docker compose -f infra/docker/docker-compose.yml up -d",
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",

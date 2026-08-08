@@ -53,6 +53,10 @@ Fire webhook:
     -H "Content-Type: application/json" \\
     -d "{\"action\":\"opened\",\"source\":\"github\",\"title\":\"ship feature for demo\"}" | jq .
 
+Stage 5 quality:
+  pnpm evals:run
+  pnpm evals:write-metrics    # → Eval pass rate KPI on dashboard
+
 EOF
 ' C-m
 

@@ -1,0 +1,41 @@
+---
+id: "7.2"
+book: 7
+title: "Quality systems, not heroics"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "7.1"
+objectives:
+  - "Name three release gates before demo day"
+  - "Contrast eval CI vs manual spot-checking"
+  - "Explain when a gate should block release"
+components:
+  - QualitySystemsPanel
+quiz_id: book7-lesson2
+instructor_notes: true
+---
+
+import { QualitySystemsPanel } from "@millipede/lesson-widgets";
+
+Heroic EMs catch regressions at midnight. **Quality systems** catch them in CI.
+
+<QualitySystemsPanel client:load />
+
+## Three gates (Stage 5)
+
+| Gate | Command | Blocks when |
+|------|---------|-------------|
+| Eval regression | `pnpm evals:run` | Scorer drift on golden cases |
+| Playwright smoke | `pnpm test:e2e` | Dashboard shell or WASM portal break |
+| Latency budget | OTel spans | Enrichment p95 exceeds budget |
+
+Toggle the widget — any red gate should **block** a mock-class demo until fixed.
+
+## EM framing
+
+Your team owns the gates. You own the narrative when a gate fails in front of leadership.
+
+## Teach-back prompt
+
+Which gate catches a WASM regression vs an LLM scorer rename?

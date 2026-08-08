@@ -1,0 +1,41 @@
+---
+id: "7.9"
+book: 7
+title: "Deep-dive — Solid signals vs React hooks"
+type: deep-dive
+duration_min: 60
+prerequisites:
+  - "1.13"
+  - "7.1"
+objectives:
+  - "Contrast fine-grained Solid subscriptions with React re-renders"
+  - "Relate signals to live metric cards on radar"
+  - "Defend SolidJS choice for teaching dashboards"
+components:
+  - SolidSignalGraph
+instructor_notes: true
+---
+
+import { SolidSignalGraph } from "@millipede/lesson-widgets";
+
+**Appendix 7.A1** — optional 60-minute rabbit hole on reactivity models.
+
+<SolidSignalGraph client:load />
+
+## Core difference
+
+| | SolidJS | React |
+|--|---------|-------|
+| Unit of update | Signal subscriber graph | Component function re-run |
+| Dependency tracking | Read `count()` → subscribe | `useEffect` deps array manual |
+| DOM work | Patch only bound nodes | Reconcile virtual tree |
+
+Radar polls metrics every few seconds — Solid updates one text node per card.
+
+## When React wins at work
+
+Large design-system teams, hiring pool, ecosystem — valid enterprise reasons. Book 7.8 rubric covers **context**, not religion.
+
+## Teach-back prompt
+
+Why did PDF6 pick Solid for Team Radar given React at Snyk?

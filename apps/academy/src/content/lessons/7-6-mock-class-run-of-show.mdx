@@ -1,0 +1,47 @@
+---
+id: "7.6"
+book: 7
+title: "Mock class run-of-show"
+type: lesson
+duration_min: 45
+prerequisites:
+  - "7.5"
+objectives:
+  - "Follow the 45-minute demo checklist"
+  - "Narrate KPI → eval → live feed → WASM beats"
+  - "Close with quality systems vs heroics framing"
+components:
+  - EmMockClassFlow
+quiz_id: book7-lesson6
+instructor_notes: true
+---
+
+import { EmMockClassFlow } from "@millipede/lesson-widgets";
+
+Mock interviews and internal tech talks share one failure mode: **no run-of-show**.
+
+<EmMockClassFlow client:load />
+
+## Before you start
+
+```bash
+pnpm compose:up
+pnpm evals:run && pnpm evals:write-metrics
+pnpm build:wasm && pnpm dev:radar
+```
+
+Use the millipede-demo tmux layout — one pane per service, radar on `:5174`.
+
+## Five beats
+
+1. KPI row — friction + eval pass rate
+2. Eval gate — `pnpm evals:run` or widget
+3. Webhook curl — live feed updates
+4. `/1on1` — WASM redaction
+5. Close — gates replace heroics
+
+Advance the widget checklist as you demo — reset between rehearsals.
+
+## Teach-back prompt
+
+Which beat would you cut if leadership only has 25 minutes?

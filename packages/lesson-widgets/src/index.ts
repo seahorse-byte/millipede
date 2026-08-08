@@ -57,3 +57,8 @@ export { LlmWorkerContainer } from "./LlmWorkerContainer";
 export { PythonKafkaConsumer } from "./PythonKafkaConsumer";
 export { EnrichmentGraph } from "./EnrichmentGraph";
 export { SecuredPipelineCapstone } from "./SecuredPipelineCapstone";
+export { AgentEvalGate } from "./AgentEvalGate";
+export { KpiDictionary } from "./KpiDictionary";
+export { QualitySystemsPanel } from "./QualitySystemsPanel";
+export { EmMockClassFlow } from "./EmMockClassFlow";
+export { StackDecisionRubric } from "./StackDecisionRubric";
