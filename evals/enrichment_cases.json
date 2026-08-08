@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ship-positive",
+    "payload": { "action": "merged", "source": "github", "title": "ship feature approved" },
+    "sentiment_min": 0.55,
+    "risk_max": 0.25
+  },
+  {
+    "id": "incident-negative",
+    "payload": { "action": "opened", "source": "github", "title": "build fail on main" },
+    "sentiment_max": 0.55,
+    "risk_min": 0.0
+  },
+  {
+    "id": "security-high-risk",
+    "payload": { "action": "opened", "source": "github", "title": "security CVE exploit patch" },
+    "risk_min": 0.35,
+    "sentiment_max": 0.75
+  },
+  {
+    "id": "neutral-default",
+    "payload": { "action": "updated", "source": "jira", "title": "sync board columns" },
+    "sentiment_min": 0.4,
+    "sentiment_max": 0.6,
+    "risk_max": 0.2
+  },
+  {
+    "id": "secret-leak",
+    "payload": { "action": "opened", "source": "slack", "title": "password leak in logs" },
+    "risk_min": 0.35
+  }
+]

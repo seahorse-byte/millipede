@@ -1107,6 +1107,7 @@ dependencies = [
  "axum",
  "axum-server",
  "bytes",
+ "futures-util",
  "http",
  "jsonwebtoken",
  "millipede-tls-common",

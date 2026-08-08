@@ -30,3 +30,4 @@ millipede-tls-common.workspace = true
 tower = "0.5"
 http = "1"
 bytes = "1"
+futures-util.workspace = true

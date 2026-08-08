@@ -1,8 +1,10 @@
-use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
 use axum::response::sse::{Event, KeepAlive, Sse};
+use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
 use axum_server::tls_rustls::RustlsConfig;
 use futures_util::StreamExt;
-use millipede_tls_common::{build_mtls_server_config, certs_dir, ensure_crypto_provider, mtls_enabled};
+use millipede_tls_common::{
+    build_mtls_server_config, certs_dir, ensure_crypto_provider, mtls_enabled,
+};
 use rdkafka::config::ClientConfig;
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::Message;
@@ -33,10 +35,19 @@ struct HealthResponse {
 }
 
 #[derive(Serialize)]
+struct ManagerKpis {
+    avg_sentiment: f64,
+    high_risk_count: i64,
+    friction_index: f64,
+    eval_pass_rate: Option<f64>,
+}
+
+#[derive(Serialize)]
 struct MetricsSummary {
     total_events: i64,
     events_by_source: HashMap<String, i64>,
     latest_by_source: HashMap<String, String>,
+    kpis: ManagerKpis,
 }
 
 #[derive(Deserialize)]
@@ -50,10 +61,7 @@ struct RawEvent {
 }
 
 async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
-    let db_ok = sqlx::query("SELECT 1")
-        .execute(&state.pool)
-        .await
-        .is_ok();
+    let db_ok = sqlx::query("SELECT 1").execute(&state.pool).await.is_ok();
     let redis_ok = if let Some(client) = &state.redis {
         match client.get_multiplexed_tokio_connection().await {
             Ok(mut conn) => redis::cmd("PING")
@@ -81,7 +89,9 @@ async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
     })
 }
 
-async fn metrics_summary(State(state): State<AppState>) -> Result<Json<MetricsSummary>, axum::http::StatusCode> {
+async fn metrics_summary(
+    State(state): State<AppState>,
+) -> Result<Json<MetricsSummary>, axum::http::StatusCode> {
     let rows: Vec<(String, i64)> = sqlx::query_as(
         "SELECT source, COUNT(*)::BIGINT FROM team_events GROUP BY source ORDER BY source",
     )
@@ -99,16 +109,56 @@ async fn metrics_summary(State(state): State<AppState>) -> Result<Json<MetricsSu
     let mut latest_by_source = HashMap::new();
     if let Some(client) = &state.redis {
         if let Ok(mut conn) = client.get_multiplexed_tokio_connection().await {
-            if let Ok(map) = conn.hgetall::<_, HashMap<String, String>>("team_radar:latest_by_source").await {
+            if let Ok(map) = conn
+                .hgetall::<_, HashMap<String, String>>("team_radar:latest_by_source")
+                .await
+            {
                 latest_by_source = map;
             }
         }
     }
 
+    let kpi_row: (Option<f64>, i64, Option<f64>) = sqlx::query_as(
+        r#"
+        SELECT
+            AVG(sentiment)::float8,
+            COUNT(*) FILTER (WHERE risk_score >= 0.5)::BIGINT,
+            AVG(risk_score)::float8
+        FROM team_events
+        "#,
+    )
+    .fetch_one(&state.pool)
+    .await
+    .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let avg_sentiment = kpi_row.0.unwrap_or(0.5);
+    let avg_risk = kpi_row.2.unwrap_or(0.0);
+    let friction_index =
+        ((1.0 - avg_sentiment) * 0.6 + avg_risk * 0.4).clamp(0.0, 1.0);
+
+    let eval_pass_rate: Option<f64> = sqlx::query_scalar(
+        r#"
+        SELECT value::float8
+        FROM team_metrics
+        WHERE metric_type = 'eval_pass_rate'
+        ORDER BY computed_at DESC
+        LIMIT 1
+        "#,
+    )
+    .fetch_optional(&state.pool)
+    .await
+    .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+
     Ok(Json(MetricsSummary {
         total_events,
         events_by_source,
         latest_by_source,
+        kpis: ManagerKpis {
+            avg_sentiment,
+            high_risk_count: kpi_row.1,
+            friction_index: (friction_index * 1000.0).round() / 1000.0,
+            eval_pass_rate,
+        },
     }))
 }
 
@@ -144,17 +194,14 @@ async fn events_stream(
         }
     });
 
-    let stream = ReceiverStream::new(rx).map(|payload| {
-        Ok(Event::default().event("team_event").data(payload))
-    });
+    let stream = ReceiverStream::new(rx)
+        .map(|payload| Ok(Event::default().event("team_event").data(payload)));
 
-    Ok(
-        Sse::new(stream).keep_alive(
-            KeepAlive::new()
-                .interval(Duration::from_secs(15))
-                .text("ping"),
-        ),
-    )
+    Ok(Sse::new(stream).keep_alive(
+        KeepAlive::new()
+            .interval(Duration::from_secs(15))
+            .text("ping"),
+    ))
 }
 
 async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Error> {
@@ -259,7 +306,9 @@ async fn run_consumer(state: Arc<AppState>, brokers: String, topic: String) {
                             warm_redis(client, &event).await;
                         }
                     }
-                    Err(err) => error!(event_id = %event.id, error = %err, "postgres insert failed"),
+                    Err(err) => {
+                        error!(event_id = %event.id, error = %err, "postgres insert failed")
+                    }
                 }
             }
             Err(err) => {
@@ -282,7 +331,9 @@ async fn serve(app: Router, addr: SocketAddr, mtls_service: Option<&str>) {
             .expect("mTLS server failed");
     } else {
         info!(%addr, "analyzer listening (plain HTTP)");
-        let listener = tokio::net::TcpListener::bind(addr).await.expect("bind failed");
+        let listener = tokio::net::TcpListener::bind(addr)
+            .await
+            .expect("bind failed");
         axum::serve(listener, app).await.expect("server failed");
     }
 }
@@ -292,16 +343,14 @@ async fn main() {
     ensure_crypto_provider();
     tracing_subscriber::fmt()
         .with_env_filter(
-            env::var("RUST_LOG")
-                .unwrap_or_else(|_| "millipede_analyzer=info,sqlx=warn".into()),
+            env::var("RUST_LOG").unwrap_or_else(|_| "millipede_analyzer=info,sqlx=warn".into()),
         )
         .init();
 
     let kafka_brokers = env::var("KAFKA_BROKERS").unwrap_or_else(|_| "localhost:9092".into());
     let kafka_topic = env::var("KAFKA_TOPIC").unwrap_or_else(|_| "enriched-dev-events".into());
-    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://millipede:millipede@localhost:5432/team_radar".into()
-    });
+    let database_url = env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://millipede:millipede@localhost:5432/team_radar".into());
     let redis_url = env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
     let port: u16 = env::var("PORT")
         .ok()

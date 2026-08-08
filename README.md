@@ -74,15 +74,27 @@ pnpm compose:up && pnpm llm-worker:dev & pnpm analyzer:dev & pnpm ingestion:dev 
 pnpm dev:radar   # http://localhost:5174
 ```
 
+### Stage 5 — Quality systems (eval CI + e2e + EM KPIs)
+
+See [`docs/stage5-quality.md`](docs/stage5-quality.md). Quick path:
+
+```bash
+pnpm evals:run                              # enrichment regression gate
+pnpm build:wasm && pnpm test:e2e              # Playwright smoke vs radar UI
+pnpm evals:write-metrics           # → team_metrics → dashboard KPI card
+```
+
 ## Monorepo layout
 
 ```
 apps/academy/          Astro site (lessons + widgets)
-apps/radar/            SolidJS dashboard (Stage 4)
+apps/radar/            SolidJS dashboard (Stage 4–5)
 services/ingestion/    Rust Axum → Kafka
 services/gateway/      JWT + mTLS gateway (Stage 2)
 services/analyzer/     SQLx + Redis (Stage 1+)
 services/llm-worker/   Python LLM consumer (Stage 3)
+evals/                 Enrichment eval gate (Stage 5)
+e2e/                   Playwright smoke tests (Stage 5)
 packages/lesson-widgets/   Interactive teaching components
 packages/mdx-schema/       Lesson frontmatter types
 content/               MDX books 0–7
@@ -98,7 +110,7 @@ docs/                  PDFs + work-alignment reference
 | 2 | JWT gateway + mTLS |
 | 3 | Python LLM enrichment |
 | 4 | SolidJS + TanStack + WASM redaction |
-| 5 | Eval CI, OTel, Playwright e2e |
+| 5 | Eval CI, Playwright e2e, EM KPI panels — [`docs/stage5-quality.md`](docs/stage5-quality.md) |
 
 **End-to-end map:** [`docs/millipede-e2e-map.md`](docs/millipede-e2e-map.md) · Demo replay: [`docs/millipede-demo-replay.md`](docs/millipede-demo-replay.md) · **Academy status:** [`docs/academy-status.md`](docs/academy-status.md)
 

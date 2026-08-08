@@ -61,6 +61,41 @@ export function Dashboard() {
         </div>
       </Show>
 
+      <section class="kpi-row" aria-label="Manager KPIs">
+        <article class="kpi-card">
+          <p class="kpi-label">Friction index</p>
+          <p class="kpi-value">
+            {metricsQuery.data?.kpis?.friction_index != null
+              ? metricsQuery.data.kpis.friction_index.toFixed(2)
+              : "—"}
+          </p>
+          <p class="kpi-hint">sentiment + risk blend</p>
+        </article>
+        <article class="kpi-card">
+          <p class="kpi-label">Avg sentiment</p>
+          <p class="kpi-value">
+            {metricsQuery.data?.kpis?.avg_sentiment != null
+              ? metricsQuery.data.kpis.avg_sentiment.toFixed(2)
+              : "—"}
+          </p>
+          <p class="kpi-hint">enriched events</p>
+        </article>
+        <article class="kpi-card">
+          <p class="kpi-label">High risk</p>
+          <p class="kpi-value">{metricsQuery.data?.kpis?.high_risk_count ?? "—"}</p>
+          <p class="kpi-hint">risk ≥ 0.5</p>
+        </article>
+        <article class="kpi-card">
+          <p class="kpi-label">Eval pass rate</p>
+          <p class="kpi-value">
+            {metricsQuery.data?.kpis?.eval_pass_rate != null
+              ? `${Math.round(metricsQuery.data.kpis.eval_pass_rate * 100)}%`
+              : "—"}
+          </p>
+          <p class="kpi-hint">pnpm evals:write-metrics</p>
+        </article>
+      </section>
+
       <Show when={metricsQuery.isSuccess && metricsQuery.data}>
         <section class="stat-row">
           <article class="stat-card stat-card--hero">

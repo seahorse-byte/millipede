@@ -8,12 +8,13 @@ use axum::{
     Json, Router,
 };
 use axum_server::tls_rustls::RustlsConfig;
+use futures_util::StreamExt;
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use millipede_gateway::Claims;
 use millipede_tls_common::{build_public_server_config, certs_dir, ensure_crypto_provider, mtls_enabled};
 use reqwest::Client;
 use serde::Serialize;
-use std::{env, net::SocketAddr, time::Duration};
+use std::{env, io, net::SocketAddr, time::Duration};
 use tracing::{info, warn};
 
 #[derive(Clone)]
@@ -33,6 +34,27 @@ struct HealthResponse {
 
 fn jwt_secret() -> String {
     env::var("JWT_SECRET").unwrap_or_else(|_| "millipede-dev-secret".into())
+}
+
+fn bearer_token(req: &Request) -> Option<String> {
+    if let Some(auth) = req
+        .headers()
+        .get(header::AUTHORIZATION)
+        .and_then(|v| v.to_str().ok())
+    {
+        if let Some(token) = auth.strip_prefix("Bearer ") {
+            return Some(token.to_string());
+        }
+    }
+
+    let query = req.uri().query()?;
+    for pair in query.split('&') {
+        let mut parts = pair.splitn(2, '=');
+        if parts.next()? == "access_token" {
+            return parts.next().map(str::to_string);
+        }
+    }
+    None
 }
 
 fn build_http_client() -> Client {
@@ -65,17 +87,11 @@ async fn require_manager_jwt(
     mut req: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    let auth = req
-        .headers()
-        .get(header::AUTHORIZATION)
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("");
-
-    let token = auth.strip_prefix("Bearer ").ok_or(StatusCode::UNAUTHORIZED)?;
+    let token = bearer_token(&req).ok_or(StatusCode::UNAUTHORIZED)?;
 
     let validation = Validation::default();
     let claims = decode::<Claims>(
-        token,
+        &token,
         &DecodingKey::from_secret(state.jwt_secret.as_bytes()),
         &validation,
     )
@@ -97,6 +113,21 @@ async fn health() -> Json<HealthResponse> {
     })
 }
 
+fn strip_access_token_query(query: Option<&str>) -> String {
+    let Some(raw) = query else {
+        return String::new();
+    };
+    let filtered: Vec<&str> = raw
+        .split('&')
+        .filter(|pair| !pair.starts_with("access_token="))
+        .collect();
+    if filtered.is_empty() {
+        String::new()
+    } else {
+        format!("?{}", filtered.join("&"))
+    }
+}
+
 async fn proxy(
     state: &AppState,
     req: Request,
@@ -107,11 +138,7 @@ async fn proxy(
         .path()
         .strip_prefix("/api")
         .unwrap_or(req.uri().path());
-    let query = req
-        .uri()
-        .query()
-        .map(|q| format!("?{q}"))
-        .unwrap_or_default();
+    let query = strip_access_token_query(req.uri().query());
     let target = format!("{backend_base}{path}{query}");
 
     let method = req.method().clone();
@@ -151,12 +178,64 @@ async fn proxy(
     Ok(response)
 }
 
+async fn proxy_stream(
+    state: &AppState,
+    req: Request,
+    backend_base: &str,
+) -> Result<Response, StatusCode> {
+    let path = req
+        .uri()
+        .path()
+        .strip_prefix("/api")
+        .unwrap_or(req.uri().path());
+    let query = strip_access_token_query(req.uri().query());
+    let target = format!("{backend_base}{path}{query}");
+
+    let method = req.method().clone();
+    let headers = req.headers().clone();
+
+    let mut builder = state.http_client.request(method, target);
+    for (name, value) in headers.iter() {
+        if name == header::HOST || name == header::AUTHORIZATION {
+            continue;
+        }
+        builder = builder.header(name, value);
+    }
+
+    let upstream = builder.send().await.map_err(|err| {
+        warn!(error = %err, "upstream stream request failed");
+        StatusCode::BAD_GATEWAY
+    })?;
+
+    let status = upstream.status();
+    let upstream_headers = upstream.headers().clone();
+    let stream = upstream.bytes_stream().map(|result| {
+        result.map_err(|err| io::Error::new(io::ErrorKind::Other, err))
+    });
+    let mut response = Response::new(Body::from_stream(stream));
+    *response.status_mut() = status;
+    for (name, value) in upstream_headers.iter() {
+        if name == header::TRANSFER_ENCODING || name == header::CONNECTION {
+            continue;
+        }
+        response.headers_mut().insert(name, value.clone());
+    }
+    Ok(response)
+}
+
 async fn proxy_ingestion(State(state): State<AppState>, req: Request) -> Result<Response, StatusCode> {
     proxy(&state, req, &state.ingestion_base).await
 }
 
 async fn proxy_analyzer(State(state): State<AppState>, req: Request) -> Result<Response, StatusCode> {
     proxy(&state, req, &state.analyzer_base).await
+}
+
+async fn proxy_analyzer_stream(
+    State(state): State<AppState>,
+    req: Request,
+) -> Result<Response, StatusCode> {
+    proxy_stream(&state, req, &state.analyzer_base).await
 }
 
 #[tokio::main]
@@ -190,6 +269,7 @@ async fn main() {
     let protected = Router::new()
         .route("/api/webhooks/{*rest}", any(proxy_ingestion))
         .route("/api/metrics/{*rest}", any(proxy_analyzer))
+        .route("/api/events/{*rest}", any(proxy_analyzer_stream))
         .route_layer(middleware::from_fn_with_state(state.clone(), require_manager_jwt));
 
     let app = Router::new()

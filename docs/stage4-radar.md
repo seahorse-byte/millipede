@@ -50,7 +50,7 @@ VITE_JWT="$(cargo run -q -p millipede-gateway --bin mint-dev-jwt)" \
 pnpm dev:radar
 ```
 
-Metrics calls include `Authorization: Bearer`. SSE through gateway is not wired yet — use the Vite proxy for live events during local dev.
+Metrics calls include `Authorization: Bearer`. SSE uses `?access_token=` on the EventSource URL (browser limitation). Gateway streams SSE without buffering — see [`docs/stage5-quality.md`](stage5-quality.md).
 
 ## Environment variables
 
@@ -69,6 +69,6 @@ SolidJS radar (:5174)
   └─ WASM redact_pii_deterministic (1:1 portal, browser-local)
 ```
 
-Stage 5 adds eval CI, OTel, and Playwright e2e over this UI.
+Stage 5 adds eval CI, OTel, and Playwright e2e over this UI. See [`docs/stage5-quality.md`](stage5-quality.md).
 
 **Demo replay:** [`docs/millipede-demo-replay.md`](millipede-demo-replay.md) — tmux layout + curl script to test the full pipeline in the UI.

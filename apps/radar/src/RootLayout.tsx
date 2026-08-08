@@ -59,7 +59,7 @@ export function RootLayout() {
           <div class="rank-card">
             <span class="rank-label">Operator</span>
             <strong>Manager</strong>
-            <span class="rank-meta">Stage 4 · local dev</span>
+            <span class="rank-meta">Stage 5 · quality systems</span>
           </div>
         </div>
       </aside>
