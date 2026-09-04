@@ -7,6 +7,15 @@ Interactive **Academy** + **DevSecOps Team Radar** monorepo.
 | **Millipede Academy** | Teach fundamentals while you build | Astro → Cloudflare Pages |
 | **Team Radar** | Manager dashboard for dev velocity + security risk | SolidJS, Rust/Axum, Python LLM, Kafka |
 
+## Run Team Radar today (one command)
+
+```bash
+cd /Users/olsigjeci/Documents/OLSI/DEV/olab/millipede
+pnpm millipede-demo    # full stack in tmux — see docs/millipede-playbook.md
+```
+
+**Playbook:** [`docs/millipede-playbook.md`](docs/millipede-playbook.md) — tmux layout, every command explained, troubleshooting.
+
 ## Quick start
 
 ```bash
@@ -112,6 +121,6 @@ docs/                  PDFs + work-alignment reference
 | 4 | SolidJS + TanStack + WASM redaction |
 | 5 | Eval CI, Playwright e2e, EM KPI panels — [`docs/stage5-quality.md`](docs/stage5-quality.md) |
 
-**End-to-end map:** [`docs/millipede-e2e-map.md`](docs/millipede-e2e-map.md) · Demo replay: [`docs/millipede-demo-replay.md`](docs/millipede-demo-replay.md) · **Academy status:** [`docs/academy-status.md`](docs/academy-status.md)
+**End-to-end map:** [`docs/millipede-e2e-map.md`](docs/millipede-e2e-map.md) · **Playbook:** [`docs/millipede-playbook.md`](docs/millipede-playbook.md) · Demo replay: [`docs/millipede-demo-replay.md`](docs/millipede-demo-replay.md) · **Academy status:** [`docs/academy-status.md`](docs/academy-status.md)
 
 Canonical plan: `millipede_learning_journey_0db313c1.plan.md`

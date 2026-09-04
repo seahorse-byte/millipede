@@ -92,7 +92,14 @@ def main() -> None:
             if msg is None:
                 continue
             if msg.error():
-                raise KafkaException(msg.error())
+                err = msg.error()
+                if err.code() == err.UNKNOWN_TOPIC_OR_PART:
+                    LOG.warning(
+                        "topic %s not ready yet — run: bash scripts/init-kafka-topics.sh",
+                        input_topic,
+                    )
+                    continue
+                raise KafkaException(err)
 
             try:
                 payload = msg.value().decode("utf-8")

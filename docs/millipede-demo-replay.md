@@ -1,6 +1,8 @@
 # Millipede demo replay — tmux + UI walkthrough
 
-Snapshot of the local Stage 1–4 stack: **ingestion → Kafka → llm-worker → analyzer → Postgres/Redis → SolidJS radar UI**.
+> **Operator playbook (one command + command glossary):** [`millipede-playbook.md`](millipede-playbook.md)
+
+Snapshot of the local Stage 1–5 stack: **ingestion → Kafka → llm-worker → analyzer → Postgres/Redis → SolidJS radar UI**.
 
 Use this doc to replay the demo from a clean terminal.
 
@@ -21,8 +23,11 @@ pnpm build:wasm
 ## 1. Quick launch (automated tmux)
 
 ```bash
-bash scripts/millipede-demo-tmux.sh
+pnpm millipede-demo
+# or: bash scripts/millipede-demo-tmux.sh
 ```
+
+See [`millipede-playbook.md`](millipede-playbook.md) for what each pane runs and readiness gates.
 
 Creates session **`millipede`** with two windows:
 
@@ -87,7 +92,7 @@ pnpm dev:radar          # pane 0 — http://localhost:5174
 # pane 1 — test shell (curl commands below)
 ```
 
-Open browser: **http://localhost:5174/** (use `localhost`, not `127.0.0.1` — Vite binds IPv6).
+Open browser: **http://127.0.0.1:5174/** (Vite binds `127.0.0.1` with `strictPort`).
 
 ---
 
@@ -256,10 +261,10 @@ tmux kill-session -t millipede   # optional
 | UI header only, no metrics | Hard refresh; ensure `Outlet` fix is in tree |
 | `metricsQuery.isSuccess is not a function` | Pull latest Dashboard.tsx (query props are not functions) |
 | Metrics work, live feed empty | Redis down — `compose:down && compose:up`, restart analyzer |
-| llm-worker crash: unknown topic | Start compose first; wait for Kafka healthy |
+| llm-worker crash: unknown topic | `bash scripts/init-kafka-topics.sh` then restart worker |
 | analyzer: address in use :8082 | `pkill -f millipede-analyzer` |
-| curl metrics via 127.0.0.1:5174 fails | Use **localhost:5174** (Vite IPv6 bind) |
-| `kafka_status: unavailable` | Kafka still starting — wait 30s |
+| `kafka_status: unavailable` | Kafka still starting — wait, run `init-kafka-topics.sh` |
+| llm-worker bad interpreter | `rm -rf services/llm-worker/.venv` · `pnpm llm-worker:dev` |
 
 ---
 
@@ -269,4 +274,4 @@ Not needed for the UI demo. See [`docs/stage2-gateway.md`](stage2-gateway.md).
 
 ---
 
-Related: [`docs/stage4-radar.md`](stage4-radar.md) · [`README.md`](../README.md)
+Related: [`millipede-playbook.md`](millipede-playbook.md) · [`docs/stage4-radar.md`](stage4-radar.md) · [`README.md`](../README.md)

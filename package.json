@@ -14,7 +14,7 @@
     "test:e2e": "pnpm --filter @millipede/e2e test",
     "test:e2e:pipeline": "pnpm --filter @millipede/e2e test -- --grep @pipeline",
     "test:e2e:ui": "pnpm --filter @millipede/e2e test:ui",
-    "compose:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "compose:up": "docker compose -f infra/docker/docker-compose.yml up -d && bash scripts/init-kafka-topics.sh",
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",
     "demo:tmux": "bash scripts/millipede-demo-tmux.sh",
     "millipede-demo": "bash scripts/millipede-demo-tmux.sh",
@@ -22,7 +22,7 @@
     "ingestion:dev": "cargo run -p millipede-ingestion",
     "analyzer:dev": "cargo run -p millipede-analyzer",
     "gateway:dev": "cargo run -p millipede-gateway",
-    "llm-worker:dev": "bash -c 'cd services/llm-worker && (test -d .venv || python3 -m venv .venv) && .venv/bin/pip install -q -e . && .venv/bin/python -m millipede_llm_worker.main'"
+    "llm-worker:dev": "bash -c 'cd services/llm-worker && if ! .venv/bin/python -c \"import sys\" 2>/dev/null; then rm -rf .venv && python3 -m venv .venv; fi && .venv/bin/pip install -q -e . && .venv/bin/python -m millipede_llm_worker.main'"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

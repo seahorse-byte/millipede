@@ -168,7 +168,7 @@ PDFs referenced as living in `docs/` — planning artifacts, not runtime.
 
 | Intent | Command |
 |--------|---------|
-| Run full local demo | `millipede-demo` or `pnpm millipede-demo` |
+| Run full local demo | `pnpm millipede-demo` — see [`millipede-playbook.md`](millipede-playbook.md) |
 | Academy dev | `pnpm dev:academy` → http://localhost:4321 |
 | Radar dev | `pnpm dev:radar` → http://127.0.0.1:5174 |
 | Eval gate | `pnpm evals:run` · `pnpm evals:write-metrics` |
@@ -176,4 +176,4 @@ PDFs referenced as living in `docs/` — planning artifacts, not runtime.
 | Pipeline e2e | `RUN_PIPELINE_E2E=1 pnpm test:e2e:pipeline` |
 | Commit + push | `millipede-commit-push` |
 
-Playbook: `playbook` → `millipede`
+Playbook: [`docs/millipede-playbook.md`](millipede-playbook.md) · `PLAYBOOK.md` at repo root
