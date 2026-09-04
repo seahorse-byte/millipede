@@ -168,6 +168,8 @@ Edit `config/direct-reports.json` with your team's GitHub/GitLab/Slack/Jira hand
 
 ## Team Brain (living docs)
 
+**Operator checklist:** [`docs/team-brain/QUICKSTART.md`](team-brain/QUICKSTART.md) — step-by-step local setup.
+
 Local EM documentation that auto-updates from analyzer data — per-direct-report snapshots, source rollups, PR table, and **per-source freshness receipts**.
 
 ```bash
