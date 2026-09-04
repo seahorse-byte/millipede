@@ -1,0 +1,21 @@
+{
+  "github": {
+    "repos": [
+      "snyk/millipede"
+    ],
+    "sync_days": 14,
+    "include_reviews": true
+  },
+  "gitlab": {
+    "host": "https://gitlab.com",
+    "projects": []
+  },
+  "jira": {
+    "site": "https://yourorg.atlassian.net",
+    "projects": []
+  },
+  "slack": {
+    "channels": [],
+    "include_dms": false
+  }
+}
