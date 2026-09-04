@@ -51,6 +51,18 @@ Projects tracked by pr-radar live in `~/.claude/skills/mr-radar/data/config.json
 
 Open http://127.0.0.1:5174 — filter by direct report, check Pull requests tab.
 
+## Fine-grained PAT (Probely org)
+
+The **Probely** GitHub org blocks **classic** personal access tokens. Repos under `Probely/*` (e.g. `Probely/probely-website`) require a **fine-grained PAT**:
+
+1. GitHub → **Settings** → **Developer settings** → **Fine-grained tokens** → **Generate new token**
+2. **Resource owner**: Probely (or your user, if the org has granted you access)
+3. **Repository access**: select the Probely repos you need (`probely-website`, `securityheaders`, …)
+4. **Permissions** (minimum for PR sync): **Pull requests** (read), **Contents** (read)
+5. Store the token in 1Password / `.env.local` as `GITHUB_TOKEN`
+
+Classic PATs still work for `snyk/*` repos. If sync logs `access denied (403)` for a Probely repo, other repos in `config/team-sources.json` are still processed — fix the token for that org and re-run.
+
 ## Commands
 
 | Script | pnpm alias | Status |
