@@ -55,6 +55,6 @@ Lists repos, Jira projects, and Slack channels to sync for your team. Used by `p
 | `jira.projects` | keys | Jira project keys (stub connector) |
 | `slack.channels` | IDs | Allowlisted channel IDs (stub connector) |
 
-Team repos for `saw_saw-frontend` were seeded from the GitHub team; refine the list or run `pnpm sync:roster --sync-repos` to refresh.
+Current team repos: `Probely/probely-website`, `snyk/saw-mcp`, `Probely/securityheaders`. Refine the list manually or run `pnpm sync:roster --sync-repos` to merge from the GitHub team.
 
 See `scripts/connectors/README.md` and `.env.example` for token setup.

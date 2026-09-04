@@ -41,7 +41,7 @@ See `config/README.md` for field details.
 
 Edit **`config/team-sources.json`**:
 
-- **GitHub:** `org`, `team_slug` (optional), `repos` (e.g. `snyk/maverick-ui`), `sync_days`, `include_reviews`
+- **GitHub:** `org`, `team_slug` (optional), `repos` (e.g. `Probely/probely-website`, `snyk/saw-mcp`, `Probely/securityheaders`), `sync_days`, `include_reviews`
 - **GitLab / Jira / Slack:** fill when you add those tokens (stubs today)
 
 ## 5. Add GitHub token (for real PR sync)

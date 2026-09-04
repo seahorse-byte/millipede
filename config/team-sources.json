@@ -3,13 +3,9 @@
     "org": "snyk",
     "team_slug": "saw_saw-frontend",
     "repos": [
-      "snyk/maverick-ui",
-      "snyk/feature-flags",
+      "Probely/probely-website",
       "snyk/saw-mcp",
-      "snyk/claude-marketplace-internal",
-      "snyk/cerberus-sdk-node",
-      "snyk/saw-adlc-skills",
-      "snyk/millipede"
+      "Probely/securityheaders",
     ],
     "sync_days": 14,
     "include_reviews": true
