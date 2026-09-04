@@ -1,7 +1,7 @@
 mod telemetry;
 use axum::response::sse::{Event, KeepAlive, Sse};
 use axum::extract::{Query, State};
-use axum::{http::StatusCode, routing::get, Json, Router};
+use axum::{http::StatusCode, routing::{get, post}, Json, Router};
 use axum_server::tls_rustls::RustlsConfig;
 use futures_util::StreamExt;
 use millipede_tls_common::{
@@ -111,6 +111,13 @@ struct MetricsSummary {
     events_by_source: HashMap<String, i64>,
     latest_by_source: HashMap<String, String>,
     kpis: ManagerKpis,
+}
+
+#[derive(Serialize)]
+struct BrainRefreshResponse {
+    status: &'static str,
+    message: &'static str,
+    command: &'static str,
 }
 
 #[derive(Deserialize)]
@@ -282,6 +289,15 @@ async fn ensure_schema(pool: &PgPool) {
 
 async fn list_direct_reports(State(state): State<AppState>) -> Json<Vec<DirectReport>> {
     Json(state.direct_reports.clone())
+}
+
+/// Stub for future Kafka consumer or subprocess trigger — run brain-writer locally today.
+async fn brain_refresh_stub() -> Json<BrainRefreshResponse> {
+    Json(BrainRefreshResponse {
+        status: "stub",
+        message: "Team Brain refresh is not wired in-process yet; run the local writer script.",
+        command: "pnpm brain:refresh",
+    })
 }
 
 async fn list_events(
@@ -651,6 +667,8 @@ async fn main() {
         .route("/events", get(list_events))
         .route("/api/pull-requests", get(list_pull_requests))
         .route("/pull-requests", get(list_pull_requests))
+        .route("/api/brain/refresh", post(brain_refresh_stub))
+        .route("/brain/refresh", post(brain_refresh_stub))
         .route("/api/events/stream", get(events_stream))
         .route("/events/stream", get(events_stream))
         .layer(

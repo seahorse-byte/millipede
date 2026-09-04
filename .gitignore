@@ -36,3 +36,6 @@ infra/certs/dev/*.pem
 infra/certs/dev/*.srl
 
 .vscode/
+
+# Team Brain generated snapshots (templates + README committed)
+docs/team-brain/generated/

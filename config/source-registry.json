@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "slack",
+      "display_name": "Slack",
+      "required": true,
+      "analyzer_source_key": "slack",
+      "matcher_fields": ["slack_user_id"],
+      "doc_template": "source-default"
+    },
+    {
+      "id": "jira",
+      "display_name": "Jira",
+      "required": true,
+      "analyzer_source_key": "jira",
+      "matcher_fields": ["jira_account_id"],
+      "doc_template": "source-default"
+    },
+    {
+      "id": "github",
+      "display_name": "GitHub",
+      "required": true,
+      "analyzer_source_key": "github",
+      "matcher_fields": ["github"],
+      "doc_template": "source-default"
+    },
+    {
+      "id": "gitlab",
+      "display_name": "GitLab",
+      "required": true,
+      "analyzer_source_key": "gitlab",
+      "matcher_fields": ["gitlab"],
+      "doc_template": "source-default"
+    }
+  ]
+}

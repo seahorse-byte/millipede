@@ -42,3 +42,10 @@ post '{"source":"github","event_type":"pr","actor_id":"casey-nguyen","actor_name
 echo ""
 echo "Done. Wait ~5s for pipeline, then open http://127.0.0.1:5174"
 echo "Filter by direct report and switch to Pull requests tab."
+
+if [[ "${BRAIN_REFRESH:-}" == "1" ]]; then
+  echo ""
+  echo "BRAIN_REFRESH=1 — waiting for analyzer pipeline, then refreshing Team Brain…"
+  sleep 8
+  bash "$(dirname "$0")/brain-writer/run.sh" || echo "  (brain refresh skipped — is analyzer running?)"
+fi
