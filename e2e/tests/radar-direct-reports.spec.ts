@@ -33,6 +33,7 @@ async function seedEvents(request: import("@playwright/test").APIRequestContext)
       state: "open",
       url: "https://github.com/acme/e2e-repo/pull/999",
       action: "opened",
+      updated_at: "2026-09-01T12:00:00Z",
     },
     {
       source: "gitlab",
@@ -45,6 +46,8 @@ async function seedEvents(request: import("@playwright/test").APIRequestContext)
       state: "merged",
       url: "https://gitlab.com/acme/e2e-services/-/merge_requests/888",
       action: "merged",
+      merged_at: "2026-09-03T15:30:00Z",
+      updated_at: "2026-09-03T15:30:00Z",
     },
   ];
 
@@ -130,5 +133,16 @@ test.describe("Team Radar filters UI", () => {
     await expect(page.getByLabel("Direct report")).toBeVisible();
     await expect(page.getByRole("tab", { name: "Pull requests" })).toBeVisible();
     await expect(page.getByRole("group", { name: "Source filters" })).toBeVisible();
+  });
+
+  test("renders PR state filter chips on pull requests tab", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("tab", { name: "Pull requests" }).click();
+
+    await expect(page.getByRole("group", { name: "PR state filters" })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByRole("button", { name: "Merged" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Open" })).toBeVisible();
   });
 });

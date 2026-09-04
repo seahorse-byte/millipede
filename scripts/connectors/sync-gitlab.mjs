@@ -88,6 +88,15 @@ async function fetchMergeRequests(projectPath, token, host) {
   return all;
 }
 
+function mrBlocked(mr) {
+  if (mr.blocking_discussions_resolved === false) return true;
+  const labels = mr.labels ?? [];
+  return labels.some((label) => {
+    const name = typeof label === "string" ? label : label?.name;
+    return name?.toLowerCase() === "blocked";
+  });
+}
+
 function normalizeMr(mr, projectPath, person) {
   return {
     source: "gitlab",
@@ -100,6 +109,10 @@ function normalizeMr(mr, projectPath, person) {
     state: mrState(mr),
     url: mr.web_url,
     action: mrAction(mr),
+    merged_at: mr.merged_at ?? null,
+    draft: Boolean(mr.draft || mr.work_in_progress),
+    blocked: mrBlocked(mr),
+    updated_at: mr.updated_at,
   };
 }
 

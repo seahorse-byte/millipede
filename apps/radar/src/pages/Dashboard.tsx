@@ -11,6 +11,7 @@ import {
   openEventStream,
   type ActivitySource,
   type LiveEvent,
+  type PrStateFilter,
   type PullRequest,
   type TeamEvent,
 } from "../api/client";
@@ -32,10 +33,58 @@ function riskLabel(score?: number) {
   return "Low";
 }
 
-function prStateBadge(state: string) {
+function prStateBadge(state: string, draft?: boolean, blocked?: boolean) {
+  if (blocked) return "badge badge--hard";
+  if (draft) return "badge badge--muted";
   if (state === "merged") return "badge badge--easy";
   if (state === "closed") return "badge badge--muted";
   return "badge badge--medium";
+}
+
+function prStateLabel(state: string, draft?: boolean, blocked?: boolean) {
+  if (blocked) return "blocked";
+  if (draft) return "draft";
+  return state;
+}
+
+const PR_STATE_FILTERS: { value: PrStateFilter | ""; label: string }[] = [
+  { value: "", label: "All" },
+  { value: "open", label: "Open" },
+  { value: "merged", label: "Merged" },
+  { value: "draft", label: "Draft" },
+  { value: "closed", label: "Closed" },
+  { value: "blocked", label: "Blocked" },
+];
+
+function PrStateFilterBar(props: {
+  state: () => PrStateFilter | "";
+  onState: (value: PrStateFilter | "") => void;
+  showBlocked: () => boolean;
+}) {
+  const filters = createMemo(() =>
+    PR_STATE_FILTERS.filter((filter) => filter.value !== "blocked" || props.showBlocked()),
+  );
+
+  return (
+    <div class="filter-field">
+      <span class="filter-label">State</span>
+      <div class="source-chips" role="group" aria-label="PR state filters">
+        <For each={filters()}>
+          {(filter) => (
+            <button
+              type="button"
+              class="source-chip"
+              classList={{ "source-chip--active": props.state() === filter.value }}
+              aria-pressed={props.state() === filter.value}
+              onClick={() => props.onState(filter.value)}
+            >
+              {filter.label}
+            </button>
+          )}
+        </For>
+      </div>
+    </div>
+  );
 }
 
 function eventTitle(event: TeamEvent | LiveEvent) {
@@ -200,6 +249,7 @@ function PullRequestTable(props: {
               <th>Title</th>
               <th>Author</th>
               <th>State</th>
+              <th>Merged</th>
               <th>Updated</th>
             </tr>
           </thead>
@@ -223,7 +273,12 @@ function PullRequestTable(props: {
                   </td>
                   <td>{pr.author_name ?? "—"}</td>
                   <td>
-                    <span class={prStateBadge(pr.state)}>{pr.state}</span>
+                    <span class={prStateBadge(pr.state, pr.draft, pr.blocked)}>
+                      {prStateLabel(pr.state, pr.draft, pr.blocked)}
+                    </span>
+                  </td>
+                  <td class="mono dim">
+                    {pr.merged_at ? formatTimestamp(pr.merged_at) : "—"}
                   </td>
                   <td class="mono dim">{formatTimestamp(pr.updated_at)}</td>
                 </tr>
@@ -240,6 +295,7 @@ export function Dashboard() {
   const [activeTab, setActiveTab] = createSignal<DashboardTab>("activity");
   const [directReport, setDirectReport] = createSignal("");
   const [selectedSources, setSelectedSources] = createSignal<Set<ActivitySource>>(new Set());
+  const [prStateFilter, setPrStateFilter] = createSignal<PrStateFilter | "">("");
   const [liveEvents, setLiveEvents] = createSignal<FeedRow[]>([]);
   const [streamStatus, setStreamStatus] = createSignal<"connecting" | "live" | "offline">(
     "connecting",
@@ -262,6 +318,7 @@ export function Dashboard() {
   const filterKey = createMemo(() => ({
     directReport: directReport(),
     sources: [...selectedSources()].sort().join(","),
+    prState: prStateFilter(),
     tab: activeTab(),
   }));
 
@@ -279,18 +336,47 @@ export function Dashboard() {
   }));
 
   const pullRequestsQuery = createQuery(() => ({
-    queryKey: ["pull-requests", filterKey().directReport, filterKey().sources],
+    queryKey: [
+      "pull-requests",
+      filterKey().directReport,
+      filterKey().sources,
+      filterKey().prState,
+    ],
     queryFn: () =>
       fetchPullRequests({
         directReport: directReport() || undefined,
         source:
           selectedSources().size === 1 ? [...selectedSources()][0] : undefined,
+        state: prStateFilter() || undefined,
+        sort: "merged_at_desc",
         limit: 50,
       }),
     refetchInterval: 5000,
     enabled: activeTab() === "pull-requests",
     suspense: false,
   }));
+
+  const pullRequestsAllQuery = createQuery(() => ({
+    queryKey: [
+      "pull-requests-all",
+      filterKey().directReport,
+      filterKey().sources,
+    ],
+    queryFn: () =>
+      fetchPullRequests({
+        directReport: directReport() || undefined,
+        source:
+          selectedSources().size === 1 ? [...selectedSources()][0] : undefined,
+        limit: 200,
+      }),
+    enabled: activeTab() === "pull-requests",
+    staleTime: 30_000,
+    suspense: false,
+  }));
+
+  const showBlockedFilter = createMemo(() =>
+    (pullRequestsAllQuery.data ?? []).some((pr) => pr.blocked),
+  );
 
   const metrics = createMemo(() => metricsQuery.data);
   const isMetricsLoading = createMemo(
@@ -498,6 +584,13 @@ export function Dashboard() {
         </Show>
 
         <Show when={activeTab() === "pull-requests"}>
+          <div class="panel-filters">
+            <PrStateFilterBar
+              state={prStateFilter}
+              onState={setPrStateFilter}
+              showBlocked={showBlockedFilter}
+            />
+          </div>
           <PullRequestTable
             rows={() => pullRequestsQuery.data ?? []}
             directReport={directReport}

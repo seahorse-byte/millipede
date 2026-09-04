@@ -45,6 +45,9 @@ export interface PullRequest {
   author_id?: string;
   author_name?: string;
   updated_at: string;
+  merged_at?: string;
+  draft?: boolean;
+  blocked?: boolean;
 }
 
 export interface LiveEvent {
@@ -115,11 +118,14 @@ export async function fetchEvents(query: EventsQuery = {}): Promise<TeamEvent[]>
   return response.json();
 }
 
+export type PrStateFilter = "open" | "merged" | "closed" | "draft" | "blocked";
+
 export interface PullRequestsQuery {
   directReport?: string;
   source?: ActivitySource;
-  state?: string;
+  state?: PrStateFilter | PrStateFilter[];
   repo?: string;
+  sort?: "merged_at_desc" | "updated_at_desc";
   limit?: number;
 }
 
@@ -129,7 +135,15 @@ export async function fetchPullRequests(
   const params = new URLSearchParams();
   if (query.directReport) params.set("direct_report", query.directReport);
   if (query.source) params.set("source", query.source);
-  if (query.state) params.set("state", query.state);
+  const states = query.state
+    ? Array.isArray(query.state)
+      ? query.state
+      : [query.state]
+    : [];
+  for (const state of states) {
+    params.append("state", state);
+  }
+  if (query.sort) params.set("sort", query.sort);
   if (query.repo) params.set("repo", query.repo);
   if (query.limit) params.set("limit", String(query.limit));
   const qs = params.toString();
