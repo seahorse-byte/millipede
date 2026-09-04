@@ -1,6 +1,14 @@
 {
   "github": {
+    "org": "snyk",
+    "team_slug": "saw_saw-frontend",
     "repos": [
+      "snyk/maverick-ui",
+      "snyk/feature-flags",
+      "snyk/saw-mcp",
+      "snyk/claude-marketplace-internal",
+      "snyk/cerberus-sdk-node",
+      "snyk/saw-adlc-skills",
       "snyk/millipede"
     ],
     "sync_days": 14,

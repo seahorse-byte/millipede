@@ -21,6 +21,7 @@ Open http://127.0.0.1:5174 — filter by direct report, check Pull requests tab.
 | Script | pnpm alias | Status |
 |--------|------------|--------|
 | `sync-github.mjs` | `pnpm sync:github` | Working |
+| `sync-roster-from-github.mjs` | `pnpm sync:roster` | Working |
 | `sync-gitlab.mjs` | `pnpm sync:gitlab` | Stub |
 | `sync-jira.mjs` | `pnpm sync:jira` | Stub |
 | `sync-slack.mjs` | `pnpm sync:slack` | Stub |

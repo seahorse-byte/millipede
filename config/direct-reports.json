@@ -1,49 +1,58 @@
 {
   "direct_reports": [
     {
-      "id": "alex-chen",
-      "name": "Alex Chen",
-      "email": "alex.chen@example.com",
-      "github": "alexchen",
-      "gitlab": "alex.chen",
-      "slack_user_id": "U01ALEX",
-      "jira_account_id": "alex.chen"
+      "id": "vbifonixor",
+      "name": "Mikhail Kononenko",
+      "email": "",
+      "github": "vbifonixor",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
     },
     {
-      "id": "sam-patel",
-      "name": "Sam Patel",
-      "email": "sam.patel@example.com",
-      "github": "sampatel",
-      "gitlab": "sam.patel",
-      "slack_user_id": "U02SAM",
-      "jira_account_id": "sam.patel"
+      "id": "olsigjecii",
+      "name": "Olsi Gjeci",
+      "email": "",
+      "github": "olsigjecii",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
     },
     {
-      "id": "jordan-lee",
-      "name": "Jordan Lee",
-      "email": "jordan.lee@example.com",
-      "github": "jordanlee",
-      "gitlab": "jordan.lee",
-      "slack_user_id": "U03JORDAN",
-      "jira_account_id": "jordan.lee"
+      "id": "ninjaneer87-probely",
+      "name": "Andrej Forgac",
+      "email": "",
+      "github": "Ninjaneer87-probely",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
     },
     {
-      "id": "riley-morgan",
-      "name": "Riley Morgan",
-      "email": "riley.morgan@example.com",
-      "github": "rileymorgan",
-      "gitlab": "riley.morgan",
-      "slack_user_id": "U04RILEY",
-      "jira_account_id": "riley.morgan"
+      "id": "andreprobely",
+      "name": "André Rodrigo",
+      "email": "",
+      "github": "andreprobely",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
     },
     {
-      "id": "casey-nguyen",
-      "name": "Casey Nguyen",
-      "email": "casey.nguyen@example.com",
-      "github": "caseynguyen",
-      "gitlab": "casey.nguyen",
-      "slack_user_id": "U05CASEY",
-      "jira_account_id": "casey.nguyen"
+      "id": "leidsoncruz-snyk",
+      "name": "Leidson Cruz",
+      "email": "",
+      "github": "leidsoncruz-snyk",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
+    },
+    {
+      "id": "romain-preston-snyk",
+      "name": "romain-preston-snyk",
+      "email": "",
+      "github": "romain-preston-snyk",
+      "gitlab": "",
+      "slack_user_id": "",
+      "jira_account_id": ""
     }
   ]
 }

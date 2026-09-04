@@ -2,7 +2,23 @@
 
 ## `direct-reports.json`
 
-Replace placeholder names and handles with your team's real identities before using Team Radar in production.
+Roster of direct reports used for actor matching in connectors and the analyzer.
+
+**Sync from GitHub team** (recommended):
+
+```bash
+# .env.local — GITHUB_TOKEN with read:org
+pnpm sync:roster
+```
+
+Reads `github.org` and `github.team_slug` from `config/team-sources.json` (currently `snyk` / `saw_saw-frontend`). Preserves existing `gitlab`, `slack_user_id`, `jira_account_id`, and `email` values when re-syncing.
+
+Flags:
+
+- `--dry-run` — print JSON without writing
+- `--sync-repos` — also merge team repos into `team-sources.json`
+
+Fill in GitLab, Slack, and Jira handles manually after the first roster sync (see table below).
 
 | Field | Used to match |
 |-------|----------------|
@@ -31,10 +47,14 @@ Lists repos, Jira projects, and Slack channels to sync for your team. Used by `p
 
 | Section | Field | Purpose |
 |---------|-------|---------|
+| `github.org` | string | GitHub org for roster sync (`pnpm sync:roster`) |
+| `github.team_slug` | string | Team slug for roster sync |
 | `github.repos` | `owner/name` | Repos to poll for PRs and reviews |
 | `github.sync_days` | number | Only PRs updated within this window (default 14) |
 | `gitlab.projects` | path | GitLab project paths (stub connector) |
 | `jira.projects` | keys | Jira project keys (stub connector) |
 | `slack.channels` | IDs | Allowlisted channel IDs (stub connector) |
+
+Team repos for `saw_saw-frontend` were seeded from the GitHub team; refine the list or run `pnpm sync:roster --sync-repos` to refresh.
 
 See `scripts/connectors/README.md` and `.env.example` for token setup.

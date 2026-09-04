@@ -21,6 +21,7 @@
     "seed:demo": "bash scripts/seed-demo-events.sh",
     "brain:refresh": "bash scripts/brain-writer/run.sh",
     "sync:github": "node scripts/connectors/sync-github.mjs",
+    "sync:roster": "node scripts/connectors/sync-roster-from-github.mjs",
     "sync:gitlab": "node scripts/connectors/sync-gitlab.mjs",
     "sync:jira": "node scripts/connectors/sync-jira.mjs",
     "sync:slack": "node scripts/connectors/sync-slack.mjs",
