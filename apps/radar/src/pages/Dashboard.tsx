@@ -94,7 +94,7 @@ function ActivityTable(props: { rows: () => TeamEvent[] }) {
       fallback={
         <div class="empty-state">
           <p>No activity matches these filters.</p>
-          <p class="dim">Run <code class="mono">pnpm seed:demo</code> or POST webhooks to populate events.</p>
+          <p class="dim">Run <code class="mono">pnpm sync:github</code> or POST webhooks to populate events. GitHub PRs appear under <strong>Pull requests</strong>.</p>
         </div>
       }
     >
@@ -149,7 +149,7 @@ function PullRequestTable(props: { rows: () => PullRequest[] }) {
       fallback={
         <div class="empty-state">
           <p>No pull requests match these filters.</p>
-          <p class="dim">Seed demo PRs with <code class="mono">pnpm seed:demo</code>.</p>
+          <p class="dim">Run <code class="mono">pnpm sync:github</code> or <code class="mono">pnpm sync:gitlab</code> to load PRs/MRs.</p>
         </div>
       }
     >
@@ -446,7 +446,7 @@ export function Dashboard() {
             </div>
             <p class="panel-sub">
               {activeTab() === "activity"
-                ? "REST + Redis SSE · per-person activity"
+                ? "REST + Redis SSE · reviews & non-PR activity (PRs → Pull requests tab)"
                 : "Cross-repo PRs · GitHub + GitLab"}
             </p>
           </div>

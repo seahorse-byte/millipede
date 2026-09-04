@@ -100,6 +100,7 @@ session: millipede
 | `pnpm evals:write-metrics` | Quality | Write eval pass rate → Postgres → dashboard KPI |
 | `pnpm millipede-demo` | Ops | Launch tmux session with full stack |
 | `pnpm seed:demo` | Demo | Post activity + PR events for 5 direct reports (4 sources) |
+| `pnpm clear:demo` | Demo | Delete seed/e2e placeholder rows from Postgres |
 | `pnpm brain:refresh` | Team Brain | Regenerate `docs/team-brain/generated/` from analyzer APIs |
 | `pnpm sync:github` | Connectors | Poll GitHub PRs/reviews for roster members → ingestion |
 | `pnpm sync:gitlab` | Connectors | Poll GitLab MRs for roster members → ingestion |
@@ -113,6 +114,7 @@ session: millipede
 |--------|---------|
 | `millipede-demo-tmux.sh` | Creates tmux session, splits panes, runs commands above |
 | `seed-demo-events.sh` | Seeds Slack/Jira/GitHub/GitLab activity + cross-repo PRs |
+| `clear-demo-events.sh` | Deletes seed/e2e placeholder rows from `team_events` |
 | `brain-writer/run.sh` | Regenerates Team Brain docs from analyzer APIs |
 | `connectors/sync-github.mjs` | Polls GitHub API; posts normalized PR/review events |
 | `connectors/sync-gitlab.mjs` | Polls GitLab API; posts normalized MR events |

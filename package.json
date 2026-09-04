@@ -20,7 +20,6 @@
     "millipede-demo": "bash scripts/millipede-demo-tmux.sh",
     "seed:demo": "bash scripts/seed-demo-events.sh",
     "clear:demo": "bash scripts/clear-demo-events.sh",
-    "clear:demo": "bash scripts/clear-demo-events.sh",
     "brain:refresh": "bash scripts/brain-writer/run.sh",
     "sync:github": "bash scripts/with-op-env.sh node scripts/connectors/sync-github.mjs",
     "sync:roster": "bash scripts/with-op-env.sh node scripts/connectors/sync-roster-from-github.mjs",

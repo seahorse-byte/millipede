@@ -107,9 +107,12 @@ sleep 5
 **With `GITHUB_TOKEN` set:**
 
 ```bash
+pnpm clear:demo      # remove seed/e2e rows if you ran pnpm seed:demo earlier
 pnpm sync:github
 sleep 5
 ```
+
+GitHub **PRs** land as `event_type: pr` and appear on the **Pull requests** tab. **Reviews** sync as `event_type: activity` on the Activity tab. Probely repos need a fine-grained PAT (see `scripts/connectors/README.md`).
 
 **With `GITLAB_TOKEN` set:**
 
@@ -155,6 +158,7 @@ Add `GITLAB_TOKEN`, Jira, and Slack tokens in `.env.local` when those connectors
 |------|---------|
 | Full stack in tmux | `pnpm millipede-demo` |
 | Demo webhooks only | `pnpm seed:demo` |
+| Clear seed/e2e rows | `pnpm clear:demo` |
 | Real GitHub PRs | `pnpm sync:github` |
 | Regenerate markdown brain | `pnpm brain:refresh` |
 | Stop Docker | `pnpm compose:down` |
