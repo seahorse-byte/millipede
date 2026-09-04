@@ -78,6 +78,9 @@ Fire webhook (expect kafka_status: published):
     -H "Content-Type: application/json" \\
     -d "{\"action\":\"opened\",\"source\":\"github\",\"title\":\"ship feature for demo\"}" | jq .
 
+Seed demo data (5 devs × 4 sources + cross-repo PRs):
+  pnpm seed:demo
+
 Stage 5 quality:
   pnpm evals:run
   pnpm evals:write-metrics

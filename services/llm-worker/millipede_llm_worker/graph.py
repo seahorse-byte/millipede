@@ -54,13 +54,21 @@ def run_graph(state: EnrichmentState, nodes: list[Node] | None = None) -> Enrich
 
 
 def enrich_raw_event(raw: dict[str, Any]) -> dict[str, Any]:
+    payload = dict(raw.get("payload") or {})
     state = EnrichmentState(
         event_id=str(raw.get("id", "")),
         source=str(raw.get("source", "unknown")),
-        payload=dict(raw.get("payload") or {}),
+        payload=payload,
     )
     result = run_graph(state)
-    return {
+
+    def pick(key: str, payload_key: str | None = None) -> Any:
+        alt = payload_key or key
+        if raw.get(key) is not None:
+            return raw.get(key)
+        return payload.get(alt)
+
+    out: dict[str, Any] = {
         "id": result.event_id,
         "source": result.source,
         "payload": result.payload,
@@ -69,3 +77,14 @@ def enrich_raw_event(raw: dict[str, Any]) -> dict[str, Any]:
         "enriched_at": result.enriched_at,
         "enrichment_notes": result.notes,
     }
+
+    for key in ("event_type", "actor_id", "actor_name", "title", "repo", "pr_number", "url"):
+        value = pick(key)
+        if value is not None:
+            out[key] = value
+
+    pr_state = pick("pr_state", "state")
+    if pr_state is not None:
+        out["pr_state"] = pr_state
+
+    return out

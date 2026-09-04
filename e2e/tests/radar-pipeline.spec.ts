@@ -33,6 +33,6 @@ test.describe("Team Radar pipeline @pipeline", () => {
   test("dashboard reflects live pipeline state", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByLabel("Manager KPIs")).toBeVisible();
-    await expect(page.getByText("Activity stream")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Activity" })).toBeVisible();
   });
 });

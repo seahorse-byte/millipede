@@ -99,12 +99,14 @@ session: millipede
 | `pnpm evals:run` | Quality | Run enrichment regression gate (`evals/run_evals.py`) |
 | `pnpm evals:write-metrics` | Quality | Write eval pass rate → Postgres → dashboard KPI |
 | `pnpm millipede-demo` | Ops | Launch tmux session with full stack |
+| `pnpm seed:demo` | Demo | Post activity + PR events for 5 direct reports (4 sources) |
 
 ### Helper scripts (`scripts/`)
 
 | Script | Purpose |
 |--------|---------|
 | `millipede-demo-tmux.sh` | Creates tmux session, splits panes, runs commands above |
+| `seed-demo-events.sh` | Seeds Slack/Jira/GitHub/GitLab activity + cross-repo PRs |
 | `wait-for-kafka.sh` | Poll Kafka until broker ready |
 | `init-kafka-topics.sh` | Create `raw-dev-events` + `enriched-dev-events` |
 | `wait-for-health.sh` | Poll ingestion + analyzer `/health` |
@@ -145,10 +147,20 @@ curl -s -X POST http://127.0.0.1:8081/webhooks/hello \
 
 **Open UI:** http://127.0.0.1:5174/
 
+**Seed demo team data** (after Ready):
+
+```bash
+pnpm seed:demo
+```
+
+Edit `config/direct-reports.json` with your team's GitHub/GitLab/Slack/Jira handles (see `config/README.md`).
+
 | UI area | Updates when |
 |---------|----------------|
 | Manager KPIs + stat cards | ~5s poll after Postgres write |
-| Activity stream (SSE) | Only events while dashboard tab is **open** |
+| Direct report filter + source chips | Immediate — filters activity feed |
+| **Pull requests** tab | Cross-repo GitHub + GitLab PRs/MRs |
+| Activity stream (SSE) | Only non-PR events while dashboard tab is **open** |
 
 Optional eval KPI:
 

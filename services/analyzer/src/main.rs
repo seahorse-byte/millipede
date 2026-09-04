@@ -1,6 +1,7 @@
 mod telemetry;
 use axum::response::sse::{Event, KeepAlive, Sse};
-use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
+use axum::extract::{Query, State};
+use axum::{http::StatusCode, routing::get, Json, Router};
 use axum_server::tls_rustls::RustlsConfig;
 use futures_util::StreamExt;
 use millipede_tls_common::{
@@ -24,6 +25,67 @@ struct AppState {
     pool: PgPool,
     redis: Option<redis::Client>,
     kafka_topic: String,
+    direct_reports: Vec<DirectReport>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct DirectReport {
+    id: String,
+    name: String,
+    email: String,
+    github: String,
+    gitlab: String,
+    slack_user_id: String,
+    jira_account_id: String,
+}
+
+#[derive(Deserialize)]
+struct RosterFile {
+    direct_reports: Vec<DirectReport>,
+}
+
+#[derive(Deserialize)]
+struct EventsQuery {
+    direct_report: Option<String>,
+    #[serde(default)]
+    source: Vec<String>,
+    limit: Option<i64>,
+}
+
+#[derive(Deserialize)]
+struct PullRequestsQuery {
+    direct_report: Option<String>,
+    source: Option<String>,
+    state: Option<String>,
+    repo: Option<String>,
+    limit: Option<i64>,
+}
+
+#[derive(Serialize, sqlx::FromRow)]
+struct EventItem {
+    id: String,
+    source: String,
+    actor_id: Option<String>,
+    actor_name: Option<String>,
+    title: Option<String>,
+    event_type: Option<String>,
+    sentiment: Option<f32>,
+    risk_score: Option<f32>,
+    created_at: String,
+}
+
+#[derive(Serialize, sqlx::FromRow)]
+struct PullRequestItem {
+    id: String,
+    source: String,
+    repo: String,
+    pr_number: i32,
+    title: String,
+    url: Option<String>,
+    state: String,
+    author_id: Option<String>,
+    author_name: Option<String>,
+    updated_at: String,
 }
 
 #[derive(Serialize)]
@@ -59,6 +121,14 @@ struct RawEvent {
     sentiment: Option<f64>,
     risk_score: Option<f64>,
     enriched_at: Option<String>,
+    event_type: Option<String>,
+    actor_id: Option<String>,
+    actor_name: Option<String>,
+    title: Option<String>,
+    repo: Option<String>,
+    pr_number: Option<i32>,
+    pr_state: Option<String>,
+    url: Option<String>,
 }
 
 async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
@@ -168,6 +238,140 @@ async fn telemetry_summary() -> Json<telemetry::TelemetrySummary> {
     Json(telemetry::summary())
 }
 
+fn load_direct_reports() -> Vec<DirectReport> {
+    let path = env::var("DIRECT_REPORTS_CONFIG")
+        .unwrap_or_else(|_| "config/direct-reports.json".into());
+    match std::fs::read_to_string(&path) {
+        Ok(contents) => match serde_json::from_str::<RosterFile>(&contents) {
+            Ok(roster) => {
+                info!(count = roster.direct_reports.len(), path = %path, "loaded direct reports roster");
+                roster.direct_reports
+            }
+            Err(err) => {
+                warn!(error = %err, path = %path, "failed to parse direct reports roster");
+                Vec::new()
+            }
+        },
+        Err(err) => {
+            warn!(error = %err, path = %path, "direct reports roster not found");
+            Vec::new()
+        }
+    }
+}
+
+async fn ensure_schema(pool: &PgPool) {
+    let statements = [
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS actor_id TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS actor_name TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS title TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS event_type TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS repo TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_number INTEGER",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_state TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS url TEXT",
+        "CREATE INDEX IF NOT EXISTS idx_team_events_actor_id ON team_events(actor_id)",
+        "CREATE INDEX IF NOT EXISTS idx_team_events_event_type ON team_events(event_type)",
+        "CREATE INDEX IF NOT EXISTS idx_team_events_pr ON team_events(event_type, repo, pr_number) WHERE event_type = 'pr'",
+    ];
+    for sql in statements {
+        if let Err(err) = sqlx::query(sql).execute(pool).await {
+            warn!(error = %err, sql, "schema migration step failed");
+        }
+    }
+}
+
+async fn list_direct_reports(State(state): State<AppState>) -> Json<Vec<DirectReport>> {
+    Json(state.direct_reports.clone())
+}
+
+async fn list_events(
+    State(state): State<AppState>,
+    Query(params): Query<EventsQuery>,
+) -> Result<Json<Vec<EventItem>>, StatusCode> {
+    let limit = params.limit.unwrap_or(50).clamp(1, 200);
+    let sources = params.source;
+
+    let rows: Vec<EventItem> = if sources.is_empty() {
+        sqlx::query_as(
+            r#"
+            SELECT id, source, actor_id, actor_name, title, event_type, sentiment, risk_score, created_at
+            FROM team_events
+            WHERE ($1::TEXT IS NULL OR actor_id = $1)
+              AND COALESCE(event_type, 'activity') != 'pr'
+            ORDER BY created_at DESC
+            LIMIT $2
+            "#,
+        )
+        .bind(params.direct_report.as_deref())
+        .bind(limit)
+        .fetch_all(&state.pool)
+        .await
+    } else {
+        sqlx::query_as(
+            r#"
+            SELECT id, source, actor_id, actor_name, title, event_type, sentiment, risk_score, created_at
+            FROM team_events
+            WHERE ($1::TEXT IS NULL OR actor_id = $1)
+              AND source = ANY($2)
+              AND COALESCE(event_type, 'activity') != 'pr'
+            ORDER BY created_at DESC
+            LIMIT $3
+            "#,
+        )
+        .bind(params.direct_report.as_deref())
+        .bind(&sources)
+        .bind(limit)
+        .fetch_all(&state.pool)
+        .await
+    }
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(rows))
+}
+
+async fn list_pull_requests(
+    State(state): State<AppState>,
+    Query(params): Query<PullRequestsQuery>,
+) -> Result<Json<Vec<PullRequestItem>>, StatusCode> {
+    let limit = params.limit.unwrap_or(50).clamp(1, 200);
+
+    let rows: Vec<PullRequestItem> = sqlx::query_as(
+        r#"
+        SELECT DISTINCT ON (repo, pr_number)
+            id,
+            source,
+            repo,
+            pr_number,
+            COALESCE(title, '') AS title,
+            url,
+            COALESCE(pr_state, 'open') AS state,
+            actor_id AS author_id,
+            actor_name AS author_name,
+            created_at AS updated_at
+        FROM team_events
+        WHERE event_type = 'pr'
+          AND repo IS NOT NULL
+          AND pr_number IS NOT NULL
+          AND ($1::TEXT IS NULL OR actor_id = $1)
+          AND ($2::TEXT IS NULL OR source = $2)
+          AND ($3::TEXT IS NULL OR pr_state = $3)
+          AND ($4::TEXT IS NULL OR repo = $4)
+        ORDER BY repo, pr_number, created_at DESC
+        LIMIT $5
+        "#,
+    )
+    .bind(params.direct_report.as_deref())
+    .bind(params.source.as_deref())
+    .bind(params.state.as_deref())
+    .bind(params.repo.as_deref())
+    .bind(limit)
+    .fetch_all(&state.pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(rows))
+}
+
 async fn events_stream(
     State(state): State<AppState>,
 ) -> Result<Sse<impl futures_util::Stream<Item = Result<Event, Infallible>> + Send>, StatusCode> {
@@ -215,12 +419,23 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
     let payload_json = event.payload.to_string();
     sqlx::query(
         r#"
-        INSERT INTO team_events (id, source, payload_json, sentiment, risk_score, enriched_at, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6, NOW()::TEXT)
+        INSERT INTO team_events (
+            id, source, payload_json, sentiment, risk_score, enriched_at, created_at,
+            actor_id, actor_name, title, event_type, repo, pr_number, pr_state, url
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, NOW()::TEXT, $7, $8, $9, $10, $11, $12, $13, $14)
         ON CONFLICT (id) DO UPDATE SET
             sentiment = EXCLUDED.sentiment,
             risk_score = EXCLUDED.risk_score,
-            enriched_at = EXCLUDED.enriched_at
+            enriched_at = EXCLUDED.enriched_at,
+            actor_id = EXCLUDED.actor_id,
+            actor_name = EXCLUDED.actor_name,
+            title = EXCLUDED.title,
+            event_type = EXCLUDED.event_type,
+            repo = EXCLUDED.repo,
+            pr_number = EXCLUDED.pr_number,
+            pr_state = EXCLUDED.pr_state,
+            url = EXCLUDED.url
         "#,
     )
     .bind(&event.id)
@@ -229,6 +444,14 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
     .bind(event.sentiment)
     .bind(event.risk_score)
     .bind(event.enriched_at.as_deref())
+    .bind(event.actor_id.as_deref())
+    .bind(event.actor_name.as_deref())
+    .bind(event.title.as_deref())
+    .bind(event.event_type.as_deref())
+    .bind(event.repo.as_deref())
+    .bind(event.pr_number)
+    .bind(event.pr_state.as_deref())
+    .bind(event.url.as_deref())
     .execute(pool)
     .await?;
     Ok(())
@@ -245,6 +468,14 @@ async fn warm_redis(client: &redis::Client, event: &RawEvent) {
         "source": event.source,
         "sentiment": event.sentiment,
         "risk_score": event.risk_score,
+        "actor_id": event.actor_id,
+        "actor_name": event.actor_name,
+        "title": event.title,
+        "event_type": event.event_type,
+        "repo": event.repo,
+        "pr_number": event.pr_number,
+        "pr_state": event.pr_state,
+        "url": event.url,
     });
 
     let _: Result<(), redis::RedisError> = conn
@@ -372,6 +603,7 @@ async fn main() {
         .await
     {
         Ok(pool) => {
+            ensure_schema(&pool).await;
             info!("postgres pool ready");
             pool
         }
@@ -380,6 +612,8 @@ async fn main() {
             std::process::exit(1);
         }
     };
+
+    let direct_reports = load_direct_reports();
 
     let redis = match redis::Client::open(redis_url.as_str()) {
         Ok(client) => {
@@ -396,6 +630,7 @@ async fn main() {
         pool,
         redis,
         kafka_topic: kafka_topic.clone(),
+        direct_reports,
     });
 
     let state_for_consumer = Arc::clone(&state);
@@ -410,6 +645,12 @@ async fn main() {
         .route("/metrics/summary", get(metrics_summary))
         .route("/api/telemetry/summary", get(telemetry_summary))
         .route("/telemetry/summary", get(telemetry_summary))
+        .route("/api/direct-reports", get(list_direct_reports))
+        .route("/direct-reports", get(list_direct_reports))
+        .route("/api/events", get(list_events))
+        .route("/events", get(list_events))
+        .route("/api/pull-requests", get(list_pull_requests))
+        .route("/pull-requests", get(list_pull_requests))
         .route("/api/events/stream", get(events_stream))
         .route("/events/stream", get(events_stream))
         .layer(

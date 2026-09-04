@@ -18,6 +18,7 @@
     "compose:down": "docker compose -f infra/docker/docker-compose.yml down",
     "demo:tmux": "bash scripts/millipede-demo-tmux.sh",
     "millipede-demo": "bash scripts/millipede-demo-tmux.sh",
+    "seed:demo": "bash scripts/seed-demo-events.sh",
     "millipede-commit-push": "bash scripts/millipede-commit-push.sh",
     "ingestion:dev": "cargo run -p millipede-ingestion",
     "analyzer:dev": "cargo run -p millipede-analyzer",
