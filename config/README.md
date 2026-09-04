@@ -1,8 +1,17 @@
 # Team Radar config
 
+## `manager.json`
+
+EM / manager identity — **not** a direct report. Used by `pnpm sync:roster` to exclude the manager from `direct-reports.json` when syncing from a GitHub team (the team roster often includes the EM).
+
+| Field | Purpose |
+|-------|---------|
+| `github` | Login to skip during roster sync |
+| `name` | Display name (docs / future filters) |
+
 ## `direct-reports.json`
 
-Roster of direct reports used for actor matching in connectors and the analyzer.
+Roster of **direct reports only** (manager excluded — see `manager.json`) used for actor matching in connectors and the analyzer.
 
 **Sync from GitHub team** (recommended):
 

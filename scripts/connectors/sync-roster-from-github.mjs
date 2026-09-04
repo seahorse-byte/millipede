@@ -102,6 +102,16 @@ async function fetchTeamRepos(org, teamSlug, token) {
   return repos.sort();
 }
 
+function loadManagerGithub() {
+  const path = resolve(REPO_ROOT, "config/manager.json");
+  try {
+    const data = JSON.parse(readFileSync(path, "utf8"));
+    return data.github?.toLowerCase() ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function loadExistingReports() {
   const path = resolve(REPO_ROOT, "config/direct-reports.json");
   try {
@@ -160,10 +170,19 @@ async function main() {
 
   const { teamName, members } = await fetchTeamMembers(org, teamSlug, token);
   const { path, byGithub } = loadExistingReports();
+  const managerGithub = loadManagerGithub();
 
   const direct_reports = members
+    .filter((node) => node.login.toLowerCase() !== managerGithub)
     .map((node) => mergeMember(node, byGithub.get(node.login.toLowerCase())))
     .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (managerGithub) {
+    const skipped = members.filter((node) => node.login.toLowerCase() === managerGithub);
+    if (skipped.length) {
+      console.log(`Skipped manager (${skipped[0].login}) — see config/manager.json`);
+    }
+  }
 
   const output = { direct_reports };
 
