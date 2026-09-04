@@ -7,7 +7,7 @@
       "snyk/saw-mcp",
       "Probely/securityheaders"
     ],
-    "sync_days": 14,
+    "sync_days": 90,
     "include_reviews": true
   },
   "gitlab": {
@@ -17,7 +17,7 @@
       "probely/enterprise-frontend",
       "probely/ninja-onboarding-runner"
     ],
-    "sync_days": 14
+    "sync_days": 90
   },
   "jira": {
     "site": "https://yourorg.atlassian.net",
