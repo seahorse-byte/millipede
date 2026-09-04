@@ -40,7 +40,7 @@ cp .env.example .env.local
 # GITLAB_TOKEN — PAT with read_api
 # GITLAB_HOST — optional (default https://gitlab.com)
 # config/team-sources.json → gitlab.projects (aligned with pr-radar / mr-radar)
-# config/direct-reports.json → gitlab usernames
+# config/direct-reports.json → gitlab usernames (canonical: team-manager config.yaml → gitlab_handle, strip @)
 
 pnpm millipede-demo
 pnpm sync:gitlab
@@ -78,7 +78,7 @@ Flags: `node scripts/connectors/sync-github.mjs --dry-run` (or `sync-gitlab.mjs`
 
 ## Config
 
-- `config/direct-reports.json` — roster + per-source handles
+- `config/direct-reports.json` — roster + per-source handles (re-read each `pnpm sync:*` run; no restart)
 - `config/team-sources.json` — repos, Jira projects, Slack channel IDs
 - `.env.local` — plaintext tokens (see `.env.example`), or `.env.local.op` + `op`
 

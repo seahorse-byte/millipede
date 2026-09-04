@@ -29,6 +29,10 @@ Flags:
 
 Fill in GitLab, Slack, and Jira handles manually after the first roster sync (see table below).
 
+**GitLab handles:** canonical source is `~/.claude/skills/team-manager/config.yaml` → each member's `gitlab_handle` (strip a leading `@` before storing). Cross-check `~/.claude/skills/mr-radar/data/config.json` → `team.members[].gitlab` if needed. `pnpm sync:roster` preserves existing `gitlab` values — re-align from team-manager after a roster refresh.
+
+Connectors and the analyzer read `direct-reports.json` on each run (`pnpm sync:gitlab`, etc.) — no service restart required after editing this file.
+
 | Field | Used to match |
 |-------|----------------|
 | `id` | Canonical `actor_id` on events (do not change lightly) |
