@@ -5,7 +5,7 @@
     "repos": [
       "Probely/probely-website",
       "snyk/saw-mcp",
-      "Probely/securityheaders",
+      "Probely/securityheaders"
     ],
     "sync_days": 14,
     "include_reviews": true
