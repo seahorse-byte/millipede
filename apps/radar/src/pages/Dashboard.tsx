@@ -142,14 +142,52 @@ function ActivityTable(props: { rows: () => TeamEvent[] }) {
   );
 }
 
-function PullRequestTable(props: { rows: () => PullRequest[] }) {
+function pullRequestEmptyMessage(
+  directReportId: string,
+  sources: Set<ActivitySource>,
+  roster: { id: string; name: string }[],
+): { headline: string; hint: string } {
+  const gitlabOnly = sources.size === 1 && sources.has("gitlab");
+  const person = roster.find((member) => member.id === directReportId);
+
+  if (gitlabOnly && directReportId) {
+    const who = person?.name ?? directReportId;
+    return {
+      headline: `No GitLab MRs for ${who} in the sync window.`,
+      hint: "GitLab sync requires GITLAB_TOKEN in .env.local (or .env.local.op). Then run pnpm sync:gitlab.",
+    };
+  }
+
+  if (gitlabOnly) {
+    return {
+      headline: "No GitLab MRs in the sync window.",
+      hint: "Set GITLAB_TOKEN in .env.local (or .env.local.op), then run pnpm sync:gitlab.",
+    };
+  }
+
+  return {
+    headline: "No pull requests match these filters.",
+    hint: "Run pnpm sync:github or pnpm sync:gitlab to load PRs/MRs.",
+  };
+}
+
+function PullRequestTable(props: {
+  rows: () => PullRequest[];
+  directReport: () => string;
+  sources: () => Set<ActivitySource>;
+  roster: () => { id: string; name: string }[];
+}) {
+  const empty = createMemo(() =>
+    pullRequestEmptyMessage(props.directReport(), props.sources(), props.roster()),
+  );
+
   return (
     <Show
       when={props.rows().length > 0}
       fallback={
         <div class="empty-state">
-          <p>No pull requests match these filters.</p>
-          <p class="dim">Run <code class="mono">pnpm sync:github</code> or <code class="mono">pnpm sync:gitlab</code> to load PRs/MRs.</p>
+          <p>{empty().headline}</p>
+          <p class="dim">{empty().hint}</p>
         </div>
       }
     >
@@ -460,7 +498,12 @@ export function Dashboard() {
         </Show>
 
         <Show when={activeTab() === "pull-requests"}>
-          <PullRequestTable rows={() => pullRequestsQuery.data ?? []} />
+          <PullRequestTable
+            rows={() => pullRequestsQuery.data ?? []}
+            directReport={directReport}
+            sources={selectedSources}
+            roster={() => rosterQuery.data ?? []}
+          />
         </Show>
       </section>
     </div>
