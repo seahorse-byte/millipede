@@ -42,14 +42,16 @@ See `config/README.md` for field details.
 Edit **`config/team-sources.json`**:
 
 - **GitHub:** `org`, `team_slug` (optional), `repos` (e.g. `Probely/probely-website`, `snyk/saw-mcp`, `Probely/securityheaders`), `sync_days`, `include_reviews`
-- **GitLab / Jira / Slack:** fill when you add those tokens (stubs today)
+- **GitLab:** `projects` (e.g. `probely/enterprise-frontend` — same paths as pr-radar), `host`, `sync_days`
+- **Jira / Slack:** fill when you add those tokens (stubs today)
 
-## 5. Add GitHub token (for real PR sync)
+## 5. Add tokens (for real PR/MR sync)
 
 In **`.env.local`**:
 
 ```bash
 GITHUB_TOKEN=ghp_...   # classic: repo scope; fine-grained: PR read on listed repos
+GITLAB_TOKEN=glpat-... # read_api — same projects as pr-radar
 INGESTION_URL=http://127.0.0.1:8081
 ```
 
@@ -57,6 +59,7 @@ Dry-run without posting:
 
 ```bash
 node scripts/connectors/sync-github.mjs --dry-run
+node scripts/connectors/sync-gitlab.mjs --dry-run
 ```
 
 ## 6. Start the stack
@@ -79,7 +82,7 @@ pnpm llm-worker:dev   # terminal 2
 pnpm analyzer:dev     # terminal 3
 ```
 
-## 7. Load data — demo **or** GitHub
+## 7. Load data — demo **or** connectors
 
 **No token yet (see the full loop immediately):**
 
@@ -95,7 +98,14 @@ pnpm sync:github
 sleep 5
 ```
 
-Re-run sync anytime; it only ingests PRs/reviews for logins in `direct-reports.json` and repos in `team-sources.json`.
+**With `GITLAB_TOKEN` set:**
+
+```bash
+pnpm sync:gitlab
+sleep 5
+```
+
+Re-run sync anytime; connectors only ingest events for handles in `direct-reports.json` and repos/projects in `team-sources.json`.
 
 ## 8. Refresh Team Brain docs
 

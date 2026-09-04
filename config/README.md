@@ -60,10 +60,12 @@ Lists repos, Jira projects, and Slack channels to sync for your team. Used by `p
 | `github.team_slug` | string | Team slug for roster sync |
 | `github.repos` | `owner/name` | Repos to poll for PRs and reviews |
 | `github.sync_days` | number | Only PRs updated within this window (default 14) |
-| `gitlab.projects` | path | GitLab project paths (stub connector) |
+| `gitlab.projects` | path | GitLab project paths (`group/project`) |
+| `gitlab.host` | URL | GitLab host (default `https://gitlab.com`; override with `GITLAB_HOST`) |
+| `gitlab.sync_days` | number | Only MRs updated within this window (default 14) |
 | `jira.projects` | keys | Jira project keys (stub connector) |
 | `slack.channels` | IDs | Allowlisted channel IDs (stub connector) |
 
-Current team repos: `Probely/probely-website`, `snyk/saw-mcp`, `Probely/securityheaders`. Refine the list manually or run `pnpm sync:roster --sync-repos` to merge from the GitHub team.
+Current team repos: `Probely/probely-website`, `snyk/saw-mcp`, `Probely/securityheaders` (GitHub). GitLab: `probely/saw-agent-skills`, `probely/enterprise-frontend`, `probely/ninja-onboarding-runner` (aligned with pr-radar). Refine the list manually or run `pnpm sync:roster --sync-repos` to merge GitHub repos from the team.
 
 See `scripts/connectors/README.md` and `.env.example` for token setup.

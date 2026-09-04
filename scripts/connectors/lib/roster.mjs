@@ -36,3 +36,8 @@ export function matchGithubLogin(login, byGithub) {
   if (!login) return null;
   return byGithub.get(login.toLowerCase()) ?? null;
 }
+
+export function matchGitlabUsername(username, byGitlab) {
+  if (!username) return null;
+  return byGitlab.get(username.toLowerCase()) ?? null;
+}

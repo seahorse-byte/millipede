@@ -14,6 +14,22 @@ pnpm millipede-demo   # or manual stack
 pnpm sync:github
 ```
 
+## Quick start (GitLab)
+
+```bash
+cp .env.example .env.local
+# GITLAB_TOKEN — PAT with read_api
+# GITLAB_HOST — optional (default https://gitlab.com)
+# config/team-sources.json → gitlab.projects (aligned with pr-radar / mr-radar)
+# config/direct-reports.json → gitlab usernames
+
+pnpm millipede-demo
+pnpm sync:gitlab
+# Dry-run: node scripts/connectors/sync-gitlab.mjs --dry-run
+```
+
+Projects tracked by pr-radar live in `~/.claude/skills/mr-radar/data/config.json` → `repos[]` where `platform: gitlab`. Millipede mirrors those paths in `config/team-sources.json`.
+
 Open http://127.0.0.1:5174 — filter by direct report, check Pull requests tab.
 
 ## Commands
@@ -22,12 +38,12 @@ Open http://127.0.0.1:5174 — filter by direct report, check Pull requests tab.
 |--------|------------|--------|
 | `sync-github.mjs` | `pnpm sync:github` | Working |
 | `sync-roster-from-github.mjs` | `pnpm sync:roster` | Working |
-| `sync-gitlab.mjs` | `pnpm sync:gitlab` | Stub |
+| `sync-gitlab.mjs` | `pnpm sync:gitlab` | Working |
 | `sync-jira.mjs` | `pnpm sync:jira` | Stub |
 | `sync-slack.mjs` | `pnpm sync:slack` | Stub |
 | `watch.mjs` | `pnpm connectors:watch` | Polls enabled connectors |
 
-Flags: `node scripts/connectors/sync-github.mjs --dry-run` prints payloads without POSTing.
+Flags: `node scripts/connectors/sync-github.mjs --dry-run` (or `sync-gitlab.mjs`) prints payloads without POSTing.
 
 ## Config
 

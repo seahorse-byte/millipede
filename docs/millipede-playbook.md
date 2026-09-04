@@ -102,7 +102,7 @@ session: millipede
 | `pnpm seed:demo` | Demo | Post activity + PR events for 5 direct reports (4 sources) |
 | `pnpm brain:refresh` | Team Brain | Regenerate `docs/team-brain/generated/` from analyzer APIs |
 | `pnpm sync:github` | Connectors | Poll GitHub PRs/reviews for roster members → ingestion |
-| `pnpm sync:gitlab` | Connectors | Stub — GitLab MR sync (instructions only) |
+| `pnpm sync:gitlab` | Connectors | Poll GitLab MRs for roster members → ingestion |
 | `pnpm sync:jira` | Connectors | Stub — Jira issue sync (instructions only) |
 | `pnpm sync:slack` | Connectors | Stub — Slack channel sync (instructions only) |
 | `pnpm connectors:watch` | Connectors | Poll enabled connectors every N minutes (see `.env.local`) |
@@ -115,6 +115,7 @@ session: millipede
 | `seed-demo-events.sh` | Seeds Slack/Jira/GitHub/GitLab activity + cross-repo PRs |
 | `brain-writer/run.sh` | Regenerates Team Brain docs from analyzer APIs |
 | `connectors/sync-github.mjs` | Polls GitHub API; posts normalized PR/review events |
+| `connectors/sync-gitlab.mjs` | Polls GitLab API; posts normalized MR events |
 | `connectors/watch.mjs` | Interval runner for all enabled connectors |
 | `wait-for-kafka.sh` | Poll Kafka until broker ready |
 | `init-kafka-topics.sh` | Create `raw-dev-events` + `enriched-dev-events` |
@@ -237,7 +238,7 @@ Never commit `.env.local` — it is gitignored.
 
 ```bash
 pnpm sync:github          # working — PRs + reviews for direct reports
-pnpm sync:gitlab          # stub (prints setup steps)
+pnpm sync:gitlab          # working — MRs for direct reports (pr-radar projects)
 pnpm sync:jira            # stub
 pnpm sync:slack           # stub
 
@@ -245,7 +246,7 @@ pnpm sync:slack           # stub
 pnpm connectors:watch
 ```
 
-Dry-run without POSTing: `node scripts/connectors/sync-github.mjs --dry-run`
+Dry-run without POSTing: `node scripts/connectors/sync-github.mjs --dry-run` or `sync-gitlab.mjs --dry-run`
 
 ### 4. Verify in Radar
 
@@ -253,7 +254,7 @@ Open http://127.0.0.1:5174 — use direct-report filter and **Pull requests** ta
 
 **Webhook alternative (optional):** Expose `:8081` via `cloudflared tunnel --url http://127.0.0.1:8081` and point GitHub/GitLab webhooks at `/webhooks/github`. Polling is simpler for local-only use.
 
-Full connector plan: `~/.claude/plans/millipede-local-team-connectors.md` · `scripts/connectors/README.md`
+Full connector plan: `~/.claude/plans/millipede-local-team-connectors.md` · `~/.claude/plans/millipede-gitlab-pr-radar-parity.md` · `scripts/connectors/README.md`
 
 ---
 

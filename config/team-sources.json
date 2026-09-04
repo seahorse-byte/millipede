@@ -12,7 +12,12 @@
   },
   "gitlab": {
     "host": "https://gitlab.com",
-    "projects": []
+    "projects": [
+      "probely/saw-agent-skills",
+      "probely/enterprise-frontend",
+      "probely/ninja-onboarding-runner"
+    ],
+    "sync_days": 14
   },
   "jira": {
     "site": "https://yourorg.atlassian.net",
