@@ -7,6 +7,7 @@ import { loadEnv, requireEnv, envOr } from "./lib/env.mjs";
 import { loadDirectReports, buildRosterMaps, matchGithubLogin } from "./lib/roster.mjs";
 import { loadTeamSources } from "./lib/config.mjs";
 import { postEvent } from "./lib/ingest.mjs";
+import { refreshTeamBrain } from "./lib/brain.mjs";
 
 loadEnv();
 
@@ -181,6 +182,7 @@ async function main() {
   );
   if (!dryRun && totalPosted > 0) {
     console.log("Wait ~5s, then open http://127.0.0.1:5174");
+    await refreshTeamBrain();
   }
 }
 

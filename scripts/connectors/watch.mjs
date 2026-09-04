@@ -7,6 +7,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv, envOr } from "./lib/env.mjs";
 import { loadTeamSources } from "./lib/config.mjs";
+import { refreshTeamBrain } from "./lib/brain.mjs";
 
 loadEnv();
 
@@ -65,6 +66,8 @@ async function tick(sources) {
       console.error(`[${name}]`, err.message);
     }
   }
+
+  await refreshTeamBrain();
 }
 
 async function main() {

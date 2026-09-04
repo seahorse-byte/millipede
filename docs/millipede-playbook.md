@@ -247,7 +247,7 @@ Dry-run without POSTing: `node scripts/connectors/sync-github.mjs --dry-run`
 
 ### 4. Verify in Radar
 
-Open http://127.0.0.1:5174 — use direct-report filter and **Pull requests** tab. Events appear ~5s after Postgres write.
+Open http://127.0.0.1:5174 — use direct-report filter and **Pull requests** tab. Events appear ~5s after Postgres write. `sync:github` and `connectors:watch` auto-run `pnpm brain:refresh` unless `BRAIN_REFRESH=0`.
 
 **Webhook alternative (optional):** Expose `:8081` via `cloudflared tunnel --url http://127.0.0.1:8081` and point GitHub/GitLab webhooks at `/webhooks/github`. Polling is simpler for local-only use.
 
