@@ -11,6 +11,18 @@ test.describe("Team Radar dashboard", () => {
     await expect(page.getByText("Eval pass rate")).toBeVisible();
   });
 
+  test("renders live metrics when analyzer is up", async ({ page, request }) => {
+    const summary = await request.get("http://127.0.0.1:8082/api/metrics/summary");
+    test.skip(!summary.ok(), "Analyzer not running on :8082");
+
+    const data = (await summary.json()) as { total_events: number };
+    await page.goto("/");
+
+    await expect(page.getByText("Total events")).toBeVisible();
+    await expect(page.getByText(String(data.total_events))).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator(".kpi-value").first()).not.toHaveText("—", { timeout: 10_000 });
+  });
+
   test("shows empty live feed guidance", async ({ page }) => {
     await page.goto("/");
 

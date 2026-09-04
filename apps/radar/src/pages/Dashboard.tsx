@@ -1,5 +1,5 @@
 import { createQuery } from "@tanstack/solid-query";
-import { For, Show, createSignal, onCleanup, onMount } from "solid-js";
+import { For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import {
   fetchMetricsSummary,
   openEventStream,
@@ -29,35 +29,51 @@ export function Dashboard() {
     refetchInterval: 5000,
   }));
 
+  const metrics = createMemo(() => metricsQuery.data);
+  const isMetricsLoading = createMemo(
+    () => metricsQuery.isPending && metrics() == null,
+  );
+  const isMetricsError = createMemo(() => metricsQuery.isError);
+  const metricsError = createMemo(() => metricsQuery.error);
+
   const [liveEvents, setLiveEvents] = createSignal<FeedRow[]>([]);
   const [streamStatus, setStreamStatus] = createSignal<"connecting" | "live" | "offline">(
     "connecting",
   );
 
   onMount(() => {
-    const close = openEventStream(
-      (event) => {
+    const close = openEventStream({
+      onEvent: (event) => {
         setStreamStatus("live");
         setLiveEvents((current) => [
           { ...event, receivedAt: new Date().toISOString().slice(11, 19) },
           ...current,
         ].slice(0, 12));
       },
-      () => {
+      onOpen: () => setStreamStatus("live"),
+      onError: () => {
         if (liveEvents().length === 0) setStreamStatus("offline");
       },
-    );
+    });
     onCleanup(close);
   });
 
   return (
     <div class="page-stack">
-      <Show when={metricsQuery.isPending}>
+      <Show when={isMetricsLoading()}>
         <div class="alert alert--info">Syncing metrics from analyzer…</div>
       </Show>
-      <Show when={metricsQuery.isError}>
-        <div class="alert alert--danger">
-          Analyzer unreachable on :8082. Start the pipeline and refresh.
+      <Show when={isMetricsError()}>
+        <div class="alert alert--danger" role="alert">
+          <p>
+            <strong>Analyzer unreachable.</strong> Metrics will not update until{" "}
+            <code class="mono">:8082</code> is running.
+          </p>
+          <p class="dim">
+            {metricsError() instanceof Error
+              ? metricsError()!.message
+              : "Start the pipeline with pnpm millipede-demo or pnpm analyzer:dev, then refresh."}
+          </p>
         </div>
       </Show>
 
@@ -65,72 +81,77 @@ export function Dashboard() {
         <article class="kpi-card">
           <p class="kpi-label">Friction index</p>
           <p class="kpi-value">
-            {metricsQuery.data?.kpis?.friction_index != null
-              ? metricsQuery.data.kpis.friction_index.toFixed(2)
-              : "—"}
+            {(() => {
+              const value = metrics()?.kpis?.friction_index;
+              return value != null ? value.toFixed(2) : "—";
+            })()}
           </p>
           <p class="kpi-hint">sentiment + risk blend</p>
         </article>
         <article class="kpi-card">
           <p class="kpi-label">Avg sentiment</p>
           <p class="kpi-value">
-            {metricsQuery.data?.kpis?.avg_sentiment != null
-              ? metricsQuery.data.kpis.avg_sentiment.toFixed(2)
-              : "—"}
+            {(() => {
+              const value = metrics()?.kpis?.avg_sentiment;
+              return value != null ? value.toFixed(2) : "—";
+            })()}
           </p>
           <p class="kpi-hint">enriched events</p>
         </article>
         <article class="kpi-card">
           <p class="kpi-label">High risk</p>
-          <p class="kpi-value">{metricsQuery.data?.kpis?.high_risk_count ?? "—"}</p>
+          <p class="kpi-value">{metrics()?.kpis?.high_risk_count ?? "—"}</p>
           <p class="kpi-hint">risk ≥ 0.5</p>
         </article>
         <article class="kpi-card">
           <p class="kpi-label">Eval pass rate</p>
           <p class="kpi-value">
-            {metricsQuery.data?.kpis?.eval_pass_rate != null
-              ? `${Math.round(metricsQuery.data.kpis.eval_pass_rate * 100)}%`
-              : "—"}
+            {(() => {
+              const rate = metrics()?.kpis?.eval_pass_rate;
+              return rate != null ? `${Math.round(rate * 100)}%` : "—";
+            })()}
           </p>
           <p class="kpi-hint">pnpm evals:write-metrics</p>
         </article>
       </section>
 
-      <Show when={metricsQuery.isSuccess && metricsQuery.data}>
-        <section class="stat-row">
-          <article class="stat-card stat-card--hero">
-            <div class="stat-icon stat-icon--green">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M4 14h4v6H4v-6zm6-4h4v10h-4V10zm6-6h4v16h-4V4z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <div>
-              <p class="stat-label">Total events</p>
-              <p class="stat-value">{metricsQuery.data!.total_events}</p>
-              <p class="stat-hint">postgres · team_events</p>
-            </div>
-          </article>
+      <Show when={metrics()}>
+        {(data) => (
+          <section class="stat-row">
+            <article class="stat-card stat-card--hero">
+              <div class="stat-icon stat-icon--green">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 14h4v6H4v-6zm6-4h4v10h-4V10zm6-6h4v16h-4V4z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p class="stat-label">Total events</p>
+                <p class="stat-value">{data().total_events}</p>
+                <p class="stat-hint">postgres · team_events</p>
+              </div>
+            </article>
 
-          <For each={Object.entries(metricsQuery.data!.events_by_source)}>
-            {([source, count]) => (
-              <article class="stat-card">
-                <div class="stat-icon">
-                  <span>{source.slice(0, 2).toUpperCase()}</span>
-                </div>
-                <div>
-                  <p class="stat-label">{source}</p>
-                  <p class="stat-value">{count}</p>
-                  <p class="stat-hint mono">
-                    {metricsQuery.data!.latest_by_source[source]?.slice(0, 8) ?? "—"}
-                  </p>
-                </div>
-              </article>
-            )}
-          </For>
-        </section>
+            <For each={Object.entries(data().events_by_source)}>
+              {([source, count]) => (
+                <article class="stat-card">
+                  <div class="stat-icon">
+                    <span>{source.slice(0, 2).toUpperCase()}</span>
+                  </div>
+                  <div>
+                    <p class="stat-label">{source}</p>
+                    <p class="stat-value">{count}</p>
+                    <p class="stat-hint mono">
+                      {data().latest_by_source[source]?.slice(0, 8) ?? "—"}
+                    </p>
+                  </div>
+                </article>
+              )}
+            </For>
+          </section>
+        )}
       </Show>
 
       <section class="panel">

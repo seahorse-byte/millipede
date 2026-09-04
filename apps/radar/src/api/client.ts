@@ -44,15 +44,22 @@ function streamUrl(): string {
   return `${base}${separator}access_token=${encodeURIComponent(token)}`;
 }
 
-export function openEventStream(onEvent: (event: LiveEvent) => void, onError?: () => void) {
+export interface EventStreamHandlers {
+  onEvent: (event: LiveEvent) => void;
+  onOpen?: () => void;
+  onError?: () => void;
+}
+
+export function openEventStream(handlers: EventStreamHandlers) {
   const source = new EventSource(streamUrl());
+  source.onopen = () => handlers.onOpen?.();
   source.addEventListener("team_event", (message) => {
     try {
-      onEvent(JSON.parse(message.data));
+      handlers.onEvent(JSON.parse(message.data));
     } catch {
-      onError?.();
+      handlers.onError?.();
     }
   });
-  source.onerror = () => onError?.();
+  source.onerror = () => handlers.onError?.();
   return () => source.close();
 }
