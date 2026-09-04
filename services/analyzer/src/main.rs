@@ -56,8 +56,10 @@ struct EventsQuery {
 struct PullRequestsQuery {
     direct_report: Option<String>,
     source: Option<String>,
-    state: Option<String>,
+    #[serde(default)]
+    state: Vec<String>,
     repo: Option<String>,
+    sort: Option<String>,
     limit: Option<i64>,
 }
 
@@ -86,6 +88,9 @@ struct PullRequestItem {
     author_id: Option<String>,
     author_name: Option<String>,
     updated_at: String,
+    merged_at: Option<String>,
+    draft: bool,
+    blocked: bool,
 }
 
 #[derive(Serialize)]
@@ -136,6 +141,10 @@ struct RawEvent {
     pr_number: Option<i32>,
     pr_state: Option<String>,
     url: Option<String>,
+    merged_at: Option<String>,
+    pr_draft: Option<bool>,
+    pr_blocked: Option<bool>,
+    pr_updated_at: Option<String>,
 }
 
 async fn health(State(state): State<AppState>) -> Json<HealthResponse> {
@@ -276,6 +285,10 @@ async fn ensure_schema(pool: &PgPool) {
         "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_number INTEGER",
         "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_state TEXT",
         "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS url TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS merged_at TEXT",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_draft BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_blocked BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE team_events ADD COLUMN IF NOT EXISTS pr_updated_at TEXT",
         "CREATE INDEX IF NOT EXISTS idx_team_events_actor_id ON team_events(actor_id)",
         "CREATE INDEX IF NOT EXISTS idx_team_events_event_type ON team_events(event_type)",
         "CREATE INDEX IF NOT EXISTS idx_team_events_pr ON team_events(event_type, repo, pr_number) WHERE event_type = 'pr'",
@@ -350,40 +363,90 @@ async fn list_pull_requests(
     Query(params): Query<PullRequestsQuery>,
 ) -> Result<Json<Vec<PullRequestItem>>, StatusCode> {
     let limit = params.limit.unwrap_or(50).clamp(1, 200);
+    let sort = params.sort.as_deref().unwrap_or("merged_at_desc");
+    let states: Vec<String> = params
+        .state
+        .iter()
+        .flat_map(|value| value.split(','))
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_ascii_lowercase)
+        .collect();
+    let state_filter: Option<Vec<String>> = if states.is_empty() {
+        None
+    } else {
+        Some(states)
+    };
 
-    let rows: Vec<PullRequestItem> = sqlx::query_as(
+    let order_clause = match sort {
+        "updated_at_desc" => "updated_at DESC",
+        _ => "merged_at DESC NULLS LAST, updated_at DESC",
+    };
+
+    let sql = format!(
         r#"
-        SELECT DISTINCT ON (repo, pr_number)
+        SELECT
             id,
             source,
             repo,
             pr_number,
-            COALESCE(title, '') AS title,
+            title,
             url,
-            COALESCE(pr_state, 'open') AS state,
-            actor_id AS author_id,
-            actor_name AS author_name,
-            created_at AS updated_at
-        FROM team_events
-        WHERE event_type = 'pr'
-          AND repo IS NOT NULL
-          AND pr_number IS NOT NULL
-          AND ($1::TEXT IS NULL OR actor_id = $1)
-          AND ($2::TEXT IS NULL OR source = $2)
-          AND ($3::TEXT IS NULL OR pr_state = $3)
-          AND ($4::TEXT IS NULL OR repo = $4)
-        ORDER BY repo, pr_number, created_at DESC
+            state,
+            author_id,
+            author_name,
+            updated_at,
+            merged_at,
+            draft,
+            blocked
+        FROM (
+            SELECT DISTINCT ON (repo, pr_number)
+                id,
+                source,
+                repo,
+                pr_number,
+                COALESCE(title, '') AS title,
+                url,
+                COALESCE(pr_state, 'open') AS state,
+                actor_id AS author_id,
+                actor_name AS author_name,
+                COALESCE(pr_updated_at, created_at) AS updated_at,
+                merged_at,
+                COALESCE(pr_draft, false) AS draft,
+                COALESCE(pr_blocked, false) AS blocked
+            FROM team_events
+            WHERE event_type = 'pr'
+              AND repo IS NOT NULL
+              AND pr_number IS NOT NULL
+              AND ($1::TEXT IS NULL OR actor_id = $1)
+              AND ($2::TEXT IS NULL OR source = $2)
+              AND ($4::TEXT IS NULL OR repo = $4)
+            ORDER BY repo, pr_number, created_at DESC
+        ) latest
+        WHERE (
+            $3::TEXT[] IS NULL
+            OR (
+                ('open' = ANY($3) AND state = 'open' AND NOT draft)
+                OR ('merged' = ANY($3) AND state = 'merged')
+                OR ('closed' = ANY($3) AND state = 'closed')
+                OR ('draft' = ANY($3) AND draft)
+                OR ('blocked' = ANY($3) AND blocked)
+            )
+        )
+        ORDER BY {order_clause}
         LIMIT $5
-        "#,
-    )
-    .bind(params.direct_report.as_deref())
-    .bind(params.source.as_deref())
-    .bind(params.state.as_deref())
-    .bind(params.repo.as_deref())
-    .bind(limit)
-    .fetch_all(&state.pool)
-    .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        "#
+    );
+
+    let rows: Vec<PullRequestItem> = sqlx::query_as(&sql)
+        .bind(params.direct_report.as_deref())
+        .bind(params.source.as_deref())
+        .bind(state_filter)
+        .bind(params.repo.as_deref())
+        .bind(limit)
+        .fetch_all(&state.pool)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(rows))
 }
@@ -437,9 +500,10 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
         r#"
         INSERT INTO team_events (
             id, source, payload_json, sentiment, risk_score, enriched_at, created_at,
-            actor_id, actor_name, title, event_type, repo, pr_number, pr_state, url
+            actor_id, actor_name, title, event_type, repo, pr_number, pr_state, url,
+            merged_at, pr_draft, pr_blocked, pr_updated_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, NOW()::TEXT, $7, $8, $9, $10, $11, $12, $13, $14)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW()::TEXT, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
         ON CONFLICT (id) DO UPDATE SET
             sentiment = EXCLUDED.sentiment,
             risk_score = EXCLUDED.risk_score,
@@ -451,7 +515,11 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
             repo = EXCLUDED.repo,
             pr_number = EXCLUDED.pr_number,
             pr_state = EXCLUDED.pr_state,
-            url = EXCLUDED.url
+            url = EXCLUDED.url,
+            merged_at = EXCLUDED.merged_at,
+            pr_draft = EXCLUDED.pr_draft,
+            pr_blocked = EXCLUDED.pr_blocked,
+            pr_updated_at = EXCLUDED.pr_updated_at
         "#,
     )
     .bind(&event.id)
@@ -468,6 +536,10 @@ async fn persist_event(pool: &PgPool, event: &RawEvent) -> Result<(), sqlx::Erro
     .bind(event.pr_number)
     .bind(event.pr_state.as_deref())
     .bind(event.url.as_deref())
+    .bind(event.merged_at.as_deref())
+    .bind(event.pr_draft)
+    .bind(event.pr_blocked)
+    .bind(event.pr_updated_at.as_deref())
     .execute(pool)
     .await?;
     Ok(())
@@ -492,6 +564,9 @@ async fn warm_redis(client: &redis::Client, event: &RawEvent) {
         "pr_number": event.pr_number,
         "pr_state": event.pr_state,
         "url": event.url,
+        "merged_at": event.merged_at,
+        "draft": event.pr_draft,
+        "blocked": event.pr_blocked,
     });
 
     let _: Result<(), redis::RedisError> = conn

@@ -13,7 +13,11 @@ CREATE TABLE IF NOT EXISTS team_events (
   repo TEXT,
   pr_number INTEGER,
   pr_state TEXT,
-  url TEXT
+  url TEXT,
+  merged_at TEXT,
+  pr_draft BOOLEAN DEFAULT FALSE,
+  pr_blocked BOOLEAN DEFAULT FALSE,
+  pr_updated_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS team_metrics (

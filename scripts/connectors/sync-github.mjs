@@ -84,6 +84,16 @@ async function githubFetch(path, token) {
   return response.json();
 }
 
+function prBlocked(pr) {
+  // GitHub list pulls endpoint does not include labels; blocked is only set when
+  // labels are present (e.g. webhook payloads). Re-sync cannot detect blocked PRs.
+  const labels = pr.labels ?? [];
+  return labels.some((label) => {
+    const name = typeof label === "string" ? label : label?.name;
+    return name?.toLowerCase() === "blocked";
+  });
+}
+
 function normalizePr(pr, repo, person) {
   return {
     source: "github",
@@ -96,6 +106,10 @@ function normalizePr(pr, repo, person) {
     state: prState(pr),
     url: pr.html_url,
     action: prAction(pr),
+    merged_at: pr.merged_at ?? null,
+    draft: Boolean(pr.draft),
+    blocked: prBlocked(pr),
+    updated_at: pr.updated_at,
   };
 }
 

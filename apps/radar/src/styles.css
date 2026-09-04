@@ -450,6 +450,10 @@ body {
   color: var(--text-dim);
 }
 
+.panel-filters {
+  padding: 0.85rem 1rem 0;
+}
+
 /* ── Stream badge ── */
 .stream-badge {
   font-size: 0.68rem;

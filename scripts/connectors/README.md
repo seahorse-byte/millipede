@@ -76,6 +76,17 @@ Classic PATs still work for `snyk/*` repos. If sync logs `access denied (403)` f
 
 Flags: `node scripts/connectors/sync-github.mjs --dry-run` (or `sync-gitlab.mjs`) prints payloads without POSTing.
 
+### PR/MR fields synced
+
+| Field | GitHub | GitLab |
+|-------|--------|--------|
+| `merged_at` | `merged_at` from PR API | `merged_at` from MR API |
+| `draft` | `draft` flag | `draft` / `work_in_progress` |
+| `blocked` | `blocked` label only (list endpoint has no labels — gap) | `blocking_discussions_resolved: false` or `blocked` label |
+| `updated_at` | PR `updated_at` | MR `updated_at` |
+
+Re-run `pnpm sync:github` / `pnpm sync:gitlab` after upgrading to backfill new columns.
+
 ## Config
 
 - `config/direct-reports.json` — roster + per-source handles (re-read each `pnpm sync:*` run; no restart)

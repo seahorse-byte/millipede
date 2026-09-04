@@ -87,4 +87,17 @@ def enrich_raw_event(raw: dict[str, Any]) -> dict[str, Any]:
     if pr_state is not None:
         out["pr_state"] = pr_state
 
+    for key in ("merged_at", "pr_updated_at"):
+        value = pick(key, "updated_at" if key == "pr_updated_at" else key)
+        if value is not None:
+            out[key] = value
+
+    draft = pick("pr_draft", "draft")
+    if draft is not None:
+        out["pr_draft"] = bool(draft)
+
+    blocked = pick("pr_blocked", "blocked")
+    if blocked is not None:
+        out["pr_blocked"] = bool(blocked)
+
     return out
