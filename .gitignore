@@ -7,6 +7,7 @@ target/
 .env
 .env.*
 !.env.example
+!.env.local.op
 .DS_Store
 coverage/
 playwright-report/

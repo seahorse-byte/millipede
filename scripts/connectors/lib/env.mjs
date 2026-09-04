@@ -38,7 +38,7 @@ export function loadEnv() {
 export function requireEnv(name) {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing ${name} — set it in .env.local (see .env.example)`);
+    throw new Error(`Missing ${name} — set it in .env.local, or use .env.local.op with op (see .env.example)`);
   }
   return value;
 }

@@ -26,6 +26,19 @@ cp -n .env.example .env.local   # skip if you already have .env.local
 
 **Never commit `.env.local`.**
 
+
+### Option B — 1Password (no plaintext in `.env.local`)
+
+The repo includes **`.env.local.op`** with `op://` references. With [1Password CLI](https://developer.1password.com/docs/cli/) installed:
+
+```bash
+op whoami
+op run --env-file=.env.local.op -- node scripts/connectors/sync-github.mjs --dry-run
+pnpm sync:github   # wraps via scripts/with-op-env.sh
+```
+
+You do **not** need `.env.local` if all secrets come from 1Password.
+
 ## 3. Point roster at your people
 
 Edit **`config/direct-reports.json`**:
@@ -47,7 +60,7 @@ Edit **`config/team-sources.json`**:
 
 ## 5. Add tokens (for real PR/MR sync)
 
-In **`.env.local`**:
+In **`.env.local`** (skip this section if you use **Option B** — 1Password above):
 
 ```bash
 GITHUB_TOKEN=ghp_...   # classic: repo scope; fine-grained: PR read on listed repos

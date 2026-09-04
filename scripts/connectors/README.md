@@ -2,6 +2,25 @@
 
 Poll-based sync scripts that fetch real team data and POST normalized events to ingestion (`:8081`).
 
+
+## 1Password (recommended for tokens)
+
+Committed template: **`.env.local.op`** at repo root (only `op://` references — safe to commit).
+
+Prerequisites: [1Password CLI](https://developer.1password.com/docs/cli/) signed in (`op whoami`).
+
+```bash
+# Dry-run with injected secrets
+op run --env-file=.env.local.op -- node scripts/connectors/sync-github.mjs --dry-run
+
+# pnpm scripts auto-use op when .env.local.op exists and `op` is on PATH
+pnpm sync:github
+```
+
+GitHub item in vault **Dev Vault (CLI tools)** — use the UUID reference in `.env.local.op` (the item title has a trailing space, so name-based `op://` paths may fail).
+
+If you use 1Password, **`.env.local` is optional** (plaintext tokens only needed when not using `op`).
+
 ## Quick start (GitHub)
 
 ```bash
@@ -49,6 +68,6 @@ Flags: `node scripts/connectors/sync-github.mjs --dry-run` (or `sync-gitlab.mjs`
 
 - `config/direct-reports.json` — roster + per-source handles
 - `config/team-sources.json` — repos, Jira projects, Slack channel IDs
-- `.env.local` — tokens (see `.env.example`)
+- `.env.local` — plaintext tokens (see `.env.example`), or `.env.local.op` + `op`
 
 Full plan: `~/.claude/plans/millipede-local-team-connectors.md`
